@@ -24,7 +24,7 @@ class RedisUtils
      * @return \Redis
      * @throws JsonException
      */
-    public static function init($store = "default")
+    public static function init($store = "redis")
     {
         $redis = Cache::store($store)->handler();
         // 判断缓存类是否为 redis

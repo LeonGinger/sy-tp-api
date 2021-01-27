@@ -1,3 +1,6 @@
 .idea
 *.log
 thinkphp
+sftp-config.json
+./runtime/log/*
+./runtime/cache/*

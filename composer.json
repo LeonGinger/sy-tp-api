@@ -17,7 +17,12 @@
     ],
     "require": {
         "php": ">=5.6.0",
-        "topthink/framework": "5.1.*"
+        "topthink/framework": "5.1.*",
+        "firebase/php-jwt": "^5.2",
+        "naixiaoxin/think-wechat": "^1.6",
+        "topthink/think-worker": "v2.0.9",
+        "workerman/gateway-worker": "^3.0",
+        "workerman/workerman": "^3.5"
     },
     "autoload": {
         "psr-4": {

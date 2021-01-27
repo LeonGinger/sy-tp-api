@@ -8,6 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-return [
-
-];
+// return [
+//   'sqs'=>'/admin/ad/ad',
+//   'login'=>'/admin/auth/Login/',
+// ];
+use think\facade\Route;
+//  Route::rule('sqs','admin/ad/ad','post');
+ Route::rule('web/:methods','admin/Entrance/index');
+ Route::rule('wap/:methods','wap/Entrance/index');

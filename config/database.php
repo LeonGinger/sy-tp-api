@@ -15,11 +15,11 @@ return [
     // 服务器地址
     'hostname'        => '127.0.0.1',
     // 数据库名
-    'database'        => 'vue-admin',
+    'database'        => 'test1_tp',
     // 用户名
-    'username'        => 'root',
+    'username'        => 'test1_tp',
     // 密码
-    'password'        => 'root',
+    'password'        => 'WKA3hNjGNmTAetGz',
     // 端口
     'hostport'        => '',
     // 连接dsn

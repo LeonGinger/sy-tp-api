@@ -1,8 +1,8 @@
 <?php
 
-namespace app\admin\controller\auth;
+namespace app\wap\controller\auth;
 
-use app\admin\controller\Base;
+use app\wap\controller\Base;
 use app\common\enums\ErrorCode;
 use app\common\model\auth\AuthAdmin;
 use app\common\model\auth\AuthPermission;

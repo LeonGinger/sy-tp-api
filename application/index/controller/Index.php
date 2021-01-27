@@ -9,7 +9,6 @@ class Index
 {
     public function index()
     {
-
         throw new JsonException(ErrorCode::AUTH_FAILED,"1111");
 
     }

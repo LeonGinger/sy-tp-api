@@ -43,5 +43,4 @@
 ## 一些注意点 ##
 1. 用的是 tp5.1 版本，具体文档 <a href="https://www.kancloud.cn/manual/thinkphp5_1/353946">点击查看</a>
 2. 安装好后请把 composer.json 里面的 "topthink/framework": "5.1.*"  * 号 改成具体的某个版本
-
-
+123123
