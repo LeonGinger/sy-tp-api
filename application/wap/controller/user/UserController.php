@@ -17,6 +17,13 @@ class UserController extends Base
     	var_dump('HALO');
     	exit();
     }
+    public function set_token(){
+       
+        var_dump(1);
+        exit;
+        // $toekn = $this->jwtAuthApi->setUid(1)->encode()->getToken();
+        // var_dump($toekn);
 
+    }
 
 }

@@ -15,4 +15,6 @@
 use think\facade\Route;
 //  Route::rule('sqs','admin/ad/ad','post');
  Route::rule('web/:methods','admin/Entrance/index');
- Route::rule('wap/:methods','wap/Entrance/index');
+ //Route::rule('wap/:methods','wap/Entrance/index')->middleware('JwtApi')->allowCrossDomain();
+ Route::rule('wap/:methods','wap/Entrance/index')->middleware('JwtApi');
+ //Route::rule('utoken','/wap/user/user/set_token');

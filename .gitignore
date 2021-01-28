@@ -4,3 +4,5 @@ thinkphp
 sftp-config.json
 ./runtime/log/*
 ./runtime/cache/*
+./public/.htaccess
+nginx.htaccess
