@@ -11,18 +11,24 @@ class JwtApi
 {
     public function handle(Request $request, \Closure $next)
     {   
-        if(in_array($request->url(),RouteNo::NOT_API)){
+
+        if(array_key_exists($request->path(),RouteNo::NOT_WAPAPI)){
             return $next($request);
         }
+ 
         $token= $request->param('token')?:$request->header('token');
+
         if($token){
+        
             $jwtAuth =JwtAuthWap::getInstance();
+ 
             $jwtAuth->setToken($token);
             if($jwtAuth->decode()){
             // if($jwtAuth->validate()&&$jwtAuth->verify()){
                 /**
                  * 
                  */
+           
                 return $next($request);
             }else{
                 return  response(ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED));

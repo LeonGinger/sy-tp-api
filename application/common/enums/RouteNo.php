@@ -16,12 +16,20 @@ class RouteNo
     // +----------------------------------------------------------------------
     // | 方法
     // +----------------------------------------------------------------------
-    const NOT_API = [ 
-        '/wap/user/user/set_token',
 
-
+    /**
+     * 前端不需要token的接口
+     */
+    const NOT_WAPAPI = [ 
+        'wap/user/user/set_token'=>'/user/UserController/set_token',
+        'wap/user/user/Login'=>'/user/UserController/Login',
     ];
-
+    /**
+     * 后台不需要token的接口
+     */
+    const NOT_WEBAPI = [ 
+        // 'wap/user/user/set_token',
+    ];
     // 管理员相关
 
 }

@@ -11,7 +11,6 @@ class EntranceController
 {
     public function __construct()
     {
-        
     }
     // public function index()
     // {
@@ -20,8 +19,9 @@ class EntranceController
     public function index(Request $request){
 
         $request_data=$request->param('');
-        if(in_array($request->url(),RouteNo::NOT_API)){
-            $methodType = $this->getMethod($request->url(),'no');
+ 
+        if(array_key_exists($request->path(),RouteNo::NOT_WAPAPI)){
+            $methodType = RouteNo::NOT_WAPAPI[$request->path()];
         }else{
             $methodType = $this->getMethod($request_data['methods']);
         }
@@ -39,11 +39,11 @@ class EntranceController
       @remark 坑-window和linux斜杆
     */
     public function getMethod($method,$m_type=''){
-        if($m_type=='no'){
-            $find_method = $this->methodNoApi[$method];
-        }else{
+        // if($m_type=='no'){
+        //     $find_method = $this->methodNoApi[$method];
+        // }else{
             $find_method = $this->methodApi[$method];
-        }
+        // }
        
         return $find_method;
     }
@@ -53,9 +53,5 @@ class EntranceController
         'test'=>'/file/UploadController/qiuNiuUpToken',
         'utoken'=>'/user/UserController/set_token',
         // 'test'=>'/auth/LoginController/index',
-    ];
-
-    private $methodNoApi =  [
-        '/wap/user/user/set_token'=>'/user/UserController/set_token',
     ];
 }
