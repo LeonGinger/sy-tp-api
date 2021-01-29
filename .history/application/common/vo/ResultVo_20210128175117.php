@@ -40,7 +40,7 @@ class ResultVo
         if (empty($data)) {
             $data = new \stdClass();
         }
-        $instance = new self(200, "success", $data);
+        $instance = new self(0, "success", $data);
         return json($instance);
     }
 

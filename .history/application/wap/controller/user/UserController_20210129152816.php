@@ -18,9 +18,9 @@ class UserController extends Base
     	exit();
     }
     public function set_token(){
-        
+
         $token = $this->jwtAuthApi->setUid(1)->encode()->getToken();
-        return ResultVo::success($token);
+        return $this->success($toekn);
 
     }
 
