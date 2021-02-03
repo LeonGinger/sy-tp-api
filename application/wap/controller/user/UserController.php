@@ -42,4 +42,17 @@ class UserController extends Base
         return  ResultVo::success($get_uifno);
     }
 
+    /*用户信息修改保存*/
+    public function usave()
+    {
+        $data = $this->request->param();
+        $set_data = [
+            'username'=> $this->request->param('username'),
+            'user_image'=>$this->request->param('user_image'),
+
+        ];
+        $result = $this->insert('User',$set_data);
+        return  ResultVo::success($result);
+    }
+
 }
