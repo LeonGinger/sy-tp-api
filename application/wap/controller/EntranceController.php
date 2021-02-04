@@ -49,6 +49,7 @@ class EntranceController
     }
     private $namespacePrefix='wap';
     private $methodApi = [
+        'usersave'=>'/user/UserController/index',
         'userindex'=>'/user/UserController/index',
         'test'=>'/file/UploadController/qiuNiuUpToken',
         'utoken'=>'/user/UserController/set_token',

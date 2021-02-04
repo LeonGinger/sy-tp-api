@@ -49,7 +49,7 @@ class UserController extends Base
         $set_data = [
             'username'=> $this->request->param('username'),
             'user_image'=>$this->request->param('user_image'),
-
+            'phone'=>$this->request->param('phone'),
         ];
         $result = $this->insert('User',$set_data);
         return  ResultVo::success($result);

@@ -18,9 +18,6 @@ class BusinessController extends Base
      */
     public function Apply_add()
     {
-   
-        $res=  $this->WeDb->find('auth_admin','id = 1');
-        var_dump($res);exit;
         $re_data = array(
             'business_name'=>$this->request->param('business_name'),
             'business_address'=>$this->request->param('business_address'),
