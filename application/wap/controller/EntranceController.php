@@ -52,6 +52,7 @@ class EntranceController
         'userindex'=>'/user/UserController/index',
         'test'=>'/file/UploadController/qiuNiuUpToken',
         'utoken'=>'/user/UserController/set_token',
+        'business_applyad'=>'/business/BusinessController/Apply_add',
         // 'test'=>'/auth/LoginController/index',
     ];
 }

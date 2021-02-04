@@ -49,7 +49,6 @@ class JwtAuthWap{
     }
     /**获取 token*/
     public function getToken(){
-        return  $this->token;
         return  (string)$this->token;
    }
    /**设置 tokne */
@@ -78,33 +77,37 @@ class JwtAuthWap{
             ]
         ];
         $access_token['scopes'] = 'role_access'; //token标识，请求接口的token
-        $access_token['exp'] = $time+7200; //access_token过期时间,这里设置2个小时
+        $access_token['exp'] = $time+10; //access_token过期时间,这里设置2个小时
 
         /*可只使用token 不刷新*/
         $refresh_token = $token;
 		$refresh_token['scopes'] = 'role_refresh'; //token标识，刷新access_token
-        $refresh_token['exp'] = $time+(86400 * 30); //access_token过期时间,这里设置30天
-        
+        $refresh_token['exp'] = $time+3600; //access_token过期时间,这里设置30天
 
-        $this->token = JWT::encode($access_token,$this->key);
-        // $jsonList = [
-		// 	'access_token'=>JWT::encode($access_token,$this->key),
-		// 	// 'refresh_token'=>JWT::encode($refresh_token,$key),
-		// 	'token_type'=>'bearer' //token_type：表示令牌类型，该值大小写不敏感，这里用bearer
-        // ];
-        // var_dump($this);
-        // exit;
+        $jsonList = [
+			'access_token'=>JWT::encode($access_token,$this->key),
+			'refresh_token'=>JWT::encode($refresh_token,$this->key),
+			'token_type'=>'bearer' //token_type：表示令牌类型，该值大小写不敏感，这里用bearer
+        ];
+        $this->token = $jsonList['refresh_token'];
         return $this;
-        //return $jsonList;
     }
 
     public function decode(){
+
         try {
+            if(!$this->decodeToken){
+                $this->decodeToken = $this->getToken();
+            }
+
             JWT::$leeway = 60;//当前时间减去60，把时间留点余地
+
             $decoded = JWT::decode($this->decodeToken, $this->key, ['HS256']); //HS256方式，这里要和签发的时候对应
+
             $arr = (array)$decoded;
-            $this->uid = $arr['data']['uid'];
-            // print_r($arr);
+
+            $this->uid = $arr['data']->userid;
+ 
             return $this->decodeToken;
      } catch(\Firebase\JWT\SignatureInvalidException $e) {  //签名不正确
          echo $e->getMessage();

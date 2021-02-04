@@ -18,19 +18,19 @@ class UserController extends Base
     	exit();
     }
     public function set_token(){
-        $code = $this->request->param('code');
-
-        var_dump($this->Wechat_tool->userinfo($code));
-        exit;
+//         $code = $this->request->param('code');
+// 
+//         var_dump($this->Wechat_tool->userinfo($code));
+//         exit;
         //var_dump($this->Wechat_tool->send_msg('oS9gewJvTvmu_J-jdqNvXORK2Hj4','AOfLkr3Fn2MXX3-99XJEbjbiEvUuff4zEgPFn5afxEM',['url'=>'','row'=>[]]));
-        exit;
+        // exit;
         $token = $this->jwtAuthApi->setUid(1)->encode()->getToken();
         return ResultVo::success($token);
 
     }
 
     /**
-     * H5-自动登录-并获取用户信息
+     * H5-登录-并获取用户信息
      */
     public function Login()
     {

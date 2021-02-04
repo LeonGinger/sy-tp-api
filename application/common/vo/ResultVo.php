@@ -52,11 +52,13 @@ class ResultVo
      */
     public static function error($code, $message = null)
     {
+   
         if (is_array($code)) {
             $message = isset($code['message']) && $message == null ? $code['message'] : $message;
             $code = isset($code['code']) ? $code['code'] : null;
         }
         $instance = new self($code, $message, new \stdClass());
+
         return json($instance);
     }
 

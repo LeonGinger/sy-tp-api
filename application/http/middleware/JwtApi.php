@@ -21,9 +21,11 @@ class JwtApi
         if($token){
         
             $jwtAuth =JwtAuthWap::getInstance();
- 
+
             $jwtAuth->setToken($token);
+ 
             if($jwtAuth->decode()){
+
             // if($jwtAuth->validate()&&$jwtAuth->verify()){
                 /**
                  * 
@@ -31,12 +33,11 @@ class JwtApi
            
                 return $next($request);
             }else{
-                return  response(ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED));
-            //    return  response($this->jsonData(ApiErrDesc::ErrMsg_TOKEN[0],ApiErrDesc::ErrMsg_TOKEN[1]));
+                  return ResultVo::error(ErrorCode::VALIDATION_FAILED);
             }
         }else{
-            return  response(ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED));
-            // return response($this->jsonData(ApiErrDesc::ERR_PARAMS[0],ApiErrDesc::ERR_PARAMS[1]));
+             return  ResultVo::error(ErrorCode::VALIDATION_FAILED);
+
         }
     }
 }   

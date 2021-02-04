@@ -4,8 +4,11 @@ namespace app\wap\controller;
 
 use think\Controller;
 use app\common\auth\JwtAuthWap;
-use app\common\utils\WechatUtils;
 use think\facade\Request;
+
+//使用工具
+use app\common\utils\WechatUtils;
+use app\common\utils\WeDbUtils;
 /**
  * 基础控制器
  */
@@ -13,9 +16,11 @@ use think\facade\Request;
 class Base extends Controller
 {
     public $Wechat_tool;
+    public $WeDb;
     public $jwtAuthApi;
     public $uid = null;
     public $request = null;
+
 
     public function __construct()
     {              
@@ -23,6 +28,8 @@ class Base extends Controller
         $this->request =  Request::instance();
         $this->Wechat_tool = WechatUtils::getInstance();
         $this->jwtAuthApi = JwtAuthWap::getInstance();
+        $this->WeDb = WeDbUtils::getInstance();
+        $this->uid = $this->jwtAuthApi->getuid();
     }
     // public function initialize()
     // {
