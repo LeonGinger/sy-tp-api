@@ -29,6 +29,7 @@ class CheckAuth
         // 行为逻辑
         $id = request()->get('ADMIN_ID');
         $token = request()->get('ADMIN_TOKEN');
+
         if (!$id || !$token) {
             throw new JsonException(ErrorCode::LOGIN_FAILED);
         }
