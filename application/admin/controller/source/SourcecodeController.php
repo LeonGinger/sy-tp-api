@@ -6,11 +6,17 @@ use app\admin\controller\BaseCheckUser;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use think\Queue;
+use redis\Redis;
 /**
  * 溯源码
  */
 class SourcecodeController extends BaseCheckUser
 {
+    protected $redis = null;
+    public function initialize(){
+
+        $this->redis = new Redis();
+    }
     /**
      * 溯源码队列测试
      */
@@ -23,16 +29,20 @@ class SourcecodeController extends BaseCheckUser
         $jobQueueName  	  = "helloJobQueue";
         // 3.当前任务所需的业务数据 . 不能为 resource 类型，其他类型最终将转化为json形式的字符串
         //   ( jobData 为对象时，需要在先在此处手动序列化，否则只存储其public属性的键值对)
-        $num = 200;
-        $jobData = [
+        $num = 50000;
+        $this->redis->set('has_create',$num);
+        $this->redis->set('gotostatus',1);
+//         $jobData = [
+// 
+//         ];
+//         for ($i=0; $i <=200 ; $i++) { 
+//             # code...
+//             $jobData[$i] = ['name'=>'GNLEON'.time()];            
+//         }
 
+        $job_Data = [
+            'num'=>$num,
         ];
-        for ($i=0; $i <$num ; $i++) { 
-            # code...
-            $jobData[$i] = ['name'=>'GNLEON'.time()];            
-        }
-
-        $job_Data = ['name'=>$jobData];
 
         // 4.将该任务推送到消息队列，等待对应的消费者去执行
         $isPushed = Queue::push( $jobHandlerClassName , $job_Data , $jobQueueName );
@@ -42,5 +52,26 @@ class SourcecodeController extends BaseCheckUser
         }else{
             echo 'Oops, something went wrong.';
         }
+    }
+
+    /**
+     * 生成状态
+     * think queue:listen --queue helloJobQueue
+     */
+    public function createcodestatus(){
+        $res = $this->redis->get('has_create');
+        $status = $this->redis->get('gotostatus');
+        if($status==0){
+            $this->redis->set('gotostatus',1);
+            $jobHandlerClassName  = 'app\admin\controller\job\Demo';
+            $jobQueueName  	  = "helloJobQueue";
+            $job_Data = [
+                'num'=>$res,
+            ];
+            $isPushed = Queue::push( $jobHandlerClassName , $job_Data , $jobQueueName );
+        }
+        
+        var_dump($res);
+        var_dump($status);
     }
 }

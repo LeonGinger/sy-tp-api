@@ -42,6 +42,7 @@ class EntranceController
         'out'=>'/auth/LoginController/out',
         'password'=>'/auth/LoginController/password',
         'code'=>'/source/SourcecodeController/createcode',
+        'codestatus'=>'/source/SourcecodeController/createcodestatus',
         
         'adminlist'=>'/auth/AdminController/index',
         'rolelist'=>'/auth/AdminController/roleList',
