@@ -38,7 +38,11 @@ class UserController extends Base
         $code = $this->request->param('code');
 
         $get_uifno = $this->Wechat_tool->userinfo($code);
-        
+        if(empty($get_uifno['openid'])){
+          return  ResultVo::error(400,$get_uifno);
+        }
+          //找数据库
+          //没-插入  有-返回(并替换相关信息)
         return  ResultVo::success($get_uifno);
     }
 
