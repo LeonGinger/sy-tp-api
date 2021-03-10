@@ -37,21 +37,35 @@ class EntranceController
     private $namespacePrefix='admin';
     private $methodApi = [
         'test'=>'/auth/LoginController/index',
-        'userInfo'=>'/auth/LoginController/userInfo',
+        'codestatus'=>'/source/SourcecodeController/createcodestatus',
+
+        /*登出登录、用户信息 */
         'login'=>'/auth/LoginController/index',
         'out'=>'/auth/LoginController/out',
+        'userInfo'=>'/auth/LoginController/userInfo',
         'password'=>'/auth/LoginController/password',
         'code'=>'/source/SourcecodeController/createcode',
-        'codestatus'=>'/source/SourcecodeController/createcodestatus',
+
+        /*用户管理 */
+        'admin_list'=>'/auth/AdminController/index',
+        'admin_del'=>'/auth/AdminController/delete',
+        'admin_add'=>'/auth/AdminController/save',
+        'admin_update'=>'/auth/AdminController/edit',
         
-        'adminlist'=>'/auth/AdminController/index',
-        'rolelist'=>'/auth/AdminController/roleList',
-        'admindel'=>'/auth/AdminController/delete',
+        /*角色管理 */
+        'role_list'=>'/auth/RoleController/index',
+        'role_add'=>'/auth/RoleController/save',
+        'role_update'=>'/auth/RoleController/edit',
+        'role_del'=>'/auth/RoleController/delete',
+        'authList'=>'/auth/RoleController/authList',
+        'role_auth'=>'/auth/RoleController/auth',
         
-        
-        
-        
-        
+        /*权限管理 */
+        'permission_list'=>'/auth/PermissionRuleController/index',
+        'permission_add'=>'/auth/PermissionRuleController/save',
+        'permission_update'=>'/auth/PermissionRuleController/edit',
+        'permission_del'=>'/auth/PermissionRuleController/delete',
+
             
     ];
 

@@ -96,7 +96,7 @@ class AdminController extends BaseCheckUser
     }
 
     /**
-     * 添加
+     * 添加--管理员
      */
     public function save(){
         $data = request()->post();
