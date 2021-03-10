@@ -1,0 +1,20 @@
+{
+  
+  "name": "xcjiu/php-redis",
+  "type": "library",
+  "description": "application Redis extension for PHP class",
+  "require": {
+      "php": ">=5.4.0"
+  },
+   "authors": [
+        {
+            "name": "xcjiu",
+            "email": "3483552276@qq.com"
+        }
+    ], 
+   "autoload": {
+        "psr-4": {"Redis\\": "redis"}
+    },
+  "license": "Apache-2.0"
+
+}
