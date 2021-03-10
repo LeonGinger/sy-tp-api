@@ -40,6 +40,16 @@ class Demo
      * 0-等待继续 1-确认继续 2-
      */
     private function doHelloJob($data) {
+
+        //demo1
+        for ($i=0; $i <$data['num'] ; $i++) { 
+            # code...
+            $in_data[$i] = ['name'=>'GNLEON'.time()];   
+        }
+        $res= Db::table('user')->insertAll($in_data);
+        return $res;
+        exit;
+
         // 根据消息中的数据进行实际的业务处理...
         $redis = new Redis();
         $goto = $redis->get('gotostatus');

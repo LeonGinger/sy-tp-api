@@ -48,6 +48,7 @@ class SourcecodeController extends BaseCheckUser
         $isPushed = Queue::push( $jobHandlerClassName , $job_Data , $jobQueueName );
         // database 驱动时，返回值为 1|false  ;   redis 驱动时，返回值为 随机字符串|false
         if( $isPushed !== false ){
+            return ResultVo::success('成功添加任务');
             echo date('Y-m-d H:i:s') . " a new Hello Job is Pushed to the MQ"."<br>";
         }else{
             echo 'Oops, something went wrong.';
