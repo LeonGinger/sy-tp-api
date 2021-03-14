@@ -18,3 +18,4 @@ use think\facade\Route;
  //Route::rule('wap/:methods','wap/Entrance/index')->middleware('JwtApi')->allowCrossDomain();
  Route::rule('wap/:methods','wap/Entrance/index')->middleware('JwtApi');
  //Route::rule('utoken','/wap/user/user/set_token');
+ Route::rule('/','index/Index/index');

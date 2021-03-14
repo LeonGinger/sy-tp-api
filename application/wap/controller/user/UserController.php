@@ -58,5 +58,9 @@ class UserController extends Base
         $result = $this->insert('User',$set_data);
         return  ResultVo::success($result);
     }
+    /*用户上传头像 */
+    public function upload_headimg(){
+        
+    }
 
 }
