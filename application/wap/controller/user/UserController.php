@@ -60,7 +60,13 @@ class UserController extends Base
     }
     /*用户上传头像 */
     public function upload_headimg(){
-        
+        $head_imgsrc = $this->request->file('imgurl');
+        $info = $file->validate(['ext'=>'jpg,jpeg,png'])
+                     ->move(Config::get('指定路径'));
+
+        $source = Config::get('指定路径') . $info->getSaveName();
+        /*返回头像地址 */
+        return ResultVo::success($source);
     }
 
 }
