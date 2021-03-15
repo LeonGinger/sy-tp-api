@@ -14,6 +14,7 @@ class JsonException extends Exception
     public function __construct($code, $message = "")
     {
         if (is_array($code)) {
+
             $message = isset($code['message']) && empty($message) ? $code['message'] : $message;
             $code = isset($code['code']) ? $code['code'] : 0;
         }

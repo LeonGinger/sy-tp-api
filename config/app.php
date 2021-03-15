@@ -116,4 +116,17 @@ return [
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '\\app\\common\\exception\\GlobalHandle',
 
+    /* 域名相关 */
+    'domain'=>'sy.zsicp.com',
+    'domain_http'=>'http://sy.zsicp.com/',
+    'domain_https'=>'https://sy.zsicp.com/',
+    'domain_h5'=>'https://sy.zsicp.com/h5/',
+
+    /*目录相关 */
+    //头像上传目录
+    'upload_headimg_path' => Env::get('root_path').'/public/uploads/headimg/',
+    //
+
+
+
 ];

@@ -110,13 +110,21 @@ class JwtAuthWap{
  
             return $this->decodeToken;
      } catch(\Firebase\JWT\SignatureInvalidException $e) {  //签名不正确
-         echo $e->getMessage();
+         //echo $e->getMessage();
+         //return [$e->getCode(),$e->getMessage()];
+         return false;
      }catch(\Firebase\JWT\BeforeValidException $e) {  // 签名在某个时间点之后才能用
-         echo $e->getMessage();
+         //echo $e->getMessage();
+         //return [$e->getCode(),$e->getMessage()];
+         return false;
      }catch(\Firebase\JWT\ExpiredException $e) {  // token过期
-         echo $e->getMessage();
+         //echo $e->getMessage();
+         //return [$e->getCode(),$e->getMessage()];
+         return false;
     }catch(Exception $e) {  //其他错误
-         echo $e->getMessage();
+         //echo $e->getMessage();
+         //return [$e->getCode(),$e->getMessage()];
+         return false;
      }
     }
 }

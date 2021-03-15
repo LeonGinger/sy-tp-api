@@ -30,8 +30,8 @@ use think\db;
      */
     public function find($database, $where = '')
     {
-        $result = Db::name($database)
-            ->where('deleteTime', NULL)
+        $result = Db::table($database)
+            //->where('delete_time', NULL)
             ->where($where)
             ->find();
         return $result;
@@ -45,8 +45,8 @@ use think\db;
      */
     public function total($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'NULL')
+        $result = Db::table($database)
+            ->where('delete_time', 'NULL')
             ->where($where)
             ->count($field);
         return $result;
@@ -54,13 +54,13 @@ use think\db;
 
     /**
      * 同total
-     * 此函数不需要过滤deleteTime为 NULL的条件
+     * 此函数不需要过滤delete_time为 NULL的条件
      * 多用于视图查询(排行榜) 或 特殊情况(GroupBy)
      */
 
     public function totalView($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where($where)
             ->count($field);
         return $result;
@@ -75,7 +75,7 @@ use think\db;
 
     public function totalNoBlackList($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where('blackListTime', 'null')
             ->where($where)
             ->count($field);
@@ -91,7 +91,7 @@ use think\db;
 
     public function totalBlackList($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where('blackListTime', 'not null')
             ->where($where)
             ->count($field);
@@ -111,8 +111,8 @@ use think\db;
      */
     public function totalno($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'not null')
+        $result = Db::table($database)
+            ->where('delete_time', 'not null')
             ->where($where)
             ->count($field);
         return $result;
@@ -126,8 +126,8 @@ use think\db;
      */
     public function totalOr($database, $where = '', $field = '*')
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'NULL')
+        $result = Db::table($database)
+            ->where('delete_time', 'NULL')
             ->whereOr($where)
             ->count($field);
         return $result;
@@ -140,8 +140,8 @@ use think\db;
      */
     public function sum($database, $where = '', $field)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'NULL')
+        $result = Db::table($database)
+            ->where('delete_time', 'NULL')
             ->where($where)
             ->sum($field);
         return $result;
@@ -154,8 +154,8 @@ use think\db;
      */
     public function select($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', NULL)
+        $result = Db::table($database)
+            ->where('delete_time', NULL)
             ->where($where)
             ->field($field)
             ->limit($offset, $length)
@@ -166,12 +166,12 @@ use think\db;
 
     /**
      * 同select
-     * 此函数不需要过滤deleteTime为 NULL的条件
+     * 此函数不需要过滤delete_time为 NULL的条件
      * 多用于视图查询(排行榜) 或 特殊情况(GroupBy)
      */
     public function selectView($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where($where)
             ->field($field)
             ->limit($offset, $length)
@@ -189,7 +189,7 @@ use think\db;
 
     public function selectNoBlackList($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where('blackListTime','null')
             ->where($where)
             ->field($field)
@@ -208,7 +208,7 @@ use think\db;
 
     public function selectBlackList($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where('blackListTime','not null')
             ->where($where)
             ->field($field)
@@ -220,7 +220,7 @@ use think\db;
 
 
     /**
-     * 查询deleteTime的数据
+     * 查询delete_time的数据
      *
      * @Author EDZero 
      * @DateTime 2019-12-23 10:43:26
@@ -235,8 +235,8 @@ use think\db;
      */
     public function selectno($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'not null')
+        $result = Db::table($database)
+            ->where('delete_time', 'not null')
             ->where($where)
             ->field($field)
             ->limit($offset, $length)
@@ -263,8 +263,8 @@ use think\db;
      */
     public function selectOr($database, $where = '', $field = '', $offset = 0, $length = null, $order = null)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', 'NULL')
+        $result = Db::table($database)
+            ->where('delete_time', 'NULL')
             ->whereOr($where)
             ->field($field)
             ->limit($offset, $length)
@@ -275,8 +275,8 @@ use think\db;
 
     public function selectorderRand($database, $where = '', $field = '', $offset = 0, $length = 500, $order = null)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', NULL)
+        $result = Db::table($database)
+            ->where('delete_time', NULL)
             ->where($where)
             ->field($field)
             ->limit($offset, $length)
@@ -290,8 +290,8 @@ use think\db;
      */
     public function selectOrderRaw($database, $where = '', $field = '', $offset = 0, $length = null, $order = null)
     {
-        $result = Db::name($database)
-            ->where('deleteTime', NULL)
+        $result = Db::table($database)
+            ->where('delete_time', NULL)
             ->where($where)
             ->field($field)
             ->limit($offset, $length)
@@ -307,8 +307,31 @@ use think\db;
      */
     public function insert($database, $data)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->insert($data);
+        // var_dump($result);
+        if ($result)
+            return $result;
+        else {
+            //To Do:错误异常捕捉
+            return $this->jsonData(ApiErrDesc::ErrMsg_UPDATE[0], ApiErrDesc::ErrMsg_UPDATE[1]);
+        }
+    }
+    /**
+     * [insertGetId 新增一条数据返回id]
+     * @Author       GNLEON
+     * @Param
+     * @DateTime     2020-07-10T08:55:10+0800
+     * @LastTime     2020-07-10T08:55:10+0800
+     * @param        [type]                   $database [数据库表明]
+     * @param        [type]                   $data     [插入数据]
+     * @return       [type]                             [description]
+     */
+    public function insertGetId($database, $data)
+    {
+        
+        $result = Db::table($database)
+            ->insertGetId($data);
         // var_dump($result);
         if ($result)
             return $result;
@@ -324,7 +347,7 @@ use think\db;
      */
     public function insertAll($database, $data)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->insertAll($data);
         // var_dump($result);
         if ($result)
@@ -342,7 +365,7 @@ use think\db;
      */
     public function update($database, $where = '', $data)
     {
-        $result = Db::name($database)
+        $result = Db::table($database)
             ->where($where)
             ->data($data)
             ->update();
@@ -369,8 +392,8 @@ use think\db;
     public function repeat($database, $where)
     {
         try {
-            $result = Db::name($database)
-                ->where('deleteTime', 'NULL')
+            $result = Db::table($database)
+                ->where('delete_time', 'NULL')
                 ->where($where)
                 ->find();
         } catch (\Throwable $th) {
@@ -396,7 +419,7 @@ use think\db;
     public function deleteSome($database, $field = 'id', $arr, $data)
     {
         try {
-            $result = Db::name($database)
+            $result = Db::table($database)
                 ->where($field, 'in', $arr)
                 ->data($data)
                 ->update();
@@ -428,7 +451,7 @@ use think\db;
     public function updateSome($database, $field = 'id', $arr, $data)
     {
         try {
-            $result = Db::name($database)
+            $result = Db::table($database)
                 ->where($field, 'in', $arr)
                 ->data($data)
                 ->update();

@@ -19,11 +19,11 @@ class EntranceController
     public function index(Request $request){
 
         $request_data=$request->param('');
- 
+
         if(array_key_exists($request->path(),RouteNo::NOT_WAPAPI)){
             $methodType = RouteNo::NOT_WAPAPI[$request->path()];
         }else{
-            $methodType = $this->getMethod($request_data['methods']);
+            $methodType = $this->getMethod($request_data['methods'],$request->method());
         }
         
 
@@ -38,17 +38,34 @@ class EntranceController
     /*@autho GNLEON
       @remark 坑-window和linux斜杆
     */
-    public function getMethod($method,$m_type=''){
+    public function getMethod($method,$request_type=''){
+        switch ($request_type) {
+            case 'POST':
+                $find_method = $this->methodApi_POST[$method];
+                # code...
+                break;
+            case 'GET':
+                $find_method = $this->methodApi_GET[$method];
+                # code...
+                break;
+            default:
+                
+                # code...
+                break;
+        }
+        
         // if($m_type=='no'){
         //     $find_method = $this->methodNoApi[$method];
         // }else{
-            $find_method = $this->methodApi[$method];
+            //$find_method = $this->methodApi[$method];
         // }
        
         return $find_method;
     }
     private $namespacePrefix='wap';
-    private $methodApi = [
+    
+    private $methodApi_POST = [
+        'upload_headimg'=>'/user/UserController/upload_headimg',
         'usersave'=>'/user/UserController/index',
         'userindex'=>'/user/UserController/index',
         'test'=>'/file/UploadController/qiuNiuUpToken',
@@ -56,4 +73,13 @@ class EntranceController
         'business_applyad'=>'/business/BusinessController/Apply_add',
         // 'test'=>'/auth/LoginController/index',
     ];
+    private $methodApi_GET = [
+        //'upload_headimg'=>'/user/UserController/upload_headimg',
+        'usersave'=>'/user/UserController/index',
+        'business_applyad'=>'/business/BusinessController/Apply_add',
+        // 'test'=>'/auth/LoginController/index',
+    ];
+
+
+
 }

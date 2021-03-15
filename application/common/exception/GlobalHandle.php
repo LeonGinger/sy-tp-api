@@ -10,6 +10,7 @@ use think\exception\Handle;
 use think\exception\HttpException;
 use think\exception\ValidateException;
 use think\Response;
+use app\common\utils\WechatUtils;
 
 /**
  * 全局错误回调
@@ -30,6 +31,7 @@ class GlobalHandle extends Handle
             return ResultVo::error(ErrorCode::NOT_NETWORK);
         }
 
+
         // 自定义的错误处理
         // admin 模块的异常
         if ($e instanceof JsonException) {
@@ -38,7 +40,12 @@ class GlobalHandle extends Handle
 
         // 如果是正式环境，
         if (!Container::get('app')->isDebug()) {
-            return $this->showException($e);
+            /*发送报错推送微信管理员-待加 */
+            // $Wechat_tool = WeDbUtils::getInstance();
+            //$Wechat_tool->error_report();
+            // $res = $Wechat_tool->index();
+            return ResultVo::error($e->getCode(), $e->getMessage());
+            //return $this->showException($e);
         }
 
         // 其他错误交给系统处理

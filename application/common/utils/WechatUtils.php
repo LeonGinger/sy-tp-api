@@ -101,20 +101,27 @@ class WechatUtils{
      * 获取用户信息-公众号
      * 测试url
      * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx695f4c98a1b6cff5&redirect_uri=http://sy.zsicp.com/wap/user/user/set_token&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
-     
      *
      */
-    public function userinfo(){
+    public function userinfo_oa(){
         $instance = self::getInstance();
         $new_user = [];
         $user = $this->app->oauth->user();
         $new_user = $user->getOriginal();
-        //是否关注
-        $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$instance::$wxAccessToken.'&openid='.$user->id);
-        $user_info = json_decode($user_info);
-        $new_user['subscribe'] = $user_info->subscribe;
-
+        try{
+            //是否关注公众号
+            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$instance::$wxAccessToken.'&openid='.$user->id);
+            $user_info = json_decode($user_info);
+            $new_user['subscribe'] = $user_info->subscribe;
+        }catch (\Throwable $th) {
+            $new_user['subscribe'] = 0;
+        }
         return $new_user;
     }
-
+    /*通过openid获取最新微信用户信息*/
+    public function userinfo_openid($openid){
+        $instance = self::getInstance();
+        $user = $this->app->user->get($openid);
+        return $user;
+    }
 }
