@@ -17,7 +17,6 @@ class EntranceController
     //     return ResultVo::error(ErrorCode::NOT_NETWORK);
     // }
     public function index(Request $request){
-
         $request_data=$request->param('');
 
         if(array_key_exists($request->path(),RouteNo::NOT_WAPAPI)){
@@ -41,15 +40,23 @@ class EntranceController
     public function getMethod($method,$request_type=''){
         switch ($request_type) {
             case 'POST':
-                $find_method = $this->methodApi_POST[$method];
+                try{
+                    $find_method = $this->methodApi_POST[$method];
+                }catch(\Throwable $th){
+                    throw new \think\Exception(ErrorCode::HTTP_METHOD_NOT_ALLOWED['message'],ErrorCode::HTTP_METHOD_NOT_MEHOTDS['code']);
+                }
                 # code...
                 break;
             case 'GET':
-                $find_method = $this->methodApi_GET[$method];
+                try{
+                    $find_method = $this->methodApi_GET[$method];
+                }catch(\Throwable $th){
+                    throw new \think\Exception(ErrorCode::HTTP_METHOD_NOT_MEHOTDS['message'],ErrorCode::HTTP_METHOD_NOT_MEHOTDS['code']);
+                }
                 # code...
                 break;
             default:
-                
+                throw new \think\Exception(ErrorCode::HTTP_METHOD_NOT_MEHOTDS['message'],ErrorCode::HTTP_METHOD_NOT_MEHOTDS['code']);
                 # code...
                 break;
         }
@@ -59,7 +66,6 @@ class EntranceController
         // }else{
             //$find_method = $this->methodApi[$method];
         // }
-       
         return $find_method;
     }
     private $namespacePrefix='wap';

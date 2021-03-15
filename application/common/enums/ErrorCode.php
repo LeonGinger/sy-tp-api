@@ -37,6 +37,7 @@ class ErrorCode
     const DATA_REPEAT = [ 'code' => 9, 'message' => '数据重复'];
     const DATA_NOT = [ 'code' => 10, 'message' => '数据不存在'];
     const DATA_VALIDATE_FAIL = [ 'code' => 11, 'message' => '数据验证失败'];
+    const HTTP_METHOD_NOT_MEHOTDS = [ 'code' => 404, 'message' => '接口丢失了QAQ'];
 
     // 管理员相关
 
