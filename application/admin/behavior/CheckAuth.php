@@ -38,7 +38,8 @@ class CheckAuth
             throw new JsonException(ErrorCode::LOGIN_FAILED);
         }
         // 排除权限
-        $not_check = ["admin/auth.login/userinfo"];
+        // 由于封装的自定义路由入口 导致此处下面获取的rule_name 只获取了入口 有待改进
+        $not_check = ["admin/auth.login/userinfo","admin/entrance/index"];
 
         // 获取权限列表
         $authRules = [];
