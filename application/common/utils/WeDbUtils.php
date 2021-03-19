@@ -395,9 +395,10 @@ use app\common\vo\ResultVo;
             //To Do:错误异常捕捉
             // var_dump(ErrorCode::NOT['message']);
             // exit;
-            var_dump($database,$where,$data);
-        exit;
-            exception (ErrorCode::NOT['message'],ErrorCode::NOT['code']);
+            // var_dump($database,$where,$data);
+        // exit;
+            // exception (ErrorCode::NOT['message'],ErrorCode::NOT['code']);
+            return "无需要更新的值";
         }
     }
     /**

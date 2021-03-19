@@ -9,6 +9,7 @@ use app\common\vo\ResultVo;
 use Workerman\Events\Select;
 use think\db;
 use app\model\Business;
+use app\model\Business_notice;
 
 /**
  * 商家相关
@@ -20,6 +21,11 @@ class BusinessController extends Base
     // 加入商家
     public function Apply_add()
     {
+        $userid = $this->uid;
+        $user = $this->WeDb->find('User',"id={$userid}");
+        if($user['role_id'] == 2){
+            return "sorry,您同时只能拥有一家企业";
+        }
         $code = round_code(16);
         $appraisal_img = $this->request->param('appraisal_img');
         $appraisal = $this->WeDb->insertGetId('Business_appraisal',['appraisal_image' => $appraisal_img]);
@@ -37,6 +43,12 @@ class BusinessController extends Base
             'img_info'=>0,
         );
         $res = $this->WeDb->insertGetId($this->table,$re_data);
+        $img_date = [
+            'business_id'=>$res,
+            'business_image_injson'=>' ',
+            'business_img_contentjson'=>' ',
+        ];
+        $insert = $this->WeDb->insertGetId('business_img',$img_date);
         // var_dump($this->uid);
         // exit ;
         $ue_data = [
@@ -56,7 +68,7 @@ class BusinessController extends Base
             return "抱歉，您越权了";
         }
         $delete = $this->WeDb->update($this->table,"id={$businessid}",['delete_time'=>date('Y-m-d h:i:s')]);
-        $roleupdate = $this->WeDb->update('User',"id={$userid}",['role_id'=>3]);
+        $roleupdate = $this->WeDb->update('User',"business_notice={$businessid}",['role_id'=>4,'Business_notice'=>'']);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
@@ -69,22 +81,112 @@ class BusinessController extends Base
         }
         $businessid = $user['business_notice'];
         $select = business::with('BusinessImg')->with('BusinessAppraisal')
-                ->where("id={$businessid}")
+                ->where("id={$businessid} and delete_time is null")
                 ->select();
         return ResultVo::success($select);
     }
+    // 修改所有信息接口(会修改状态为未审核)
     public function Apply_updateall(){
         $userid = $this->uid;
         $user = $this->WeDb->find('User',"id={$userid}");
-        $business_name
-        $responsile_name
-        $responsible_phone
-        $business_address
-        $business_images
-        $business_introduction
-        $business_image
-    }
+        $business_id = $user['business_notice'];
+        // $img_key = $this->request->param('img_key');
+        // $business_img_id_json  = $this->request->param('$business_img_id_json');
+        $business_name = $this->request->param('business_name');
+        $responsible_name = $this->request->param('responsible_name');
+        $responsible_phone = $this->request->param('responsible_phone');
+        $business_address = $this->request->param('business_address');
+        $business_images = $this->request->param('business_images');
+        $business_introduction = $this->request->param('business_introduction');
+        $business_images_injson = $this->request->param('business_images_injson');
+        $business_img_contentjson = $this->request->param('business_img_contentjson');
+        $appraisal_image = $this->request->param('appraisal_image'); 
+        $data = [
+            'business_name'=>$business_name,
+            'responsible_name'=>$responsible_name,
+            'responsible_phone'=>$responsible_phone,
+            'business_address'=>$business_address,
+            'business_images'=>$business_images,
+            'business_introduction'=>$business_introduction,
+            'verify_if'=>3,
+        ];
+        $update = $this->WeDb->update($this->table,"id = {$business_id}",$data);
+        $img_data = [
+            'business_image_injson'=>$business_images_injson,
+            'business_img_contentjson'=>$business_img_contentjson,
+        ];
+        $update2 = $this->WeDb->update('business_img',"business_id = {$business_id}",$img_data);
+        $ap_data = [
+            'appraisal_image'=>$appraisal_image
+        ];
+        $business = $this->WeDb->find($this->table,"id = {$business_id}");
+        $update3 = $this->WeDb->update('business_appraisal',"id = {$business['business_appraisal_id']}",$ap_data);
+        $data = [
+            'update1'=>$update,
+            'update2'=>$update2,
+            'update3'=>$update3,
+        ];
+        return ResultVo::success($data);
 
+    }
+    // 修改部分信息接口(不会修改状态为未审核)
+    public function Apply_update(){
+        $userid = $this->uid;
+        $user = $this->WeDb->find('User',"id={$userid}");
+        $business_id = $user['business_notice'];
+        // $img_key = $this->request->param('img_key');
+        // $business_img_id_json  = $this->request->param('$business_img_id_json');
+        // $business_name = $this->request->param('business_name');
+        // $responsible_name = $this->request->param('responsible_name');
+        // $responsible_phone = $this->request->param('responsible_phone');
+        // $business_address = $this->request->param('business_address');
+        $business_images = $this->request->param('business_images');
+        $business_introduction = $this->request->param('business_introduction');
+        $business_images_injson = $this->request->param('business_images_injson');
+        $business_img_contentjson = $this->request->param('business_img_contentjson');
+        // $appraisal_image = $this->request->param('appraisal_image'); 
+        $data = [
+            // 'business_name'=>$business_name,
+            // 'responsible_name'=>$responsible_name,
+            // 'responsible_phone'=>$responsible_phone,
+            // 'business_address'=>$business_address,
+            'business_images'=>$business_images,
+            'business_introduction'=>$business_introduction,
+            // 'verify_if'=>3,
+        ];
+        $update = $this->WeDb->update($this->table,"id = {$business_id}",$data);
+        $img_data = [
+            'business_image_injson'=>$business_images_injson,
+            'business_img_contentjson'=>$business_img_contentjson,
+        ];
+        $update2 = $this->WeDb->update('business_img',"business_id = {$business_id}",$img_data);
+        // $ap_data = [
+        //     'appraisal_image'=>$appraisal_image
+        // ];
+        // $business = $this->WeDb->find($this->table,"id = {$business_id}");
+        // $update3 = $this->WeDb->update('business_appraisal',"id = {$business['business_appraisal_id']}",$ap_data);
+        $data = [
+            'update1'=>$update,
+            'update2'=>$update2,
+            // 'update3'=>$update3,
+        ];
+        return ResultVo::success($data);
+    }
+    // 移除员工
+    public function out_my_user(){
+        $userid = $this->uid;
+        $out_id = $this->request->param('out_user_id');
+        $user = $this->WeDb->find('User',"id = {$userid}");
+        if($user['role_id'] !=2 and $user['role_id'] !=1){
+            return "抱歉，您越权了";
+        }
+        $out_data = [
+            'role_id'=>4,
+            'business_notice'=>''
+        ];
+        $update = $this->WeDb->update('User',"id = {$out_id}",$out_data);
+        return ResultVo::success($update);
+    }
     /**
      * 证书上传
      */

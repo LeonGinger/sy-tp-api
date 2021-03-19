@@ -84,10 +84,16 @@ class EntranceController
         'my_menu'=>'/business/BusinessController/my_menu',
         'business_applyad'=>'/business/BusinessController/Apply_add',
         'business_selectall'=>'/business/BusinessController/Apply_selectall',
+        'business_updateall'=>'/business/BusinessController/Apply_updateall',
+        'business_delete'=>'/business/BusinessController/Apply_delete',
+        'business_update'=>'/business/BusinessController/Apply_update',
+        'out_my_user'=>'/business/BusinessController/out_my_user',
         // Menu操作
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',
         'update_menu'=>'/menu/MenuController/update_menu',
+        // source操作
+        'Add_order'=>'/source/SourceController/Add_order',
     ];
     private $methodApi_GET = [
         //'upload_headimg'=>'/user/UserController/upload_headimg',

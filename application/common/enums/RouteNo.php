@@ -23,6 +23,7 @@ class RouteNo
     const NOT_WAPAPI = [ 
         'wap/user/user/set_token'=>'/user/UserController/set_token',
         'wap/user/user/Login'=>'/user/UserController/Login',
+        // 'wap/Add_order'=>'/source/SourceController/Add_order'
     ];
     /**
      * 后台不需要token的接口
