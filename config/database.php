@@ -13,14 +13,14 @@ return [
     // 数据库类型
     'type'            => 'mysql',
     // 服务器地址
-    'hostname'        => '127.0.0.1',
-    //'hostname'        => '120.79.52.222',
+    // 'hostname'        => '127.0.0.1',
+    'hostname'        => 'localhost',
     // 数据库名
     'database'        => 'sy_zsicp_com',
     // // 用户名
     'username'        => 'root',
     // 密码
-    'password'        => 'root',
+    'password'        => '123456',
     //在线数据库
     // 'username'        => 'sy_zsicp_com',
     // 'password'        => 'xHhyYNDbGAHciztS',

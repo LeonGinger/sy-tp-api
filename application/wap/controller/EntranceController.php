@@ -76,14 +76,25 @@ class EntranceController
         'userindex'=>'/user/UserController/index',
         'test'=>'/file/UploadController/qiuNiuUpToken',
         'utoken'=>'/user/UserController/set_token',
-        'business_applyad'=>'/business/BusinessController/Apply_add',
+        'this_user'=>'/user/UserController/this_user',
         // 'test'=>'/auth/LoginController/index',
+        'getConfig'=>'/wechat/WechatController/getConfig',
+        // Business操作
+        'my_user'=>'/business/BusinessController/my_user',
+        'my_menu'=>'/business/BusinessController/my_menu',
+        'business_applyad'=>'/business/BusinessController/Apply_add',
+        'business_selectall'=>'/business/BusinessController/Apply_selectall',
+        // Menu操作
+        'create_menu'=>'/menu/MenuController/create_menu',
+        'delete_menu'=>'/menu/MenuController/delete_menu',
+        'update_menu'=>'/menu/MenuController/update_menu',
     ];
     private $methodApi_GET = [
         //'upload_headimg'=>'/user/UserController/upload_headimg',
         'usersave'=>'/user/UserController/index',
         'business_applyad'=>'/business/BusinessController/Apply_add',
         // 'test'=>'/auth/LoginController/index',
+        'join_my'=>'/business/BusinessController/join_my',
     ];
 
 

@@ -8,6 +8,8 @@ use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
 use think\facade\Validate;
 use think\facade\Config;
+use think\route\Resource;
+
 /**
  * 用户相关
  */
@@ -21,14 +23,15 @@ class UserController extends Base
     	var_dump('HALO');
     	exit();
     }
+    // 获取一个token
     public function set_token(){
-//         $code = $this->request->param('code');
+        $uid = $this->request->param('uid');
 // 
 //         var_dump($this->Wechat_tool->userinfo($code));
 //         exit;
         //var_dump($this->Wechat_tool->send_msg('oS9gewJvTvmu_J-jdqNvXORK2Hj4','AOfLkr3Fn2MXX3-99XJEbjbiEvUuff4zEgPFn5afxEM',['url'=>'','row'=>[]]));
         // exit;
-        $token = $this->jwtAuthApi->setUid(1)->encode()->getToken();
+        $token = $this->jwtAuthApi->setUid($uid)->encode()->getToken();
         return ResultVo::success($token);
 
     }
@@ -50,6 +53,7 @@ class UserController extends Base
      *   
      *  } 
      */
+    // 用户登陆/注册
     public function Login()
     {
         # code...
@@ -78,7 +82,7 @@ class UserController extends Base
             // 'phone'=>'',
             'user_image'=>$get_uifno['headimgurl'],
             'open_id'=>$get_uifno['openid'],
-            'role_id'=>'0',
+            'role_id'=>'4',
             // 'real_name_state'=>'',
             // 'business_notice'=>'',
             'subscribe'=>$get_uifno['subscribe'],
@@ -134,6 +138,12 @@ class UserController extends Base
 
         );
         return ResultVo::success($re_data);
+    }
+    // 查询当前用户信息
+    public function this_user(){
+        $userid = $this->uid;
+        $user = $this->WeDb->selectlink($this->table,'role',"{$this->table}.role_id = role.id ",''.$this->table.'.id = "'.$userid.'"');
+        return ResultVo::success($user);
     }
 
 }

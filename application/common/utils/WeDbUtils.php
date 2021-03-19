@@ -1,6 +1,8 @@
 <?php
 namespace app\common\utils;
 use think\db;
+use app\common\enums\ErrorCode;
+use app\common\vo\ResultVo;
 /**
  * 封装的db方法
  */
@@ -252,6 +254,8 @@ use think\db;
      */
     public function selectSQL($database, $where = '', $field)
     {
+        // var_dump('select ' . $field . ' from ' . $database . ' ' . $where);
+        // exit;
         $result = Db::query('select ' . $field . ' from ' . $database . ' ' . $where);
         return $result;
     }
@@ -300,6 +304,20 @@ use think\db;
         return $result;
     }
 
+    /**
+     * 连表查询
+     * 
+     */
+    public function selectlink($database,$database2,$join,$where = '')
+    {
+        // var_dump($database,$database2,$join,$where);
+        // exit;
+        $result = Db::table($database)
+            ->join($database2,$join)
+            ->where($where)
+            ->select();
+        return $result;
+    }
     /**
      * 新增一条数据
      * $database 数据库表明
@@ -365,6 +383,7 @@ use think\db;
      */
     public function update($database, $where = '', $data)
     {
+        
         $result = Db::table($database)
             ->where($where)
             ->data($data)
@@ -374,7 +393,11 @@ use think\db;
             return true;
         else {
             //To Do:错误异常捕捉
-            return $this->jsonData(ApiErrDesc::ErrMsg_UPDATE[0], ApiErrDesc::ErrMsg_UPDATE[1]);
+            // var_dump(ErrorCode::NOT['message']);
+            // exit;
+            var_dump($database,$where,$data);
+        exit;
+            exception (ErrorCode::NOT['message'],ErrorCode::NOT['code']);
         }
     }
     /**

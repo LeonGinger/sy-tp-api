@@ -24,3 +24,15 @@ function get_by_curl($url,$post = false){
     curl_close($ch);
     return $result;
 }
+// 生成不重复随机数
+function round_code($length = 8){
+    // 密码字符集，可任意添加你需要的字符
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$@!%^&*';
+    $code = "";
+    for ( $i = 0; $i < $length; $i++ )
+    {
+        $f=0;
+        $code .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+    }
+    return md5(time().$code) ;
+}

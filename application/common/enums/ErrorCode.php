@@ -38,7 +38,7 @@ class ErrorCode
     const DATA_NOT = [ 'code' => 10, 'message' => '数据不存在'];
     const DATA_VALIDATE_FAIL = [ 'code' => 11, 'message' => '数据验证失败'];
     const HTTP_METHOD_NOT_MEHOTDS = [ 'code' => 404, 'message' => '接口丢失了QAQ'];
-
+    const NOT = [ 'code' => 12, 'message' => '操作失败请重试'];
     // 管理员相关
 
 }
