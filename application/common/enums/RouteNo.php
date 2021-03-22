@@ -29,6 +29,7 @@ class RouteNo
      * 后台不需要token的接口
      */
     const NOT_WEBAPI = [ 
+        'web/region/get_region'=>'/region/RegionController/get_region'
         // 'wap/user/user/set_token',
     ];
     // 管理员相关

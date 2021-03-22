@@ -6,6 +6,7 @@ namespace app\admin\controller;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use \think\Request;
+use app\common\enums\RouteNo;
 class EntranceController
 {
     public function __construct()
@@ -17,10 +18,19 @@ class EntranceController
     //     return ResultVo::error(ErrorCode::NOT_NETWORK);
     // }
     public function index(Request $request){
+
         $request_data=$request->param('');
-        $methodType = $this->getMethod($request_data['methods']);
+        if(array_key_exists($request->path(),RouteNo::NOT_WEBAPI)){
+            $methodType = RouteNo::NOT_WEBAPI[$request->path()];
+
+        }else{
+            //$methodType = $this->getMethod($request_data['methods'],$request->method());
+            $methodType = $this->getMethod($request_data['methods']);
+        }
+
+        //$methodType = $this->getMethod($request_data['methods']);
         $api = $this->namespacePrefix.$methodType;
-//var_dump($api);
+
 
         $action=action($api);
 
