@@ -38,6 +38,9 @@ class EntranceController
       @remark 坑-window和linux斜杆
     */
     public function getMethod($method,$request_type=''){
+        $find_method = $this->methodApi_POST[$method];
+        // var_dump($request_type);
+        // exit;
         switch ($request_type) {
             case 'POST':
                 try{
@@ -94,6 +97,9 @@ class EntranceController
         'update_menu'=>'/menu/MenuController/update_menu',
         // source操作
         'Add_order'=>'/source/SourceController/Add_order',
+        
+        'open_source'=>'/source/SourceController/open_source', //出入库
+        'opend_list'=>'/source/SourceController/opend_list'//出入库记录
     ];
     private $methodApi_GET = [
         //'upload_headimg'=>'/user/UserController/upload_headimg',

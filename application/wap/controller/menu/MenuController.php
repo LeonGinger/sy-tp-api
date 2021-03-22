@@ -85,7 +85,6 @@ class MenuController extends Base
       $menu_images_json = $this->request->param('menu_images_json');
       // $menu_images_json = ['123123123'=>123456,];
       $date = date('Y-m-d h:i:s');
-      
       $update = [
         'menu_name'=>$menu_name,
         'menu_address'=>$menu_address,
@@ -97,8 +96,7 @@ class MenuController extends Base
         'update_time'=>$date,
         'update_user_id'=>$userid,
       ];
-      // $menuid = $this->WeDb->update($this->table,"id = {$menu_id}",$update);
-      
+      $menuid = $this->WeDb->update($this->table,"id = {$menu_id}",$update);
       $monitor_image = $this->request->param('monitor_image');
       $sample_name = $this->request->param('sample_name');
       $monitoring_time = $this->request->param('monitoring_time');

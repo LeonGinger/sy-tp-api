@@ -32,9 +32,11 @@ use app\common\vo\ResultVo;
      */
     public function find($database, $where = '')
     {
+        // var_dump($database,$where);
+        // exit;
         $result = Db::table($database)
             //->where('delete_time', NULL)
-            ->where($where)
+            ->where($where) 
             ->find();
         return $result;
     }
