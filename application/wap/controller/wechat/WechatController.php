@@ -37,9 +37,9 @@ class WechatController extends Base
     $nonceStr = $this->createNonceStr();
     // 注意 URL 建议动态获取(也可以写死).
 
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-    $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; // 调用JSSDK的页面地址
-    // $url = $_SERVER['HTTP_REFERER']; // 前后端分离的, 获取请求地址(此值不准确时可以通过其他方式解决)
+    // $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    // $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; // 调用JSSDK的页面地址
+    $url = $this->request->param('url'); // 前后端分离的, 获取请求地址(此值不准确时可以通过其他方式解决)
 
     $str = "jsapi_ticket={$ticket}&noncestr={$nonceStr}&timestamp={$timestamp}&url={$url}";
     $sha_str = sha1($str);
@@ -47,7 +47,7 @@ class WechatController extends Base
     $data = ['appid' => $appid, 'timestamp' => $timestamp, 'nonceStr' => $nonceStr, 'signature' => $sha_str, 'ticket' => $ticket];
     return ResultVo::success($data);;
   }
-  function get_token($appid, $secret)
+  public function get_token($appid, $secret)
   {
     $token_data = @file_get_contents('wechat_token.txt');
     if (!empty($token_data)) {
@@ -73,8 +73,8 @@ class WechatController extends Base
         $token = $token_data['token'];
       }
     } else {
-      var_dump("2");
-      exit;
+      // var_dump("2");
+      // exit;
       $token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
       $token_res = $this->https_request($token_url);
       $token_res = json_decode($token_res, true);
@@ -163,6 +163,62 @@ class WechatController extends Base
     curl_close($curl);
     return $res;
   }
+  // 模板消息
+  public function send_message($data)
+  {
+    $appid = 'wxd49aee67b33932b2';
+    $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+    //模板消息
+    $template = array(
+      'touser' => $data['openid'],  //用户openid
+      'template_id' => Config::get('YjJLfcctmr0QPiL9B6l9k4C4SFiUakfHaMxa-AiNU9g'), //在公众号下配置的模板id
+      'url' => $data['url'], //点击模板消息会跳转的链接
+      'topcolor' => "#7B68EE",
+      'data' => array(
+        'first' => array('value' => $data['title'], 'color' => "#000000"),
+        'keyword1' => array('value' => $data['name'], 'color' => '#000000'),  //keyword需要与配置的模板消息对应
+        'keyword2' => array('value' => $data['mobile'], 'color' => '#000000'),
+        'keyword3' => array('value' => $data['visittime'], 'color' => '#000000'),
+        'remark' => array('value' => $data['remark'], 'color' => '#000000'),
+      )
+    );
+    $json_template = json_encode($template, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    // var_dump($json_template);
+    $access_token = $this->get_token($appid, $secret);
+    $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
+    $result = $this->https_request($url, $json_template);
+    $result = json_decode($result);
+    if ($result->errcode > 0) {
+      return false;
+    }
+    return true;
+  }
+  /*自定义 模板*/
 
-  
+  public function send_diymessage($openid, $data, $url = '')
+  {
+    $appid = 'wxd49aee67b33932b2';
+    $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+    //模板消息
+    $template = array(
+      'touser' => $openid,  //用户openid
+      'template_id' => $data['template_id'], //在公众号下配置的模板id
+      'url' => $url, //点击模板消息会跳转的链接
+      'topcolor' => "#7B68EE",
+      //keyword需要与配置的模板消息对应
+      'data' => $data['array'],
+    );
+    $json_template = json_encode($template, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    // var_dump($json_template);
+    $access_token = $this->get_token($appid, $secret);
+    $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
+    $result = $this->https_request($url, $json_template);
+    $result = json_decode($result);
+
+    if ($result->errcode > 0) {
+      return false;
+    }
+
+    return true;
+  }
 }

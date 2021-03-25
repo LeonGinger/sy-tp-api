@@ -34,5 +34,5 @@ function round_code($length = 8){
         $f=0;
         $code .= $chars[ mt_rand(0, strlen($chars) - 1) ];
     }
-    return md5(time().$code) ;
+    return md5(time().$code);
 }

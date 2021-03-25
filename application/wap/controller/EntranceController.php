@@ -79,6 +79,7 @@ class EntranceController
         // 'test'=>'/auth/LoginController/index',
         // wx操作
         'getConfig'=>'/wechat/WechatController/getConfig',
+        'send_message'=>'/wechat/WechatController/getConfig',
         // UserController操作
         'utoken'=>'/user/UserController/set_token',
         'this_user'=>'/user/UserController/this_user',
@@ -96,6 +97,7 @@ class EntranceController
         'business_delete'=>'/business/BusinessController/Apply_delete',
         'business_update'=>'/business/BusinessController/Apply_update',
         'out_my_user'=>'/business/BusinessController/out_my_user',
+        'my_quit'=>'/business/BusinessController/my_quit',
         // MenuController操作
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',

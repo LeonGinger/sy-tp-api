@@ -3,13 +3,16 @@
 namespace app\wap\controller\business;
 
 use app\wap\controller\Base;
+use think\Facade\Cache;
 use app\common\enums\ErrorCode;
 use app\common\utils\PublicFileUtils;
+use app\common\utils\WechatUtils;
 use app\common\vo\ResultVo;
 use Workerman\Events\Select;
 use think\db;
 use app\model\Business;
 use app\model\Business_notice;
+use app\wap\controller\wechat\WechatController;
 
 /**
  * 商家相关
@@ -68,7 +71,7 @@ class BusinessController extends Base
             return "抱歉，您越权了";
         }
         $delete = $this->WeDb->update($this->table,"id={$businessid}",['delete_time'=>date('Y-m-d h:i:s')]);
-        $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}",['role_id'=>4,'Business_notice'=>'']);
+        $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}",['role_id'=>4,'business_notice'=>'']);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
@@ -76,7 +79,7 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user',"id={$userid}");
-        if($user['role_id'] != 2 && $user['role_id'] != 1){
+        if($user['role_id'] != 3 && $user['role_id'] != 2 && $user['role_id'] != 1){
             return "抱歉，您越权了";
         }
         $businessid = $user['business_notice'];
@@ -179,7 +182,7 @@ class BusinessController extends Base
         $userid = $this->uid;
         $out_id = $this->request->param('out_user_id');
         $user = $this->WeDb->find('user',"id = {$userid}");
-        if($user['role_id'] !=2 and $user['role_id'] !=1){
+        if($user['role_id'] !=2 && $user['role_id'] !=1){
             return "抱歉，您越权了";
         }
         $out_data = [
@@ -221,6 +224,18 @@ class BusinessController extends Base
             return "抱歉，您是企业用户不能成为员工";
         }
         $userupdate = $this->WeDb->update('user',"id={$userid}",$us_data);
+        // 推送模板消息
+        // $data = [
+        //     'Template_id'=>'-FXFyfl80O9GKth78UKOrroqbBg1hPFxruvAAQ7rt2s',
+        //     'openid'=>$user['open_id'],
+        //     'url'=>'https://sy.zsicp.com/h5/#/pages/my/my',
+        //     'title'=>'注销成功',
+        //     'name'=>$user['username'],
+        //     'mobile'=>date('Y-m-d'),
+        //     'visittime'=>'消费者',
+        //     'remark'=>'11111'
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data); 
         return ResultVo::success($userupdate);
     }
     // 员工列表接口
@@ -241,11 +256,31 @@ class BusinessController extends Base
     // 操作员注销接口
     public function my_quit(){
         $userid = $this->uid;
+        $user = $this->WeDb->find('user',"id = {$userid}");
+        if($user['role_id'] != 3){
+            return ResultVo::error(ErrorCode::USER_NOT_BUSINESS['code'], ErrorCode::USER_NOT_BUSINESS['message']);
+        }
         $qt_data = [
             'role_id' => 4,
             'business_notice' => '',
         ];
         $update = $this->WeDb->update('user',"id ={$userid}",$qt_data);
+        // 推送模板消息
+        $da_content = [
+            'first'=>['value' => '注销成功', 'color' => "#000000"],
+            'keyword1'=>['value' => $user['username'], 'color' => "#000000"],
+            'keyword2'=>['value' => date('Y-m-d'), 'color' => "#000000"],
+            'keyword3'=>['value' => '消费者', 'color' => "#000000"],
+            'remark'=>['value' => '11111', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id'=>'-FXFyfl80O9GKth78UKOrroqbBg1hPFxruvAAQ7rt2s',
+            'openid'=>$user['open_id'],
+            'url'=>'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content'=>$da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        return ResultVo::success($return); 
     }
      
 }

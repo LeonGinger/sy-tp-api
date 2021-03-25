@@ -40,6 +40,10 @@ class ErrorCode
     const HTTP_METHOD_NOT_MEHOTDS = [ 'code' => 404, 'message' => '接口丢失了QAQ'];
     const NOT = [ 'code' => 12, 'message' => '操作失败请重试'];
     const NOT_PHONE_CODE = [ 'code' => 33, 'message' => '验证码错误'];
+    const DATA_NOT_CONTRNT = ['code'=>44, 'message' =>'数据不完整，请重试' ];
+    const USER_NOT_BUSINESS = ['code'=>55,'message' =>'您不是操作员，无需注销'];
+    const PHONE_IS_NULL = ['code'=>15,'message' => '手机号码不能为空'];
+    const PHONE_IS_TWO = ['code'=>16,'message'=>'手机号码已被注册'];
     // 管理员相关
 
 }
