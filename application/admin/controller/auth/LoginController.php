@@ -12,6 +12,8 @@ use app\common\utils\PassWordUtils;
 use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
 use think\facade\Hook;
+use redis\Redis;
+use model\User;
 
 /**
  * 登录
@@ -19,6 +21,13 @@ use think\facade\Hook;
 
 class LoginController extends Base
 {
+
+ 
+    protected $redis = null;
+    public function initialize(){
+        $this->redis = new Redis();
+    }
+
     /**
      * 获取用户信息
      */
@@ -30,25 +39,43 @@ class LoginController extends Base
             return ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        $user_name = request()->post('userName');
-        $pwd = request()->post('pwd');
-        if (!$user_name || !$pwd){
-            return ResultVo::error(ErrorCode::VALIDATION_FAILED, "username 不能为空。 password 不能为空。");
+        //$user_name = request()->post('userName');
+        //$pwd = request()->post('pwd');
+        $tel = request()->post('mobile');
+        $code = request()->post('code');
+        if (!$tel || !$code){
+            return ResultVo::error(ErrorCode::VALIDATION_FAILED, "电话号码不能为空。 验证码不能为空。");
         }
-        $admin = AuthAdmin::where('username',$user_name)
-            ->field('id,username,avatar,password,status')
-            ->find();
+        // if (!$user_name || !$pwd){
+        //     return ResultVo::error(ErrorCode::VALIDATION_FAILED, "username 不能为空。 password 不能为空。");
+        // }
 
-        if (empty($admin) ||  PassWordUtils::create($pwd) != $admin->password){
+        // $admin = AuthAdmin::where('username',$user_name)
+        //     ->field('id,username,avatar,password,status')
+        //     ->find();
+        $admin = User::where('phone',$tel)
+            ->field('id,username,user_image as avatar,status')
+            ->find();
+        if (empty($admin)){
             return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
         }
+        $verif_code = $this->redis->get('admin_phonecode_mobile_'.$tel);
+        if(!$verif_code){
+            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
+        }
+        if($verif_code!=$code){
+            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
+        }
+        // if (empty($admin) ||  PassWordUtils::create($pwd) != $admin->password){
+        //     return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
+        // }
         if ($admin->status != 1){
             return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
         }
-
+        $this->redis->del('admin_phonecode_mobile_'.$tel);
         $info = $admin->toArray();
 
-        unset($info['password']);
+        // unset($info['password']);
 
         // 保存用户信息
         $loginInfo = AuthAdmin::loginInfo($info['id'],$info);
@@ -127,8 +154,11 @@ class LoginController extends Base
 
     /**
      * 修改密码
+     * 弃用
      */
     public function password(){
+        return ResultVo::error(ErrorCode::NOT_NETWORK);
+        
         if (!request()->isPost()){
             return ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED);
         }
@@ -160,5 +190,30 @@ class LoginController extends Base
 
         return ResultVo::success();
 
+    }
+
+    /**
+     * 发送验证码登录
+     */
+    public function send_code(){
+        $sms = new \Sms_YunPian();
+        $tel = $this->request->param('mobile');
+        $check_tel = User::where('delete_time is null and phone = '.$tel)->find();
+        if(!$check_tel){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户不存在');}
+
+        $code = mt_rand(100000,999999);
+        /* 测试 */
+        $code = '123456';
+        $this->redis::set('admin_phonecode_mobile_'.$tel,$code,180);
+        return ResultVo::success();
+
+        if($sms->send($tel,$code)){
+
+            $redis::set('admin_phonecode_mobile_'.$tel,$code,180);
+
+            //返回结果        
+            return ResultVo::success();
+        }
+        return ResultVo::error(ErrorCode::NOT);
     }
 }
