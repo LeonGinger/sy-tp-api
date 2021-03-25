@@ -16,7 +16,7 @@ class Redis
     private static $host = '127.0.0.1';
     private static $port = '6379';
     private static $password = '';
-    private static $db = 0;
+    private static $db = 7;
     private static $timeout = 3600;
     /**
      * 初始化Redis连接

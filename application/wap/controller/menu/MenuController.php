@@ -15,11 +15,11 @@ use think\route\Resource;
  */
 class MenuController extends Base
 {
-    private $table = 'Menu';
+    private $table = 'menu';
     //新建商品接口
     function create_menu(){
       $userid = $this->uid;
-      $find = $this->WeDb->find('User',"id={$userid}");
+      $find = $this->WeDb->find('user',"id={$userid}");
       $businessid = $find['business_notice'];
       $menu_name = $this->request->param('menu_name');
       $menu_address = $this->request->param('menu_address');

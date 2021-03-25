@@ -7,5 +7,5 @@ use think\Model;
 class BusinessAppraisal extends Model
 {
     //
-    protected $table = 'Business_appraisal';
+    protected $table = 'business_appraisal';
 }

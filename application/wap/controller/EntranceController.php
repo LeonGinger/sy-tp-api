@@ -38,8 +38,8 @@ class EntranceController
       @remark 坑-window和linux斜杆
     */
     public function getMethod($method,$request_type=''){
-        $find_method = $this->methodApi_POST[$method];
-        // var_dump($request_type);
+        
+        // var_dump($method,$request_type);
         // exit;
         switch ($request_type) {
             case 'POST':
@@ -74,15 +74,20 @@ class EntranceController
     private $namespacePrefix='wap';
     
     private $methodApi_POST = [
-        'upload_headimg'=>'/user/UserController/upload_headimg',
-        'usersave'=>'/user/UserController/index',
-        'userindex'=>'/user/UserController/index',
         'test'=>'/file/UploadController/qiuNiuUpToken',
+        'update_token'=>'/user/UserController/update_token',
+        // 'test'=>'/auth/LoginController/index',
+        // wx操作
+        'getConfig'=>'/wechat/WechatController/getConfig',
+        // UserController操作
         'utoken'=>'/user/UserController/set_token',
         'this_user'=>'/user/UserController/this_user',
-        // 'test'=>'/auth/LoginController/index',
-        'getConfig'=>'/wechat/WechatController/getConfig',
-        // Business操作
+        'upload_headimg'=>'/user/UserController/upload_headimg',
+        'usersave'=>'/user/UserController/usave',
+        'userindex'=>'/user/UserController/index',
+        'this_source_log'=>'/user/UserController/this_source_log',
+        'iphone_code'=>'/user/UserController/iphone_code',
+        // BusinessController操作
         'my_user'=>'/business/BusinessController/my_user',
         'my_menu'=>'/business/BusinessController/my_menu',
         'business_applyad'=>'/business/BusinessController/Apply_add',
@@ -91,15 +96,15 @@ class EntranceController
         'business_delete'=>'/business/BusinessController/Apply_delete',
         'business_update'=>'/business/BusinessController/Apply_update',
         'out_my_user'=>'/business/BusinessController/out_my_user',
-        // Menu操作
+        // MenuController操作
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',
         'update_menu'=>'/menu/MenuController/update_menu',
-        // source操作
+        // sourceController操作
         'Add_order'=>'/source/SourceController/Add_order',
-        
         'open_source'=>'/source/SourceController/open_source', //出入库
-        'opend_list'=>'/source/SourceController/opend_list'//出入库记录
+        'opend_list'=>'/source/SourceController/opend_list', //出入库记录
+        'SelectAll'=>'/source/SourceController/SelectAll',
     ];
     private $methodApi_GET = [
         //'upload_headimg'=>'/user/UserController/upload_headimg',

@@ -7,4 +7,5 @@ use think\Model;
 class Menu_classify extends Model
 {
     //
+    protected $table = 'menu_classify';
 }

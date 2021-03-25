@@ -100,7 +100,7 @@ class WechatUtils{
     /**
      * 获取用户信息-公众号
      * 测试url
-     * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx695f4c98a1b6cff5&redirect_uri=http://sy.zsicp.com/wap/user/user/set_token&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+     * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd49aee67b33932b2&redirect_uri=http://sy.zsicp.com/wap/user/user/Login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
      *
      */
     public function userinfo_oa(){

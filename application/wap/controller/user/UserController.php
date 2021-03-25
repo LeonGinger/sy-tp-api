@@ -9,19 +9,26 @@ use app\common\vo\ResultVo;
 use think\facade\Validate;
 use think\facade\Config;
 use think\route\Resource;
+use redis\Redis;
 
 /**
  * 用户相关
  */
 class UserController extends Base
 {
-    private $table = 'User';
+    private $table = 'user';
     // public function initialize(){
 
     // }
     public function index(){
     	var_dump('HALO');
     	exit();
+    }
+    //刷新token
+    public function update_token(){
+      $userid = $this->uid;
+      $token = $this->jwtAuthApi->setUid($userid)->encode()->getToken();
+      return ResultVo::success($token);
     }
     // 获取一个token
     public function set_token(){
@@ -58,7 +65,7 @@ class UserController extends Base
     {
         # code...
         $code = $this->request->param('code');
-
+        $redis = new Redis();
         $get_uifno = $this->Wechat_tool->userinfo_oa($code);
         if(empty($get_uifno['openid'])){
           return  ResultVo::error(400,$get_uifno);
@@ -103,29 +110,32 @@ class UserController extends Base
 
     /*用户信息修改保存*/
     public function usave()
-    {
-        $data = $this->request->param();
+    {     
+        $redis = new Redis();
+        $userid = $this->uid;
+        $data = $this->request->param('phonecode');
+        $code = $redis::get('phonecode_'.$this->uid);
+        $phone = $redis::get('phonecode_'.$this->uid.'_mobile');
+        if($data != $code || $phone != $this->request->param('phone')){
+          return ResultVo::error(ErrorCode::NOT_PHONE_CODE['code'], ErrorCode::NOT_PHONE_CODE['message']);
+        }
         $set_data = [
             'username'=> $this->request->param('username'),
             'user_image'=>$this->request->param('user_image'),
             'phone'=>$this->request->param('phone'),
         ];
-        
-        $result = $this->WeDb->insert('User',$set_data);
-
-
+        $result = $this->WeDb->update('user',"id = {$userid}",$set_data);
         return  ResultVo::success($result);
     }
-    /*用户上传头像 */
+    /*用户上传图片 */
     public function upload_headimg(){
         $file = request()->file('imgurl');
-                
+        // var_dump($file);
+        // exit;   
         $info = $file->validate(['ext'=>'jpg,jpeg,png'])
-                     ->move(Config::get('upload_headimg_path'));
-                     
+                     ->move(Config::get('upload_headimg_path'));          
         $source = Config::get('upload_headimg_path') . $info->getSaveName();
         // $url = Config::get('domain_http').''.$info->getSaveName();
-
         $url  =str_replace(Config::get('upload_headimg_path'),Config::get('domain_http').'uploads/headimg/',$source);
         /**
          * 大小压缩
@@ -135,7 +145,6 @@ class UserController extends Base
         $re_data = array(
           'link'=>$url,
           'dir'=>$source,
-
         );
         return ResultVo::success($re_data);
     }
@@ -145,5 +154,46 @@ class UserController extends Base
         $user = $this->WeDb->selectlink($this->table,'role',"{$this->table}.role_id = role.id ",''.$this->table.'.id = "'.$userid.'"');
         return ResultVo::success($user);
     }
+    // 溯源历史
+    public function this_source_log(){
+      $userid = $this->uid;
+      $log = $this->WeDb->selectView('source_log',"user_id = {$userid}",'',0,500,'track_time easc');
+      return ResultVo::success($log);
+    }
 
+    // 短信验证码
+    function iphone_code(){
+      $redis = new Redis();
+      $mobile = $this->request->param('mobile');
+      $type  = $this->request->param('type');
+
+      if( empty($mobile)){
+          return ResultVo::success(['message'=>'手机号码不能为空','code'=>400]);
+      }
+      $check_repeat = $this->WeDb->find('user','phone = "'.$mobile.'"');
+      if($check_repeat){ return ResultVo::success(['message'=>'手机号已被使用','code'=>400]);}
+      //Loader::import('Sms_YunPian', EXTEND_PATH);
+      // var_dump($check_repeat);
+      // exit;
+      $sms = new \Sms_YunPian();
+      $code = mt_rand(100000,999999);
+          //测试
+          // $code = '123456';
+          // $redis::set('phonecode_'.$this->uid,$code,180);
+          // $redis::set('phonecode_'.$this->uid.'_mobile',$mobile,180);
+          // return ResultVo::success(['message'=>'发送短信验证成功','code'=>200]);
+
+      if($sms->send($mobile,$code)){
+          //设置cookie
+          // Cookie::set('Cookie_Message_'.$this->uid ,$code,1200);
+          $redis::set('phonecode_'.$this->uid,$code,300);
+          $redis::set('phonecode_'.$this->uid.'_mobile',$mobile,300);
+
+          //返回结果        
+          return ResultVo::success(['message'=>'发送短信验证成功','code'=>200]);
+      }else{
+
+          return ResultVo::success(['message'=>'发送短信验证失败','code'=>400]);
+      }
+    }
 }

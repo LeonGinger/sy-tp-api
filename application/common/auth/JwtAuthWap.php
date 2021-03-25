@@ -77,12 +77,12 @@ class JwtAuthWap{
             ]
         ];
         $access_token['scopes'] = 'role_access'; //token标识，请求接口的token
-        $access_token['exp'] = $time+10; //access_token过期时间,这里设置2个小时
+        $access_token['exp'] = $time+7200; //access_token过期时间,这里设置2个小时
 
         /*可只使用token 不刷新*/
         $refresh_token = $token;
 		$refresh_token['scopes'] = 'role_refresh'; //token标识，刷新access_token
-        $refresh_token['exp'] = $time+3600; //access_token过期时间,这里设置30天
+        $refresh_token['exp'] = $time+7200; //access_token过期时间,这里设置2个小时
 
         $jsonList = [
 			'access_token'=>JWT::encode($access_token,$this->key),
@@ -100,7 +100,7 @@ class JwtAuthWap{
                 $this->decodeToken = $this->getToken();
             }
 
-            JWT::$leeway = 60;//当前时间减去60，把时间留点余地
+            JWT::$leeway = 0;//当前时间减去60，把时间留点余地
 
             $decoded = JWT::decode($this->decodeToken, $this->key, ['HS256']); //HS256方式，这里要和签发的时候对应
 

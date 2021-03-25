@@ -6,5 +6,5 @@ use think\Model;
 
 class BusinessImg extends Model
 {
-    protected $table = 'Business_img';
+    protected $table = 'business_img';
 }

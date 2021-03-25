@@ -17,18 +17,18 @@ use app\model\Business_notice;
 class BusinessController extends Base
 {
 
-    private $table = 'Business';
+    private $table = 'business';
     // 加入商家
     public function Apply_add()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('User',"id={$userid}");
+        $user = $this->WeDb->find('user',"id={$userid}");
         if($user['role_id'] == 2){
             return "sorry,您同时只能拥有一家企业";
         }
         $code = round_code(16);
         $appraisal_img = $this->request->param('appraisal_img');
-        $appraisal = $this->WeDb->insertGetId('Business_appraisal',['appraisal_image' => $appraisal_img]);
+        $appraisal = $this->WeDb->insertGetId('business_appraisal',['appraisal_image' => $appraisal_img]);
         $re_data = array(
             'business_name'=>$this->request->param('business_name'),
             'business_address'=>$this->request->param('business_address'),
@@ -55,7 +55,7 @@ class BusinessController extends Base
             'business_notice'=>$res,
             'role_id'=>2,
         ];
-        $userupdate = $this->WeDb->update('User',"id={$this->uid}",$ue_data);
+        $userupdate = $this->WeDb->update('user',"id={$this->uid}",$ue_data);
         return ResultVo::success($userupdate);
     }
     // 商家软删除
@@ -63,32 +63,34 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $businessid = $this->request->param('business_id');
-        $user = $this->WeDb->find('User',"id={$userid}");
+        $user = $this->WeDb->find('user',"id={$userid}");
         if($user['role_id'] != 2 && $user['role_id'] != 1){
             return "抱歉，您越权了";
         }
         $delete = $this->WeDb->update($this->table,"id={$businessid}",['delete_time'=>date('Y-m-d h:i:s')]);
-        $roleupdate = $this->WeDb->update('User',"business_notice={$businessid}",['role_id'=>4,'Business_notice'=>'']);
+        $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}",['role_id'=>4,'Business_notice'=>'']);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
     public function Apply_selectall()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('User',"id={$userid}");
+        $user = $this->WeDb->find('user',"id={$userid}");
         if($user['role_id'] != 2 && $user['role_id'] != 1){
             return "抱歉，您越权了";
         }
         $businessid = $user['business_notice'];
-        $select = business::with('BusinessImg')->with('BusinessAppraisal')
-                ->where("id={$businessid} and delete_time is null")
+        $select = business::with('BusinessAppraisal')
+                // ->with('BusinessImg')
+                ->join('business_img','business_img.business_id = business.id')
+                ->where("business.id={$businessid} and business.delete_time is null")
                 ->select();
         return ResultVo::success($select);
     }
     // 修改所有信息接口(会修改状态为未审核)
     public function Apply_updateall(){
         $userid = $this->uid;
-        $user = $this->WeDb->find('User',"id={$userid}");
+        $user = $this->WeDb->find('user',"id={$userid}");
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -132,7 +134,7 @@ class BusinessController extends Base
     // 修改部分信息接口(不会修改状态为未审核)
     public function Apply_update(){
         $userid = $this->uid;
-        $user = $this->WeDb->find('User',"id={$userid}");
+        $user = $this->WeDb->find('user',"id={$userid}");
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -176,7 +178,7 @@ class BusinessController extends Base
     public function out_my_user(){
         $userid = $this->uid;
         $out_id = $this->request->param('out_user_id');
-        $user = $this->WeDb->find('User',"id = {$userid}");
+        $user = $this->WeDb->find('user',"id = {$userid}");
         if($user['role_id'] !=2 and $user['role_id'] !=1){
             return "抱歉，您越权了";
         }
@@ -184,7 +186,7 @@ class BusinessController extends Base
             'role_id'=>4,
             'business_notice'=>''
         ];
-        $update = $this->WeDb->update('User',"id = {$out_id}",$out_data);
+        $update = $this->WeDb->update('user',"id = {$out_id}",$out_data);
         return ResultVo::success($update);
     }
     /**
@@ -198,7 +200,7 @@ class BusinessController extends Base
     // 根据token查询当前用户的商家信息
     public function info(){
         $userid = $this->uid;
-        $user = $this->WeDb->selectSQL('User',"where id={$userid} and delete_time is null","*");
+        $user = $this->WeDb->selectSQL('user',"where id={$userid} and delete_time is null","*");
         $business = $this->WeDb->find($this->table,"id={$user['business_notice']}");
         return ResultVo::success($business);
     }
@@ -207,32 +209,43 @@ class BusinessController extends Base
         $userid = $this->uid;
         $grant_code = $this->request->param('grant_code');
         $select = $this->WeDb->selectSQL($this->table,'where grant_code="'.$grant_code.'"','id');
+        // var_dump($select);
+        // exit;
         $selectid =  $select[0]['id'];
         $us_data = [
             'business_notice'=>(int)$selectid,        
             'role_id'=>3,
         ];
-        $user = $this->WeDb->find('User',"id={$userid}");
-        if($user['role'] == 2){
+        $user = $this->WeDb->find('user',"id={$userid}");
+        if($user['role_id'] == 2){
             return "抱歉，您是企业用户不能成为员工";
         }
-        $userupdate = $this->WeDb->update('User',"id={$userid}",$us_data);
+        $userupdate = $this->WeDb->update('user',"id={$userid}",$us_data);
         return ResultVo::success($userupdate);
     }
     // 员工列表接口
     public function my_user(){
         $userid = $this->uid;
-        $find = $this->WeDb->find('User',"id={$userid}");
-        $select = $this->WeDb->selectSQL('User',"where business_notice = {$find['business_notice']} and role_id = 3",'*');
+        $find = $this->WeDb->find('user',"id={$userid}");
+        $select = $this->WeDb->selectSQL('user',"where business_notice = {$find['business_notice']} and role_id = 3",'*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品
     public function my_menu(){
         $userid = $this->uid;
-        $find = $this->WeDb->find('User',"id={$userid}");
+        $find = $this->WeDb->find('user',"id={$userid}");
         $businessid = $find['business_notice'];
-        $select = $this->WeDb->selectSQL('Menu',"where business_id = {$businessid} and if_delete = 0 ",'*');
+        $select = $this->WeDb->selectSQL('menu',"where business_id = {$businessid} and if_delete = 0 ",'*');
         return ResultVo::success($select);
+    }
+    // 操作员注销接口
+    public function my_quit(){
+        $userid = $this->uid;
+        $qt_data = [
+            'role_id' => 4,
+            'business_notice' => '',
+        ];
+        $update = $this->WeDb->update('user',"id ={$userid}",$qt_data);
     }
      
 }
