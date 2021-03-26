@@ -76,7 +76,12 @@ class EntranceController
         'permission_update'=>'/auth/PermissionRuleController/edit',
         'permission_del'=>'/auth/PermissionRuleController/delete',
 
-            
+        /*商家相关*/
+        'enterprise_list'=>'/business/BusinessController/index',
+        'enterprise_edit'=>'/business/BusinessController/edit',
+        'enterprise_state'=>'/business/BusinessController/state',
+        
+
     ];
 
 }

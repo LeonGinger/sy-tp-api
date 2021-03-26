@@ -13,7 +13,7 @@ use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
 use think\facade\Hook;
 use redis\Redis;
-use model\User;
+use app\model\User;
 
 /**
  * 登录
@@ -59,19 +59,24 @@ class LoginController extends Base
         if (empty($admin)){
             return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
         }
+
         $verif_code = $this->redis->get('admin_phonecode_mobile_'.$tel);
+ 
         if(!$verif_code){
             return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
         }
+        
         if($verif_code!=$code){
             return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
         }
         // if (empty($admin) ||  PassWordUtils::create($pwd) != $admin->password){
         //     return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
         // }
+
         if ($admin->status != 1){
             return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
         }
+
         $this->redis->del('admin_phonecode_mobile_'.$tel);
         $info = $admin->toArray();
 
@@ -202,6 +207,7 @@ class LoginController extends Base
         if(!$check_tel){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户不存在');}
 
         $code = mt_rand(100000,999999);
+
         /* 测试 */
         $code = '123456';
         $this->redis::set('admin_phonecode_mobile_'.$tel,$code,180);

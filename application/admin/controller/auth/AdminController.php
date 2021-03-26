@@ -10,6 +10,7 @@ use app\common\model\auth\AuthRoleAdmin;
 use app\common\utils\PassWordUtils;
 use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
+use app\model\User;
 
 /**
  * 管理员相关
@@ -48,11 +49,14 @@ class AdminController extends BaseCheckUser
             'var_page' => 'page',
             'list_rows' => ($limit <= 0 || $limit > 20) ? 20 : $limit,
         ];
-        $lists = AuthAdmin::where($where)
-            ->field('id,username,avatar,tel,email,status,last_login_ip,last_login_time,create_time')
+        // $lists = AuthAdmin::where($where)
+        //     ->field('id,username,avatar,tel,email,status,last_login_ip,last_login_time,create_time')
+        //     ->order($order)
+        //     ->paginate($paginate);
+        $lists = User::where($where)
+            ->field('id,username,user_image as avatar,phone as tel,status,last_login_ip,last_login_time,create_time')
             ->order($order)
             ->paginate($paginate);
-
         foreach ($lists as $k => $v) {
             $v['avatar'] = PublicFileUtils::createUploadUrl($v['avatar']);
             $roles = AuthRoleAdmin::where('admin_id',$v['id'])->field('role_id')->select();
@@ -105,7 +109,10 @@ class AdminController extends BaseCheckUser
         }
         $username = $data['username'];
         // 模型
-        $info = AuthAdmin::where('username',$username)
+        // $info = AuthAdmin::where('username',$username)
+        //     ->field('username')
+        //     ->find();
+        $info = User::where('username',$username)
             ->field('username')
             ->find();
         if ($info){
@@ -113,7 +120,8 @@ class AdminController extends BaseCheckUser
         }
 
         $status = isset($data['status']) ? $data['status'] : 0;
-        $auth_admin = new AuthAdmin();
+        // $auth_admin = new AuthAdmin();
+        $auth_admin = new User();
         $auth_admin->username = $username;
         $auth_admin->password = PassWordUtils::create($data['password']);
         $auth_admin->status = $status;
@@ -155,7 +163,10 @@ class AdminController extends BaseCheckUser
         $id = $data['id'];
         $username = strip_tags($data['username']);
         // 模型
-        $auth_admin = AuthAdmin::where('id',$id)
+        // $auth_admin = AuthAdmin::where('id',$id)
+        //     ->field('id,username')
+        //     ->find();
+        $auth_admin = User::where('id',$id)
             ->field('id,username')
             ->find();
         if (!$auth_admin){
@@ -168,9 +179,12 @@ class AdminController extends BaseCheckUser
             return ResultVo::error(ErrorCode::DATA_NOT, "最高权限用户，无权修改");
         }
 
-        $info = AuthAdmin::where('username',$username)
+        $info = User::where('username',$username)
             ->field('id')
             ->find();
+        // $info = AuthAdmin::where('username',$username)
+        //     ->field('id')
+        //     ->find();
         // 判断username 是否重名，剔除自己
         if (!empty($info['id']) && $info['id'] != $id){
             return ResultVo::error(ErrorCode::DATA_REPEAT, "管理员已存在");
@@ -224,7 +238,8 @@ class AdminController extends BaseCheckUser
         if (empty($id)){
             return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);
         }
-        $auth_admin = AuthAdmin::where('id',$id)->field('username')->find();
+        $auth_admin = User::where('id',$id)->field('username')->find();
+        //$auth_admin = AuthAdmin::where('id',$id)->field('username')->find();
         if (!$auth_admin || $auth_admin['username'] == 'admin' || !$auth_admin->delete()){
             return ResultVo::error(ErrorCode::NOT_NETWORK);
         }

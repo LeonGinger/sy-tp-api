@@ -42,7 +42,7 @@ class RoleController extends BaseCheckUser
             'list_rows' => ($limit <= 0 || $limit > 20) ? 20 : $limit,
         ];
         $lists = AuthRole::where($where)
-            ->field('id,name,status,remark,create_time,listorder')
+            ->field('id,role_name as name,status,remark,create_time,listorder')
             ->order($order)
             ->paginate($paginate);
 
@@ -113,8 +113,8 @@ class RoleController extends BaseCheckUser
         }
         $name = $data['name'];
         // 菜单模型
-        $info = AuthRole::where('name',$name)
-            ->field('name')
+        $info = AuthRole::where('role_name',$name)
+            ->field('role_name')
             ->find();
         if ($info){
             return ResultVo::error(ErrorCode::DATA_REPEAT);
@@ -123,7 +123,7 @@ class RoleController extends BaseCheckUser
         $now_time = date("Y-m-d H:i:s");
         $status = isset($data['status']) ? $data['status'] : 0;
         $auth_role = new AuthRole();
-        $auth_role->name = $name;
+        $auth_role->role_name = $name;
         $auth_role->status = $status;
         $auth_role->remark = isset($data['remark']) ? strip_tags($data['remark']) : '';
         $auth_role->create_time = $now_time;
@@ -157,7 +157,7 @@ class RoleController extends BaseCheckUser
             return ResultVo::error(ErrorCode::DATA_NOT, "角色不存在");
         }
 
-        $info = AuthRole::where('name',$name)
+        $info = AuthRole::where('role_name',$name)
             ->field('id')
             ->find();
         // 判断角色名称 是否重名，剔除自己

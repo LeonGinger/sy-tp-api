@@ -16,7 +16,7 @@ class BaseCheckUser extends Base
     public function initialize()
     {
         parent::initialize();
-        // 监听登录的钩子
+        //登录钩子
         $params = [];
         if(!array_key_exists($this->request->path(),RouteNo::NOT_WEBAPI)){
             $login_info = Hook::exec('app\\admin\\behavior\\CheckAuth', []);
@@ -24,6 +24,7 @@ class BaseCheckUser extends Base
         }else{
             $this->adminInfo = NULL;
         }
+
     }
 
 }

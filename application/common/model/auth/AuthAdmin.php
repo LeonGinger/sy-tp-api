@@ -19,10 +19,12 @@ use think\Model;
 
 /**
  * 管理员表
+ * @remark 这里的表是 User auth_admin表弃用
+ * 相关User方法写到 app\model\User下
  */
 class AuthAdmin extends Model
-{
-
+{   
+    protected $table= "user";
     /**
      * 获取登录信息
      * @param int $id 用户ID

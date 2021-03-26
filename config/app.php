@@ -125,7 +125,8 @@ return [
     /*目录相关 */
     //头像上传目录
     'upload_headimg_path' => Env::get('root_path').'/public/uploads/headimg/',
-    //
+    //商家证书
+    'upload_business_path' => Env::get('root_path').'/public/uploads/headimg/bcert',
 
 
 

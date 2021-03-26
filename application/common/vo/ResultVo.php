@@ -61,5 +61,26 @@ class ResultVo
 
         return json($instance);
     }
+    /**
+     * 请求错误
+     * @param $code
+     * @param null $message
+     * @param data $data
+     * @return \think\response\Json
+     */
+    public static function json($code,$message=null,$data){
+        if (is_array($code)) {
+            $message = isset($code['message']) && $message == null ? $code['message'] : $message;
+            $code = isset($code['code']) ? $code['code'] : null;
+        }
+        if (empty($data)) {
+            $data = new \stdClass();
+        }
+
+        $instance = new self($code, $message,$data);
+
+        return json($instance);
+
+    }
 
 }

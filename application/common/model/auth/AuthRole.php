@@ -15,10 +15,11 @@ use think\Model;
 
 /**
  * 角色表
+ * @remark 此处role表 auth_role弃用
  */
 class AuthRole extends Model
 {
-
+    protected $table= "role";
 //    protected $pk = 'id';
 
 }
