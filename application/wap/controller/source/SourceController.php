@@ -25,36 +25,68 @@ class SourceController extends Base
     $user = $this->WeDb->find('user', "id= {$userid}");
     $code = $this->request->param('source_code');
     $key = $this->request->param('key');
+    $time = date('Y-m-d h:i:s');
     $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
     if ($key == 1) {
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
-        return "对不起，您无权限操作出入库";
+        return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       $sc_data = [
-        'storage_time' => date('Y-m-d h:i:s'),
+        'storage_time' => $time,
         'enter_user_id' => $userid,
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
+      // 推送给操作员↓
+      $da_content = [
+        'content1' => ['value' => '批次已入库成功', 'color' => "#000000"],
+        'time' => ['value' => $time, 'color' => "#000000"],
+        'user_name' => ['value' => $user['username'], 'color' => "#000000"],
+        'order_number' => ['value' => $source['order_number'], 'color' => "#000000"],
+        'remark' => ['value' => '操作成功', 'color' => "#000000"],
+      ];
+      $data = [
+        'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
+        'openid' => $user['open_id'],
+        'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+        'content' => $da_content,
+      ];
+      $return = $this->Wechat_tool->sendMessage($data);
+      // * //
     } else if ($key == 2) {
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
-        return "对不起，您无权限操作出入库";
+        return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       $sc_data = [
-        'deliver_time' => date('Y-m-d h:i:s'),
+        'deliver_time' => $time,
         'out_user_id' => $userid,
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
+      // 推送给操作员↓
+      $da_content = [
+        'content1' => ['value' => '批次已出库成功', 'color' => "#000000"],
+        'time' => ['value' => $time, 'color' => "#000000"],
+        'user_name' => ['value' => $user['username'], 'color' => "#000000"],
+        'order_number' => ['value' => $source['order_number'], 'color' => "#000000"],
+        'remark' => ['value' => '操作成功', 'color' => "#000000"],
+      ];
+      $data = [
+        'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
+        'openid' => $user['open_id'],
+        'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+        'content' => $da_content,
+      ];
+      $return = $this->Wechat_tool->sendMessage($data);
+      // * //
     } else if ($key == 3) {
       $numberii = $source['order_key_number'];
       $numberi = $source['source_number'];
       $order_number = $source['order_number'];
       $id = $source['id'];
-      
+
       if ($numberii == null) {
         $numberii = 1;
       } else {
         $numberii += 1;
-        
       }
       if ($numberi == null) {
         $numberi = 1;
@@ -62,33 +94,33 @@ class SourceController extends Base
         $numberi += 1;
       }
       $source_log = db::table('source_log')->where("user_id = {$userid} and source_code = '{$code}'")->find();
-      if($source_log == null){
+      if ($source_log == null) {
         $data = [
-          'user_id'=>$userid,
-          'source_code'=>$code,
-          'menu_id'=>$source['menu_id'],
-          'track'=>1,
-          'track_time'=>date('Y-m-d h:i:s'),
-          'state'=>1,
-          'create_time'=>date('Y-m-d h:i:s'),
+          'user_id' => $userid,
+          'source_code' => $code,
+          'menu_id' => $source['menu_id'],
+          'track' => 1,
+          'track_time' => $time,
+          'state' => 1,
+          'create_time' => $time,
         ];
-        $log_insert = $this->WeDb->insert('source_log',$data);
-      }else{
+        $log_insert = $this->WeDb->insert('source_log', $data);
+      } else {
         $track = $source_log['track'];
         $track += 1;
         $data = [
-          'track'=>$track,
-          'track_time'=>date('Y-m-d h:i:s'),
+          'track' => $track,
+          'track_time' => $time,
         ];
-        $update = $this->WeDb->update('source_log',"id = {$source_log['id']}",$data);
+        $update = $this->WeDb->update('source_log', "id = {$source_log['id']}", $data);
       }
-      
+
       $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
       // var_dump($update1);
       // exit;
       $update = $this->WeDb->update($this->table, 'id = "' . $id . '" ', ['source_number' => $numberi]);
       $sc_data = [
-        'scan_time' => date('Y-m-d h:i:s'),
+        'scan_time' => $time,
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
       return ResultVo::success($source);
@@ -101,50 +133,47 @@ class SourceController extends Base
     $userid = $this->uid;
     $code = $this->request->param('source_code');
     $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
-
     $numberii = $source['order_key_number'];
-      $numberi = $source['source_number'];
-      $order_number = $source['order_number'];
-      $id = $source['id'];
-      
-      if ($numberii == null) {
-        $numberii = 1;
-      } else {
-        $numberii += 1;
-        
-      }
-      if ($numberi == null) {
-        $numberi = 1;
-      } else {
-        $numberi += 1;
-      }
-      $source_log = db::table('source_log')->where("user_id = {$userid} and source_code = '{$code}'")->find();
-      if($source_log == null){
-        $data = [
-          'user_id'=>$userid,
-          'source_code'=>$code,
-          'menu_id'=>$source['menu_id'],
-          'track'=>1,
-          'track_time'=>date('Y-m-d h:i:s'),
-          'state'=>1,
-          'create_time'=>date('Y-m-d h:i:s'),
-        ];
-        $log_insert = $this->WeDb->insert('source_log',$data);
-      }else{
-        $track = $source_log['track'];
-        $track += 1;
-        $data = [
-          'track'=>$track,
-          'track_time'=>date('Y-m-d h:i:s'),
-        ];
-        $update = $this->WeDb->update('source_log',"id = {$source_log['id']}",$data);
-      }
-      
-      $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
-      // var_dump($update1);
-      // exit;
-      $update = $this->WeDb->update($this->table, 'id = "' . $id . '" ', ['source_number' => $numberi]);
+    $numberi = $source['source_number'];
+    $order_number = $source['order_number'];
+    $id = $source['id'];
 
+    if ($numberii == null) {
+      $numberii = 1;
+    } else {
+      $numberii += 1;
+    }
+    if ($numberi == null) {
+      $numberi = 1;
+    } else {
+      $numberi += 1;
+    }
+    $source_log = db::table('source_log')->where("user_id = {$userid} and source_code = '{$code}'")->find();
+    if ($source_log == null) {
+      $data = [
+        'user_id' => $userid,
+        'source_code' => $code,
+        'menu_id' => $source['menu_id'],
+        'track' => 1,
+        'track_time' => date('Y-m-d h:i:s'),
+        'state' => 1,
+        'create_time' => date('Y-m-d h:i:s'),
+      ];
+      $log_insert = $this->WeDb->insert('source_log', $data);
+    } else {
+      $track = $source_log['track'];
+      $track += 1;
+      $data = [
+        'track' => $track,
+        'track_time' => date('Y-m-d h:i:s'),
+      ];
+      $update = $this->WeDb->update('source_log', "id = {$source_log['id']}", $data);
+    }
+
+    $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
+    // var_dump($update1);
+    // exit;
+    $update = $this->WeDb->update($this->table, 'id = "' . $id . '" ', ['source_number' => $numberi]);
     return ResultVo::success($source);
   }
   // 出入库记录
@@ -153,14 +182,23 @@ class SourceController extends Base
     $userid = $this->uid;
     $user = $this->WeDb->find('user', "id = {$userid}");
     $business_id = $user['business_notice'];
-    $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}");
-    // exit;
-    $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}");
-    $data = [
-      'message' => "请求成功",
-      'enter' => $select,
-      'out' => $select2,
-    ];
+    if($user['role_id'] == 3){
+      $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}");
+      $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}");
+      $data = [
+        'message' => "请求成功",
+        'enter' => $select,
+        'out' => $select2,
+      ];
+    }else if($user['role_id'] == 2){
+      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null and out_user_id is null");
+      $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null");
+      $data = [
+        'message' => "请求成功",
+        'enter' => $select,
+        'out' => $select2,
+      ];
+    }
     return ResultVo::success($data);
   }
   // 新建订单（一次建立多个溯源码）
@@ -179,9 +217,8 @@ class SourceController extends Base
       'source_injson' => json_encode($sourceANDnumber),
     ];
     $orderid = $this->WeDb->insertGetId('order', $data);
-    // exit;
     $source_code_array = array();
-    for ($i = 0; $i < count($sourceANDnumber); $i++) {  //第一维度箱种类
+    for ($i = 0; $i < count($sourceANDnumber); $i++) {  //第一维箱种类
       $menu_id = $sourceANDnumber[$i]['menu_id'];
       $number = $sourceANDnumber[$i]['number']; //多少箱
       $menu_number = $sourceANDnumber[$i]['menu_number']; //一箱有多少个
@@ -211,13 +248,12 @@ class SourceController extends Base
         ];
         $sourceinsert = $this->WeDb->insertGetId('Source', $in_data);
         if ($sourceinsert) {
-          $source_code_array[$i][$o] = $source_code; // $i为箱 $o为多少箱 $e为箱中有多少个
+          for ($n = 0; $n <= $menu_number; $n++) { //第三维：多少个水果多少个溯源码，因箱子外也有一个码所以是 <=
+            $source_code_array[$i][$o][$n] = $source_code; // $i为箱 $o为多少箱 $n为箱中有多少个 溯源码数量= 水果个数 + 外箱子 = $n+1↑
+          }
         }
       }
     }
     return ResultVo::success($source_code_array);
-    // $insert = $this->WeDb->insertGetId('order',['source_injson' => $sourceANDnumber]);
-    // // var_dump($sourceANDnumber);
-    // return ResultVo::success($sourceANDnumber);
   }
 }

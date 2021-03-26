@@ -57,9 +57,7 @@ class WechatController extends Base
       $time  = time() - $token_data['time'];
 
       if ($time > 3600) {
-
         $token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
-
         $token_res = $this->https_request($token_url);
         $token_res = json_decode($token_res, true);
         $token = $token_res['access_token'];
@@ -73,8 +71,6 @@ class WechatController extends Base
         $token = $token_data['token'];
       }
     } else {
-      // var_dump("2");
-      // exit;
       $token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
       $token_res = $this->https_request($token_url);
       $token_res = json_decode($token_res, true);

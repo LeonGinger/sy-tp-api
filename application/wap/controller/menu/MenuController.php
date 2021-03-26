@@ -19,8 +19,8 @@ class MenuController extends Base
     //新建商品接口
     function create_menu(){
       $userid = $this->uid;
-      $find = $this->WeDb->find('user',"id={$userid}");
-      $businessid = $find['business_notice'];
+      $user = $this->WeDb->find('user',"id={$userid}");
+      $businessid = $user['business_notice'];
       $menu_name = $this->request->param('menu_name');
       $menu_address = $this->request->param('menu_address');
       $menu_weight = $this->request->param('menu_weight');
@@ -63,19 +63,64 @@ class MenuController extends Base
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->insert('menu_certificate',$insert3);
+      // 推送给商家的所有人员↓
+      $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
+      for($i=0;$i<count($foruser);$i++){
+        $da_content = [
+          'content1'=>['value' => '新建商品成功', 'color' => "#000000"],
+          'content2'=>['value' => "新建商品名称：{$menu_name}", 'color' => "#000000"],
+          'content3'=>['value' => "新建人员：{$user['username']}", 'color' => "#000000"],
+          'content4'=>['value' => "新建时间：{$date}", 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
+            'openid'=>$foruser[$i]['open_id'],
+            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'content'=>$da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+      }
+      // * //
       return ResultVo::success($certificate);
     }
     // 软删除此商品
     function delete_menu(){
+      $userid = $this->uid;
+      $user = $this->WeDb->find('user',"id = {$userid}");
+      $businessid = $user['business_notice'];
       $menu_id = $this->request->param('menu_id');
+      $menu = $this->WeDb->find('menu',"id = {$menu_id}");
+      $menu_name = $menu['menu_name'];
+      $date = date('Y-m-d h:i:s');
       $menuDelete = $this->WeDb->update($this->table,"id = {$menu_id}",['if_delete'=>1]);
+      // 推送给商家的所有人员↓
+      $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
+      for($i=0;$i<count($foruser);$i++){
+        $da_content = [
+          'content1'=>['value' => '删除商品成功', 'color' => "#000000"],
+          'content2'=>['value' => "删除商品名称：{$menu_name}", 'color' => "#000000"],
+          'content3'=>['value' => "删除人员：{$user['username']}", 'color' => "#000000"],
+          'content4'=>['value' => "删除时间：{$date}", 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
+            'openid'=>$foruser[$i]['open_id'],
+            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'content'=>$da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+      }
+      // * //
       return ResultVo::success($menuDelete);
     }
     // 修改商品
     function update_menu(){
       // exit;
       $userid = $this->uid;
+      $user = $this->WeDb->find('user',"id = {$userid}");
+      $businessid = $user['business_notice'];
       $menu_id = $this->request->param('menu_id');
+      $Y_menu = $this->WeDb->find('menu',"id = {$menu_id}");
       $menu_name = $this->request->param('menu_name');
       $menu_address = $this->request->param('menu_address');
       $menu_weight = $this->request->param('menu_weight');
@@ -115,6 +160,24 @@ class MenuController extends Base
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->update('menu_certificate',"menu_id = {$menu_id}",$update3);
+      // 推送给商家的所有人员↓
+      $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
+      for($i=0;$i<count($foruser);$i++){
+        $da_content = [
+          'content1'=>['value' => '修改商品成功', 'color' => "#000000"],
+          'content2'=>['value' => "修改商品名称：{$Y_menu['menu_name']}->{$menu_name}", 'color' => "#000000"],
+          'content3'=>['value' => "修改人员：{$user['username']}", 'color' => "#000000"],
+          'content4'=>['value' => "修改时间：{$date}", 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
+            'openid'=>$foruser[$i]['open_id'],
+            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'content'=>$da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+      }
+      // * //
       return ResultVo::success($certificate);
     }
 }

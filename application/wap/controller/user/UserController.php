@@ -117,15 +117,16 @@ class UserController extends Base
     $username = $this->request->param('username');
     $user_image = $this->request->param('user_image');
     $phone = $this->request->param('phone');
+    // 传入数据不能为空
     if($username == '' || $user_image == '' || $phone == ''){
       return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
     }
     $user = $this->WeDb->find('user', "id = {$userid}");
     $data = $this->request->param('phonecode');
     if ($phone != $user['phone']) {
-      $code = $redis::get('phonecode_' . $this->uid);
-      $inphone = $redis::get('phonecode_' . $this->uid . '_mobile');
-      if ($data != $code || $inphone != $this->request->param('phone')) {
+      $code = $redis::get('phonecode_' . $this->uid); // 缓存的验证码
+      $inphone = $redis::get('phonecode_' . $this->uid . '_mobile'); // 缓存的手机号
+      if ($data != $code || $inphone != $this->request->param('phone')) { // 与传入数据做比对
         return ResultVo::error(ErrorCode::NOT_PHONE_CODE['code'], ErrorCode::NOT_PHONE_CODE['message']);
       }
     }
@@ -140,9 +141,10 @@ class UserController extends Base
   /*用户上传图片 */
   public function upload_headimg()
   {
-    $file = request()->file('imgurl');
-    // var_dump($file);
-    // exit;   
+    $file = request()->file('imgurl');  
+    if($file == null){
+      return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'], ErrorCode::UPLOAD_IS_NULL['message']);
+    } 
     $info = $file->validate(['ext' => 'jpg,jpeg,png'])
       ->move(Config::get('upload_headimg_path'));
     $source = Config::get('upload_headimg_path') . $info->getSaveName();
@@ -164,6 +166,12 @@ class UserController extends Base
   {
     $userid = $this->uid;
     $user = $this->WeDb->selectlink($this->table, 'role', "{$this->table}.role_id = role.id ", '' . $this->table . '.id = "' . $userid . '"');
+    // var_dump($user);
+    // exit;
+    if($user[0]['business_notice'] != '' && $user[0]['business_notice']!= null){
+      $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
+      $user[0]['business'] = $business; 
+    }
     return ResultVo::success($user);
   }
   // 溯源历史
@@ -180,7 +188,6 @@ class UserController extends Base
     $redis = new Redis();
     $mobile = $this->request->param('mobile');
     $type  = $this->request->param('type');
-
     if (empty($mobile)) {
       return ResultVo::error(ErrorCode::PHONE_IS_NULL['code'], ErrorCode::PHONE_IS_NULL['message']);
     }
@@ -198,17 +205,14 @@ class UserController extends Base
     // $redis::set('phonecode_'.$this->uid,$code,180);
     // $redis::set('phonecode_'.$this->uid.'_mobile',$mobile,180);
     // return ResultVo::success(['message'=>'发送短信验证成功','code'=>200]);
-
     if ($sms->send($mobile, $code)) {
       //设置cookie
       // Cookie::set('Cookie_Message_'.$this->uid ,$code,1200);
       $redis::set('phonecode_' . $this->uid, $code, 300);
       $redis::set('phonecode_' . $this->uid . '_mobile', $mobile, 300);
-
       //返回结果        
       return ResultVo::success(['message' => '发送短信验证成功', 'code' => 200]);
-    } else {
-
+    } else { 
       return ResultVo::success(['message' => '发送短信验证失败', 'code' => 400]);
     }
   }

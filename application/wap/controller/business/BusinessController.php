@@ -25,40 +25,64 @@ class BusinessController extends Base
     public function Apply_add()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id={$userid}");
-        if($user['role_id'] == 2){
-            return "sorry,您同时只能拥有一家企业";
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $time = date('Y-m-d h:i:s');
+        if ($user['role_id'] == 2 || $user['role_id'] == 3) {
+            return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
         }
         $code = round_code(16);
+        $business_name = $this->request->param('business_name');
+        $business_address = $this->request->param('business_address');
+        $responsible_name = $this->request->param('responsible_name');
+        $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
-        $appraisal = $this->WeDb->insertGetId('business_appraisal',['appraisal_image' => $appraisal_img]);
+        if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
+            return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
+        }
+        $appraisal = $this->WeDb->insertGetId('business_appraisal', ['appraisal_image' => $appraisal_img]);
         $re_data = array(
-            'business_name'=>$this->request->param('business_name'),
-            'business_address'=>$this->request->param('business_address'),
-            'responsible_name'=>$this->request->param('responsible_name'),
-            'responsible_phone'=>$this->request->param('responsible_phone'),
-            'create_time'=>date('Y-m-d h:i:s'),
-            'state'=>1,
-            'business_appraisal_id'=>$appraisal,
+            'business_name' => $business_name,
+            'business_address' => $business_address,
+            'responsible_name' => $responsible_name,
+            'responsible_phone' => $responsible_phone,
+            'create_time' => date('Y-m-d h:i:s'),
+            'state' => 1,
+            'business_appraisal_id' => $appraisal,
             // 'business_introduction'=>$this->request->param('business_introduction'),
-            'verify_if'=> 3,
-            'grant_code'=>$code,
-            'img_info'=>0,
+            'verify_if' => 3,
+            'grant_code' => $code,
+            'img_info' => 0,
         );
-        $res = $this->WeDb->insertGetId($this->table,$re_data);
+        $res = $this->WeDb->insertGetId($this->table, $re_data);
         $img_date = [
-            'business_id'=>$res,
-            'business_image_injson'=>' ',
-            'business_img_contentjson'=>' ',
+            'business_id' => $res,
+            'business_image_injson' => ' ',
+            'business_img_contentjson' => ' ',
         ];
-        $insert = $this->WeDb->insertGetId('business_img',$img_date);
+        $insert = $this->WeDb->insertGetId('business_img', $img_date);
         // var_dump($this->uid);
         // exit ;
         $ue_data = [
-            'business_notice'=>$res,
-            'role_id'=>2,
+            'business_notice' => $res,
+            'role_id' => 2,
         ];
-        $userupdate = $this->WeDb->update('user',"id={$this->uid}",$ue_data);
+        $userupdate = $this->WeDb->update('user', "id={$this->uid}", $ue_data);
+        // 模板消息
+        // 推送给操作员↓
+        $da_content = [
+            'title' => ['value' => '您的申请已提交', 'color' => "#000000"],
+            'business_name' => ['value' => $business_name, 'color' => "#000000"],
+            'time' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '待管理员核审，请稍后...', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'UnAwvSd2u6htsHKZpNTKPPvTpBdvn2S1MAzZHHk7FPI',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+            'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // * //
         return ResultVo::success($userupdate);
     }
     // 商家软删除
@@ -66,34 +90,38 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $businessid = $this->request->param('business_id');
-        $user = $this->WeDb->find('user',"id={$userid}");
-        if($user['role_id'] != 2 && $user['role_id'] != 1){
-            return "抱歉，您越权了";
+        $user = $this->WeDb->find('user', "id={$userid}");
+        if ($businessid != $user['business_notice']) {
+            return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
-        $delete = $this->WeDb->update($this->table,"id={$businessid}",['delete_time'=>date('Y-m-d h:i:s')]);
-        $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}",['role_id'=>4,'business_notice'=>'']);
+        if ($user['role_id'] != 2 && $user['role_id'] != 1) {
+            return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
+        }
+        $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d h:i:s')]);
+        $roleupdate = $this->WeDb->update('user', "business_notice={$businessid}", ['role_id' => 4, 'business_notice' => '']);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
     public function Apply_selectall()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id={$userid}");
-        if($user['role_id'] != 3 && $user['role_id'] != 2 && $user['role_id'] != 1){
-            return "抱歉，您越权了";
+        $user = $this->WeDb->find('user', "id={$userid}");
+        if ($user['role_id'] != 1 && $user['role_id'] != 2) {
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
         $businessid = $user['business_notice'];
         $select = business::with('BusinessAppraisal')
-                // ->with('BusinessImg')
-                ->join('business_img','business_img.business_id = business.id')
-                ->where("business.id={$businessid} and business.delete_time is null")
-                ->select();
+            // ->with('BusinessImg')
+            ->join('business_img', 'business_img.business_id = business.id')
+            ->where("business.id={$businessid} and business.delete_time is null")
+            ->select();
         return ResultVo::success($select);
     }
     // 修改所有信息接口(会修改状态为未审核)
-    public function Apply_updateall(){
+    public function Apply_updateall()
+    {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id={$userid}");
+        $user = $this->WeDb->find('user', "id={$userid}");
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -105,39 +133,39 @@ class BusinessController extends Base
         $business_introduction = $this->request->param('business_introduction');
         $business_images_injson = $this->request->param('business_images_injson');
         $business_img_contentjson = $this->request->param('business_img_contentjson');
-        $appraisal_image = $this->request->param('appraisal_image'); 
+        $appraisal_image = $this->request->param('appraisal_image');
         $data = [
-            'business_name'=>$business_name,
-            'responsible_name'=>$responsible_name,
-            'responsible_phone'=>$responsible_phone,
-            'business_address'=>$business_address,
-            'business_images'=>$business_images,
-            'business_introduction'=>$business_introduction,
-            'verify_if'=>3,
+            'business_name' => $business_name,
+            'responsible_name' => $responsible_name,
+            'responsible_phone' => $responsible_phone,
+            'business_address' => $business_address,
+            'business_images' => $business_images,
+            'business_introduction' => $business_introduction,
+            'verify_if' => 3,
         ];
-        $update = $this->WeDb->update($this->table,"id = {$business_id}",$data);
+        $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
         $img_data = [
-            'business_image_injson'=>$business_images_injson,
-            'business_img_contentjson'=>$business_img_contentjson,
+            'business_image_injson' => $business_images_injson,
+            'business_img_contentjson' => $business_img_contentjson,
         ];
-        $update2 = $this->WeDb->update('business_img',"business_id = {$business_id}",$img_data);
+        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         $ap_data = [
-            'appraisal_image'=>$appraisal_image
+            'appraisal_image' => $appraisal_image
         ];
-        $business = $this->WeDb->find($this->table,"id = {$business_id}");
-        $update3 = $this->WeDb->update('business_appraisal',"id = {$business['business_appraisal_id']}",$ap_data);
+        $business = $this->WeDb->find($this->table, "id = {$business_id}");
+        $update3 = $this->WeDb->update('business_appraisal', "id = {$business['business_appraisal_id']}", $ap_data);
         $data = [
-            'update1'=>$update,
-            'update2'=>$update2,
-            'update3'=>$update3,
+            'update1' => $update,
+            'update2' => $update2,
+            'update3' => $update3,
         ];
         return ResultVo::success($data);
-
     }
     // 修改部分信息接口(不会修改状态为未审核)
-    public function Apply_update(){
+    public function Apply_update()
+    {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id={$userid}");
+        $user = $this->WeDb->find('user', "id={$userid}");
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -155,41 +183,77 @@ class BusinessController extends Base
             // 'responsible_name'=>$responsible_name,
             // 'responsible_phone'=>$responsible_phone,
             // 'business_address'=>$business_address,
-            'business_images'=>$business_images,
-            'business_introduction'=>$business_introduction,
+            'business_images' => $business_images,
+            'business_introduction' => $business_introduction,
             // 'verify_if'=>3,
         ];
-        $update = $this->WeDb->update($this->table,"id = {$business_id}",$data);
+        $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
         $img_data = [
-            'business_image_injson'=>$business_images_injson,
-            'business_img_contentjson'=>$business_img_contentjson,
+            'business_image_injson' => $business_images_injson,
+            'business_img_contentjson' => $business_img_contentjson,
         ];
-        $update2 = $this->WeDb->update('business_img',"business_id = {$business_id}",$img_data);
+        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         // $ap_data = [
         //     'appraisal_image'=>$appraisal_image
         // ];
         // $business = $this->WeDb->find($this->table,"id = {$business_id}");
         // $update3 = $this->WeDb->update('business_appraisal',"id = {$business['business_appraisal_id']}",$ap_data);
         $data = [
-            'update1'=>$update,
-            'update2'=>$update2,
+            'update1' => $update,
+            'update2' => $update2,
             // 'update3'=>$update3,
         ];
         return ResultVo::success($data);
     }
     // 移除员工
-    public function out_my_user(){
+    public function out_my_user()
+    {
         $userid = $this->uid;
         $out_id = $this->request->param('out_user_id');
-        $user = $this->WeDb->find('user',"id = {$userid}");
-        if($user['role_id'] !=2 && $user['role_id'] !=1){
-            return "抱歉，您越权了";
+        $user = $this->WeDb->find('user', "id = {$userid}");
+        $out_user = $this->WeDb->find('user', "id = {$out_id}");
+        $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
+        $time = date('Y-m-d h:i:s');
+        if ($user['role_id'] != 2 && $user['role_id'] != 1) {
+            return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
         $out_data = [
-            'role_id'=>4,
-            'business_notice'=>''
+            'role_id' => 4,
+            'business_notice' => ''
         ];
-        $update = $this->WeDb->update('user',"id = {$out_id}",$out_data);
+        $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
+        // 推送模板消息
+        // 推送给操作员↓
+        $da_content = [
+            'content1' => ['value' => '您已被移出公司', 'color' => "#000000"],
+            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
+            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
+            'content4' => ['value' => '你的账号已更改为消费者', 'color' => "#000000"],
+            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'openid' => $out_user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // 推送给商家↓
+        $bs_content = [
+            'content1' => ['value' => "{$out_user['username']} 已被你移出公司", 'color' => "#000000"],
+            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
+            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
+            'content4' => ['value' => "{$out_user['username']}的账号已进行变更", 'color' => "#000000"],
+            'remark' => ['value' => '操作成功', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'content' => $bs_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        //*//
         return ResultVo::success($update);
     }
     /**
@@ -197,90 +261,134 @@ class BusinessController extends Base
      */
     public function Upload()
     {
-
-
     }
     // 根据token查询当前用户的商家信息
-    public function info(){
+    public function info()
+    {
         $userid = $this->uid;
-        $user = $this->WeDb->selectSQL('user',"where id={$userid} and delete_time is null","*");
-        $business = $this->WeDb->find($this->table,"id={$user['business_notice']}");
+        $user = $this->WeDb->selectSQL('user', "where id={$userid} and delete_time is null", "*");
+        $business = $this->WeDb->find($this->table, "id={$user['business_notice']}");
         return ResultVo::success($business);
     }
     // 二维码授权操作员
-    public function join_my(){
+    public function join_my()
+    {
         $userid = $this->uid;
         $grant_code = $this->request->param('grant_code');
-        $select = $this->WeDb->selectSQL($this->table,'where grant_code="'.$grant_code.'"','id');
+        $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         // var_dump($select);
         // exit;
-        $selectid =  $select[0]['id'];
+        $businessid =  $business['id'];
+        $business_user = $this->WeDb->find('user', "business_notice = {$businessid} and role_id = 2");
+        $business_mane = $this->WeDb->selectView('user', "business_notice = {$businessid}");
+        $business_number = count($business_mane) - 1;
+        $time = date('Y-m-d h:i:s');
         $us_data = [
-            'business_notice'=>(int)$selectid,        
-            'role_id'=>3,
+            'business_notice' => (int)$businessid,
+            'role_id' => 3,
         ];
-        $user = $this->WeDb->find('user',"id={$userid}");
-        if($user['role_id'] == 2){
-            return "抱歉，您是企业用户不能成为员工";
+        $user = $this->WeDb->find('user', "id={$userid}");
+        if ($user['role_id'] == 2) {
+            return ResultVo::error(ErrorCode::USER_ROLE_IN['code'], ErrorCode::USER_ROLE_IN['message']);
+        }else if ($user['role_id'] == 3) {
+            return ResultVo::error(ErrorCode::USER_ROLE_REPEAT['code'], ErrorCode::USER_ROLE_REPEAT['message']);
         }
-        $userupdate = $this->WeDb->update('user',"id={$userid}",$us_data);
+        $userupdate = $this->WeDb->update('user', "id={$userid}", $us_data);
         // 推送模板消息
-        // $data = [
-        //     'Template_id'=>'-FXFyfl80O9GKth78UKOrroqbBg1hPFxruvAAQ7rt2s',
-        //     'openid'=>$user['open_id'],
-        //     'url'=>'https://sy.zsicp.com/h5/#/pages/my/my',
-        //     'title'=>'注销成功',
-        //     'name'=>$user['username'],
-        //     'mobile'=>date('Y-m-d'),
-        //     'visittime'=>'消费者',
-        //     'remark'=>'11111'
-        // ];
-        // $return = $this->Wechat_tool->sendMessage($data); 
+        // 推送给操作员↓
+        $da_content = [
+            'business_name' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'business_user' => ['value' => $business['responsible_name'], 'color' => "#000000"],
+            'business_phone' => ['value' => $business['responsible_phone'], 'color' => "#000000"],
+            'business_address' => ['value' => $business['business_address'], 'color' => "#000000"],
+            'remark' => ['value' => '恭喜您加入到本公司', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => '-hpsvO5xcmL1l2Af_6_VFOLO65vRMRPggsOKnpejQo30',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // 推送给商家↓
+        $bs_content = [
+            'username' => ['value' => $user['username'], 'color' => "#000000"],
+            'phone' => ['value' => $user['phone'], 'color' => "#000000"],
+            'time' => ['value' => $time, 'color' => "#000000"],
+            'number' => ['value' => $business_number, 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => '-Ga5jQnQmi12lHPsSxfZk1S_PgMiu93xzmDZa9589WY',
+            'openid' => $business_user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'content' => $bs_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        //*//
         return ResultVo::success($userupdate);
     }
     // 员工列表接口
-    public function my_user(){
+    public function my_user()
+    {
         $userid = $this->uid;
-        $find = $this->WeDb->find('user',"id={$userid}");
-        $select = $this->WeDb->selectSQL('user',"where business_notice = {$find['business_notice']} and role_id = 3",'*');
+        $find = $this->WeDb->find('user', "id={$userid}");
+        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']} and role_id = 3", '*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品
-    public function my_menu(){
+    public function my_menu()
+    {
         $userid = $this->uid;
-        $find = $this->WeDb->find('user',"id={$userid}");
+        $find = $this->WeDb->find('user', "id={$userid}");
         $businessid = $find['business_notice'];
-        $select = $this->WeDb->selectSQL('menu',"where business_id = {$businessid} and if_delete = 0 ",'*');
+        $select = $this->WeDb->selectSQL('menu', "where business_id = {$businessid} and if_delete = 0 ", '*');
         return ResultVo::success($select);
     }
     // 操作员注销接口
-    public function my_quit(){
+    public function my_quit()
+    {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id = {$userid}");
-        if($user['role_id'] != 3){
+        $user = $this->WeDb->find('user', "id = {$userid}");
+        $business_user = $this->WeDb->find('user', "business_notice = {$user['business_notice']} and role_id = 2");
+        $business = $this->WeDb->find('business', "id = {$business_user['business_notice']}");
+        if ($user['role_id'] != 3) {
             return ResultVo::error(ErrorCode::USER_NOT_BUSINESS['code'], ErrorCode::USER_NOT_BUSINESS['message']);
         }
         $qt_data = [
             'role_id' => 4,
             'business_notice' => '',
         ];
-        $update = $this->WeDb->update('user',"id ={$userid}",$qt_data);
+        $update = $this->WeDb->update('user', "id ={$userid}", $qt_data);
         // 推送模板消息
+        // 推送给操作员↓
         $da_content = [
-            'first'=>['value' => '注销成功', 'color' => "#000000"],
-            'keyword1'=>['value' => $user['username'], 'color' => "#000000"],
-            'keyword2'=>['value' => date('Y-m-d'), 'color' => "#000000"],
-            'keyword3'=>['value' => '消费者', 'color' => "#000000"],
-            'remark'=>['value' => '11111', 'color' => "#000000"],
+            'first' => ['value' => '注销成功', 'color' => "#000000"],
+            'keyword1' => ['value' => $user['username'], 'color' => "#000000"],
+            'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+            'keyword3' => ['value' => '消费者', 'color' => "#000000"],
+            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id'=>'-FXFyfl80O9GKth78UKOrroqbBg1hPFxruvAAQ7rt2s',
-            'openid'=>$user['open_id'],
-            'url'=>'https://sy.zsicp.com/h5/#/pages/my/my',
-            'content'=>$da_content,
+            'Template_id' => '-5aNPVXsZQ90c0gEK90-uT0gEb9nezIZeel3RLA8pGuo',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
-        return ResultVo::success($return); 
+        // 推送给商家↓
+        $bs_content = [
+            'out_name' => ['value' => $user['username'], 'color' => "#000000"],
+            'business_name' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'out_data' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => '1teYKoeSKUdNGtMOGUNg0cIcXDN5qXU43f3nVJx9bvc',
+            'openid' => $business_user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'content' => $bs_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        //*//
+        return ResultVo::success($update);
     }
-     
 }

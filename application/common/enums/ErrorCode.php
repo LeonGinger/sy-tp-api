@@ -44,6 +44,13 @@ class ErrorCode
     const USER_NOT_BUSINESS = ['code'=>55,'message' =>'您不是操作员，无需注销'];
     const PHONE_IS_NULL = ['code'=>15,'message' => '手机号码不能为空'];
     const PHONE_IS_TWO = ['code'=>16,'message'=>'手机号码已被注册'];
+    const UPLOAD_IS_NULL = ['code'=>23,'message'=>'数据为NULL,请重试'];
+    const IS_NOT_BUSINESS = ['code'=>24,'message'=>'抱歉，您不是本商家的负责人'];
+    const USER_BUSINESS_TRUE = ['code'=>25,'message'=>'sorry,您同时只能绑定一家企业'];
+    const USER_NOT_LIMIT = ['code'=>26,'message'=>'您的权限不足，无法查阅此内容'];
+    const USER_ROLE_IN = ['code'=>27,'message'=>'抱歉，您是企业的负责人不能成为企业的操作员'];
+    const USER_ROLE_REPEAT = ['code'=>28,'message'=>'您已经是操作员了，请注销后重试'];
+    const OUT_LIMIT_NOT = ['code'=>29,'message'=>'sorry,您无权限进行此操作'];
     // 管理员相关
 
 }
