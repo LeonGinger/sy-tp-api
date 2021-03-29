@@ -6,6 +6,7 @@ use app\admin\controller\BaseCheckUser;
 use app\admin\controller\Base;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
+use app\model\Business;
 
 /**
  * 商家
@@ -23,9 +24,11 @@ class BusinessController extends BaseCheckUser
 
         $type = $this->request->param('type');
         $name = $this->request->param('name');
+        $verify_if = $this->request->param('verify_if');
         $where = '';
         $search[0] = $type!=''?'verify_if = '.$type:'';
         $search[1] = $name!=''?'business_name like "%'.$name.'%"':'';
+        $search[2] = $verify_if!=''?'verify_if = '.$verify_if:'';
         foreach ($search as $key => $value) {
             # code...
             if($value){
@@ -34,9 +37,15 @@ class BusinessController extends BaseCheckUser
         }
         $where=substr($where,0,strlen($where)-5);
 
-        $list = $this->WeDb->selectView($this->tables,$where);
+        $list = Business::with([
+            'BusinessAppraisal',
+            'BusinessImg',
+            'BossUser'=>function($query){
+                $query->where("role_id = 2")->find();
+        }])->where($where)->select()->toarray();
+        //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);
-        return ResultVo::success(['data'=>$list,'total'=>$total]);
+        return ResultVo::success(['list'=>$list,'total'=>$total]);
     }
     /*添加*/
     public function save(){}
@@ -56,10 +65,10 @@ class BusinessController extends BaseCheckUser
     /*改变状态*/
     public function state(){
     	$data = $this->request->post();
-    	if($data['state']){
+    	if(@$data['state']){
     		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['state'=>$data['state']]);
     	}
-    	if($data['verify_if']){
+    	if(@$data['verify_if']){
     		$this->verify_if($data);
     		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if']]);
     	}

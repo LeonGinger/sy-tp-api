@@ -13,5 +13,8 @@ class business extends Model
     public function BusinessImg(){
         return $this->hasMany('BusinessImg','business_id','id');
     }
+    public function BossUser(){
+    	return $this->hasOne('user','business_notice','id');
+    }
     
 }

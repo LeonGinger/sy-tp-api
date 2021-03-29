@@ -54,7 +54,7 @@ class LoginController extends Base
         //     ->field('id,username,avatar,password,status')
         //     ->find();
         $admin = User::where('phone',$tel)
-            ->field('id,username,user_image as avatar,status')
+            ->field('id,role_id,business_notice,username,user_image as avatar,status')
             ->find();
         if (empty($admin)){
             return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
