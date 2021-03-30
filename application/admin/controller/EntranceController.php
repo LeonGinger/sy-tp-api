@@ -48,7 +48,8 @@ class EntranceController
     private $methodApi = [
         'test'=>'/auth/LoginController/index',
         'codestatus'=>'/source/SourcecodeController/createcodestatus',
-
+        /*面板数据 */
+        'index_data'=>'/sys/AdminController/get_index_data',
         /*登出登录、用户信息 */
         'login'=>'/auth/LoginController/index',
         'out'=>'/auth/LoginController/out',

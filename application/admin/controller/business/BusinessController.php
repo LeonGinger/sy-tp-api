@@ -22,13 +22,15 @@ class BusinessController extends BaseCheckUser
      */
     public function index(){
 
-        $type = $this->request->param('type');
-        $name = $this->request->param('name');
-        $verify_if = $this->request->param('verify_if');
+        // $type = $this->request->param('type');
+        // $name = $this->request->param('name');
+        // $verify_if = $this->request->param('verify_if');
+        $data = $this->request->param('');
         $where = '';
-        $search[0] = $type!=''?'verify_if = '.$type:'';
-        $search[1] = $name!=''?'business_name like "%'.$name.'%"':'';
-        $search[2] = $verify_if!=''?'verify_if = '.$verify_if:'';
+        $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
+        $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
+        $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
+        
         foreach ($search as $key => $value) {
             # code...
             if($value){
@@ -42,7 +44,7 @@ class BusinessController extends BaseCheckUser
             'BusinessImg',
             'BossUser'=>function($query){
                 $query->where("role_id = 2")->find();
-        }])->where($where)->select()->toarray();
+        }])->where($where)->page($data['page'],$data['size'])->select()->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);
         return ResultVo::success(['list'=>$list,'total'=>$total]);
@@ -69,8 +71,8 @@ class BusinessController extends BaseCheckUser
     		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['state'=>$data['state']]);
     	}
     	if(@$data['verify_if']){
-    		$this->verify_if($data);
-    		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if']]);
+    		$result_verif = $this->verify_if($data);
+    		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if'],'state'=>$result_verif]);
     	}
 		return ResultVo::success();
     }
@@ -78,7 +80,7 @@ class BusinessController extends BaseCheckUser
     /*审核*/
     private function verify_if($data){
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
-    	$business_user = $this->WeDb->find('use','role_id = 2 and business_notice = '.$id);
+    	$business_user = $this->WeDb->find('user','role_id = 2 and business_notice = '.$data['id']);
     	switch ($data['verify_if']) {
     		case '1':
     			//通过
@@ -93,7 +95,8 @@ class BusinessController extends BaseCheckUser
     				),
 
     			);
-    			$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+    			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+                $state = 1;
     			break;
     		case '2':
     			//不通过
@@ -108,13 +111,14 @@ class BusinessController extends BaseCheckUser
     				),
 
     			);
-    			$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+    			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+                $state = 2;
     			break;
     		
     		default:
     			# code...
     			break;
     	}
-    	return $send_result;
+    	return $state;
     }
 }	
