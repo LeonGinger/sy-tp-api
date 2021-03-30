@@ -10,6 +10,7 @@ use think\facade\Validate;
 use think\facade\Config;
 use think\route\Resource;
 use redis\Redis;
+use think\db;
 
 /**
  * 用户相关
@@ -166,8 +167,6 @@ class UserController extends Base
   {
     $userid = $this->uid;
     $user = $this->WeDb->selectlink($this->table, 'role', "{$this->table}.role_id = role.id ", '' . $this->table . '.id = "' . $userid . '"');
-    // var_dump($user);
-    // exit;
     if($user[0]['business_notice'] != '' && $user[0]['business_notice']!= null){
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
       $user[0]['business'] = $business; 
@@ -211,9 +210,14 @@ class UserController extends Base
       $redis::set('phonecode_' . $this->uid, $code, 300);
       $redis::set('phonecode_' . $this->uid . '_mobile', $mobile, 300);
       //返回结果        
-      return ResultVo::success(['message' => '发送短信验证成功', 'code' => 200]);
+      return ResultVo::error(200,'发送短信验证成功');
     } else { 
-      return ResultVo::success(['message' => '发送短信验证失败', 'code' => 400]);
+      return ResultVo::error(400,'发送短信验证失败');
     }
+  }
+  // 常见问题查询接口
+  public function common_problem(){
+    $select = db::table('common_problem')->where('onoff = 1')->select();
+    return ResultVo::success($select);
   }
 }

@@ -51,6 +51,7 @@ class ErrorCode
     const USER_ROLE_IN = ['code'=>27,'message'=>'抱歉，您是企业的负责人不能成为企业的操作员'];
     const USER_ROLE_REPEAT = ['code'=>28,'message'=>'您已经是操作员了，请注销后重试'];
     const OUT_LIMIT_NOT = ['code'=>29,'message'=>'sorry,您无权限进行此操作'];
+    const BUSINESS_REPEAT = ['code'=>30,'message'=>'sorry,您所注册的公司名已被注册，请重试'];
     // 管理员相关
 
 }

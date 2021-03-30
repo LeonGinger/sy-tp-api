@@ -38,7 +38,7 @@ class MenuController extends Base
         'production_time'=>$production_time,
         'quality_time'=>$quality_time,
         'menu_money'=>$menu_money,
-        'menu_images_json'=>$menu_images_json,
+        'menu_images_json'=>json_encode($menu_images_json),
         'create_time'=>$date,
         'update_time'=>$date,
         'update_user_id'=>$userid,
@@ -50,7 +50,7 @@ class MenuController extends Base
       $test_location = $this->request->param('test_location');
       $insert2 = [
         'menu_id'=>$menuid,
-        'monitor_image'=>$monitor_image,
+        'monitor_image'=>json_encode($monitor_image),
         'sample_name'=>$sample_name,
         'monitoring_time'=>$monitoring_time,
         'test_location'=>$test_location,
@@ -59,7 +59,7 @@ class MenuController extends Base
       $certificate_image = $this->request->param('certificate_image');
       $insert3 = [
         'menu_id'=>$menuid,
-        'certificate_image'=>$certificate_image,
+        'certificate_image'=>json_encode($certificate_image),
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->insert('menu_certificate',$insert3);
@@ -137,7 +137,7 @@ class MenuController extends Base
         'production_time'=>$production_time,
         'quality_time'=>$quality_time,
         'menu_money'=>$menu_money,
-        'menu_images_json'=>$menu_images_json,
+        'menu_images_json'=>json_encode($menu_images_json),
         'update_time'=>$date,
         'update_user_id'=>$userid,
       ];

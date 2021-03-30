@@ -27,7 +27,7 @@ class SourceController extends Base
     $key = $this->request->param('key');
     $time = date('Y-m-d h:i:s');
     $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
-    if ($key == 1) {
+    if ($key == 1) { // 入库操作
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
@@ -52,7 +52,7 @@ class SourceController extends Base
       ];
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
-    } else if ($key == 2) {
+    } else if ($key == 2) { // 出库操作
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
@@ -77,7 +77,7 @@ class SourceController extends Base
       ];
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
-    } else if ($key == 3) {
+    } else if ($key == 3) { // 用户查询溯源信息操作
       $numberii = $source['order_key_number'];
       $numberi = $source['source_number'];
       $order_number = $source['order_number'];
@@ -191,7 +191,7 @@ class SourceController extends Base
         'out' => $select2,
       ];
     }else if($user['role_id'] == 2){
-      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null and out_user_id is null");
+      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null");
       $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null");
       $data = [
         'message' => "请求成功",

@@ -61,6 +61,8 @@ class LoginController extends Base
         }
 
         $verif_code = $this->redis->get('admin_phonecode_mobile_'.$tel);
+        // var_dump($verif_code);
+        // exit;
  
         if(!$verif_code){
             return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);

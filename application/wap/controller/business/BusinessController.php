@@ -36,10 +36,18 @@ class BusinessController extends Base
         $responsible_name = $this->request->param('responsible_name');
         $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
+        // var_dump($appraisal_img);
+        // exit;
         if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
-        $appraisal = $this->WeDb->insertGetId('business_appraisal', ['appraisal_image' => $appraisal_img]);
+        $business = $this->WeDb->selectView('business','','business_name');
+        for($i = 0;$i<count($business);$i++){
+            if($business_name == $business[$i]['business_name']){
+                return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
+            }
+        }
+        $appraisal = $this->WeDb->insertGetId('business_appraisal', ['appraisal_image' => json_encode($appraisal_img)]);
         $re_data = array(
             'business_name' => $business_name,
             'business_address' => $business_address,
@@ -68,7 +76,7 @@ class BusinessController extends Base
         ];
         $userupdate = $this->WeDb->update('user', "id={$this->uid}", $ue_data);
         // 模板消息
-        // 推送给操作员↓
+        // 推送给申请人↓
         $da_content = [
             'title' => ['value' => '您的申请已提交', 'color' => "#000000"],
             'business_name' => ['value' => $business_name, 'color' => "#000000"],
@@ -76,13 +84,14 @@ class BusinessController extends Base
             'remark' => ['value' => '待管理员核审，请稍后...', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => 'UnAwvSd2u6htsHKZpNTKPPvTpBdvn2S1MAzZHHk7FPI',
+            'Template_id' => 'feLgG3FxLHR3F8WfH1vrrT1CcrnDWDjAJSm9Fv8FKU8',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
-        // * //
+        // var_dump($return);
+        // * // 
         return ResultVo::success($userupdate);
     }
     // 商家软删除
@@ -144,11 +153,14 @@ class BusinessController extends Base
             'verify_if' => 3,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
-        $img_data = [
-            'business_image_injson' => $business_images_injson,
-            'business_img_contentjson' => $business_img_contentjson,
-        ];
-        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
+        $update2 = false;
+        if($business_images_injson != null){
+            $img_data = [
+                'business_image_injson' => json_encode($business_images_injson),
+                'business_img_contentjson' => json_encode($business_img_contentjson),
+            ];
+            $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
+        }
         $ap_data = [
             'appraisal_image' => $appraisal_image
         ];
@@ -188,11 +200,14 @@ class BusinessController extends Base
             // 'verify_if'=>3,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
-        $img_data = [
-            'business_image_injson' => $business_images_injson,
-            'business_img_contentjson' => $business_img_contentjson,
-        ];
-        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
+        $update2 = false;
+        if( $business_images_injson != null){
+            $img_data = [
+                'business_image_injson' => json_encode($business_images_injson),
+                'business_img_contentjson' => json_encode($business_img_contentjson),
+            ];
+            $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
+        }
         // $ap_data = [
         //     'appraisal_image'=>$appraisal_image
         // ];
