@@ -56,12 +56,12 @@ class BusinessController extends BaseCheckUser
     public function edit(){
     	$data = $this->request->post();
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
-    	$up_data = array(
-    		'business_name' => $data['business_name'], 
-    		'responsible_name' => $data['responsible_name'],
-    		'responsible_phone' => $data['responsible_phone'],
-    	);
-    	$result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
+    	// $up_data = array(
+    	// 	'business_name' => $data['business_name'], 
+    	// 	'responsible_name' => $data['responsible_name'],
+    	// 	'responsible_phone' => $data['responsible_phone'],
+    	// );
+    	$result = $this->WeDb->update($this->tables,'id = '.$data['id'],$data);
 		return ResultVo::success();
     }
     /*改变状态*/

@@ -62,6 +62,8 @@ class EntranceController
         'admin_del'=>'/auth/AdminController/delete',
         'admin_add'=>'/auth/AdminController/save',
         'admin_update'=>'/auth/AdminController/edit',
+        /*员工*/
+        'employee_list'=>'/user/UserController/index',
         
         /*角色管理 */
         'role_list'=>'/auth/RoleController/index',

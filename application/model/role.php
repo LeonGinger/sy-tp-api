@@ -4,7 +4,7 @@ namespace app\model;
 
 use think\Model;
 
-class role extends Model
+class Role extends Model
 {
-    //
+    protected $table = 'role';
 }
