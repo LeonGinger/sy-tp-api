@@ -14,7 +14,7 @@ use app\common\vo\ResultVo;
 use think\facade\Hook;
 use redis\Redis;
 use app\model\User;
-
+use app\common\utils\WechatUtils;
 /**
  * 登录
  */
@@ -96,7 +96,48 @@ class LoginController extends Base
 
         return ResultVo::success($res);
     }
+    /**
+     * 获取用户信息_扫码登录
+     */
+    public function index_scan()
+    {
+        if (!request()->isPost()){
+            return ResultVo::error(ErrorCode::HTTP_METHOD_NOT_ALLOWED);
+        }
 
+        $code = request()->post('code');
+        if (!$code){
+            return ResultVo::error(ErrorCode::VALIDATION_FAILED, "请重新扫码登录");
+        }
+
+        /*获取微信用户信息 匹配 数据库*/
+        $Wechat_tool = WechatUtils::getInstance();
+        $result = $Wechat_tool->webuser_info($code);
+        if(!$result){return ResultVo::error(ErrorCode::VALIDATION_FAILED, "扫码过期,请重新扫码登录");}
+
+        $admin = User::where('unionid',$result->unionid)
+            ->field('id,role_id,business_notice,username,user_image as avatar,status')
+            ->find();
+        if (empty($admin)){
+            return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
+        }
+
+        if ($admin->status != 1){
+            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
+        }
+        $info = $admin->toArray();
+        // 保存用户信息
+        $loginInfo = AuthAdmin::loginInfo($info['id'],$info);
+        $admin->last_login_ip = request()->ip();
+        $admin->last_login_time = date("Y-m-d H:i:s");
+        $admin->save();
+
+        $res = [];
+        $res['id'] = !empty($loginInfo['id']) ? intval($loginInfo['id']) : 0;
+        $res['token'] = !empty($loginInfo['token']) ? $loginInfo['token'] : '';
+
+        return ResultVo::success($res);
+    }
     /**
      * 获取登录用户信息
      */

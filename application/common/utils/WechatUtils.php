@@ -26,6 +26,14 @@ class WechatUtils
     private function __construct()
     {
         $this->app = Facade::officialAccount();
+        /*微信应用平台*/
+        $this->configYY = [
+            'app_id'   => 'wx4640de1eee48017d',
+            'secret'   => '4b86123ba6622d42c4a0a1c699668518',
+            'token'    => '开放平台第三方平台 Token',
+            'aes_key'  => '开放平台第三方平台 AES Key'
+
+        ];
     }
 
     /**
@@ -135,7 +143,29 @@ class WechatUtils
         $user = $this->app->user->get($openid);
         return $user;
     }
+    /*微信网站应用-获取用户信息
+     *code 前端请求的code
+     *请求微信接口 返回用户信息
+    */
+    public function webuser_info( $code ){
+        $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?';
 
+        $param = 'appid='.$this->configYY['app_id'].'&secret='.$this->configYY['secret'].'&code='.$code.'&grant_type=authorization_code';
+        $result = get_by_curl( $url . $param);
+        $data = json_decode($result);
+
+        if(isset($data->openid) == false || isset($data->access_token) == false){
+            return false;
+        }
+
+        $openid = $data->openid;
+        $access_token = $data->access_token;
+        // 获取当前用户信息
+        $user_info1 = get_by_curl('https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid);
+        //$user_info1 = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid);
+        $user_info1 = json_decode($user_info1);
+        return $user_info1;     
+    }
 
     
     // 发送模板消息
