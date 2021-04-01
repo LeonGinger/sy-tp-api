@@ -34,6 +34,11 @@ class RoleController extends BaseCheckUser
             $where[] = ['name','like',$name . '%'];
             $order = '';
         }
+        $role_id = request()->get('id','');
+        if(!empty($role_id)){
+            $where[] = ['id','in',$role_id];
+            $order = '';
+        }
         $limit = request()->get('limit/d', 20);
         //分页配置
         $paginate = [

@@ -52,6 +52,7 @@ class EntranceController
         'index_data'=>'/sys/AdminController/get_index_data',
         /*登出登录、用户信息 */
         'login'=>'/auth/LoginController/index',
+        'logins'=>'/auth/LoginController/index_scan',
         'out'=>'/auth/LoginController/out',
         'userInfo'=>'/auth/LoginController/userInfo',
         'password'=>'/auth/LoginController/password',
@@ -64,6 +65,8 @@ class EntranceController
         'admin_update'=>'/auth/AdminController/edit',
         /*员工*/
         'employee_list'=>'/user/UserController/index',
+        'employee_del'=>'/user/UserController/del',
+        'employee_edit'=>'/user/UserController/edit',
         
         /*角色管理 */
         'role_list'=>'/auth/RoleController/index',
