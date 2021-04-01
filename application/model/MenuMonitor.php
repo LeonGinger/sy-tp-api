@@ -4,7 +4,7 @@ namespace app\model;
 
 use think\Model;
 
-class Menu_monitor extends Model
+class MenuMonitor extends Model
 {
     //
     protected $table = 'menu_monitor';

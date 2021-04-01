@@ -10,6 +10,8 @@ use think\facade\Validate;
 use think\facade\Config;
 use think\route\Resource;
 use think\db;
+use think\Queue;
+use redis\Redis;
 
 /**
  * 用户相关
@@ -246,12 +248,20 @@ class SourceController extends Base
           'source_code' => $source_code,
           'certificate_image' => $menu_certificate['certificate_image'],
         ];
-        $sourceinsert = $this->WeDb->insertGetId('Source', $in_data);
-        if ($sourceinsert) {
+        // tp队列生成溯源码
+        $jobHandlerClassName  = 'app\wap\controller\job\order';
+        $jobQueueName = "createorder";
+        $num = 50000;
+        $this->redis = new Redis();
+        $this->redis->set('has_create',$num);
+        $this->redis->set('gotostatus',1);
+        $isPushed = Queue::push( $jobHandlerClassName , $in_data , $jobQueueName );
+        if( $isPushed !== false ){
           for ($n = 0; $n <= $menu_number; $n++) { //第三维：多少个水果多少个溯源码，因箱子外也有一个码所以是 <=
             $source_code_array[$i][$o][$n] = $source_code; // $i为箱 $o为多少箱 $n为箱中有多少个 溯源码数量= 水果个数 + 外箱子 = $n+1↑
           }
         }
+        // *** //
       }
     }
     return ResultVo::success($source_code_array);

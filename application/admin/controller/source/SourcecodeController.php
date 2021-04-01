@@ -21,7 +21,6 @@ class SourcecodeController extends BaseCheckUser
      * 溯源码队列测试
      */
     public function createcode(){
-
         // 1.当前任务将由哪个类来负责处理。
         //   当轮到该任务时，系统将生成一个该类的实例，并调用其 fire 方法
         $jobHandlerClassName  = 'app\admin\controller\job\Demo';
@@ -39,11 +38,9 @@ class SourcecodeController extends BaseCheckUser
 //             # code...
 //             $jobData[$i] = ['name'=>'GNLEON'.time()];            
 //         }
-
         $job_Data = [
             'num'=>$num,
         ];
-
         // 4.将该任务推送到消息队列，等待对应的消费者去执行
         $isPushed = Queue::push( $jobHandlerClassName , $job_Data , $jobQueueName );
         // database 驱动时，返回值为 1|false  ;   redis 驱动时，返回值为 随机字符串|false
@@ -71,7 +68,6 @@ class SourcecodeController extends BaseCheckUser
             ];
             $isPushed = Queue::push( $jobHandlerClassName , $job_Data , $jobQueueName );
         }
-        
         var_dump($res);
         var_dump($status);
     }

@@ -28,6 +28,12 @@ class MenuController extends Base
       $quality_time = $this->request->param('quality_time');
       $menu_money = $this->request->param('menu_money');
       $menu_images_json = $this->request->param('menu_images_json');
+      if($menu_name == null ||$menu_address == null ||$menu_weight == null ||
+         $production_time == null ||$quality_time == null ||$menu_money == null ||
+         $menu_images_json == null){
+            return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'],ErrorCode::UPLOAD_IS_NULL['message']);
+      }
+      // var_dump($menu_images_json);
       // $menu_images_json = ['123123123'=>123456,];
       $date = date('Y-m-d h:i:s');
       $insert = [
