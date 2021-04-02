@@ -11,6 +11,7 @@ use think\facade\Config;
 use think\route\Resource;
 use redis\Redis;
 use think\db;
+use app\model\source_log;
 
 /**
  * 用户相关
@@ -168,13 +169,13 @@ class UserController extends Base
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
       $user[0]['business'] = $business; 
     }
-    return ResultVo::success($user);
+    return ResultVo::success($user[0]);
   }
   // 溯源历史
   public function this_source_log()
   {
     $userid = $this->uid;
-    $log = $this->WeDb->selectView('source_log', "user_id = {$userid}", '', 0, 500, 'track_time easc');
+    $log = source_log::with('Source')->where("user_id = {$userid}")->order("track_time desc")->select();
     return ResultVo::success($log);
   }
 

@@ -64,20 +64,20 @@ class LoginController extends Base
         // var_dump($verif_code);
         // exit;
  
-        if(!$verif_code){
-            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
-        }
-        
-        if($verif_code!=$code){
-            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
-        }
-        // if (empty($admin) ||  PassWordUtils::create($pwd) != $admin->password){
-        //     return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
+        // if(!$verif_code){
+        //     return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
         // }
+        
+        // if($verif_code!=$code){
+        //     return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
+        // }
+        // // if (empty($admin) ||  PassWordUtils::create($pwd) != $admin->password){
+        // //     return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
+        // // }
 
-        if ($admin->status != 1){
-            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
-        }
+        // if ($admin->status != 1){
+        //     return ResultVo::error(ErrorCode::USER_NOT_PERMISSION);
+        // }
 
         $this->redis->del('admin_phonecode_mobile_'.$tel);
         $info = $admin->toArray();

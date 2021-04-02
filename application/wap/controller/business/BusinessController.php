@@ -166,7 +166,7 @@ class BusinessController extends Base
             'responsible_name' => $responsible_name,
             'responsible_phone' => $responsible_phone,
             'business_address' => $business_address,
-            'business_images' => $business_images,
+            'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             'verify_if' => 3,
         ];
@@ -180,7 +180,7 @@ class BusinessController extends Base
             $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         }
         $ap_data = [
-            'appraisal_image' => $appraisal_image
+            'appraisal_image' => json_encode($appraisal_image)
         ];
         $business = $this->WeDb->find($this->table, "id = {$business_id}");
         $update3 = $this->WeDb->update('business_appraisal', "id = {$business['business_appraisal_id']}", $ap_data);
@@ -207,8 +207,8 @@ class BusinessController extends Base
         $business_introduction = $this->request->param('business_introduction');
         $business_images_injson = $this->request->param('business_images_injson');
         $business_img_contentjson = $this->request->param('business_img_contentjson');
-        if($business_images == '' || $business_introduction == '' || 
-        $business_images_injson == '' || $business_img_contentjson == ''){
+        if($business_images == null || $business_introduction == null || 
+        $business_images_injson == null){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
         // $appraisal_image = $this->request->param('appraisal_image'); 
@@ -217,19 +217,16 @@ class BusinessController extends Base
             // 'responsible_name'=>$responsible_name,
             // 'responsible_phone'=>$responsible_phone,
             // 'business_address'=>$business_address,
-            'business_images' => $business_images,
+            'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             // 'verify_if'=>3,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
-        $update2 = false;
-        if( $business_images_injson != null){
-            $img_data = [
-                'business_image_injson' => json_encode($business_images_injson),
-                'business_img_contentjson' => json_encode($business_img_contentjson,JSON_UNESCAPED_UNICODE),
-            ];
-            $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
-        }
+        $img_data = [
+            'business_image_injson' => json_encode($business_images_injson),
+            'business_img_contentjson' => json_encode($business_img_contentjson,JSON_UNESCAPED_UNICODE),
+        ];
+        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         // $ap_data = [
         //     'appraisal_image'=>$appraisal_image
         // ];
@@ -373,7 +370,11 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $find = $this->WeDb->find('user', "id={$userid}");
-        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']} and role_id = 3", '*');
+        $role = $find['role_id'];
+        if($role != 1 && $role != 2 && $role != 3){
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
+        }
+        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']}", '*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品
@@ -382,6 +383,10 @@ class BusinessController extends Base
         $userid = $this->uid;
         $find = $this->WeDb->find('user', "id={$userid}");
         $businessid = $find['business_notice']; 
+        $role = $find['role_id'];
+        if($role != 1 && $role != 2 && $role != 3){
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
+        }
         $select = Menu::
                 with(['MenuMonitor','MenuCertificate'])
                 ->where("business_id = {$businessid} and if_delete != 1")

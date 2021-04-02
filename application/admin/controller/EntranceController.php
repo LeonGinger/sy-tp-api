@@ -87,7 +87,9 @@ class EntranceController
         'enterprise_edit'=>'/business/BusinessController/edit',
         'enterprise_state'=>'/business/BusinessController/state',
         
-
+        //批次管理
+        'order_list'=>'/source/SourcecodeController/order_list',
+        'source_list'=>'/source/SourcecodeController/source_list',
     ];
 
 }
