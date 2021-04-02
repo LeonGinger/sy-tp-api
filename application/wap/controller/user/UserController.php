@@ -95,7 +95,8 @@ class UserController extends Base
         // 'real_name_state'=>'',
         // 'business_notice'=>'',
         'subscribe' => $get_uifno['subscribe'],
-        'create_time' => date('Y-m-d H:i:s', time())
+        'create_time' => date('Y-m-d H:i:s', time()),
+        'unionid' => $get_uifno['unionid'],
         // 'deleteTime'=>'',
       );
       $in_result = $this->WeDb->insertGetId($this->table, $in_data);

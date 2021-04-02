@@ -156,7 +156,8 @@ class LoginController extends Base
             $authRules = ['admin'];
         } else {
             // 获取权限列表
-            $role_ids = AuthRoleAdmin::where('admin_id', $res['id'])->column('role_id');
+            $role_ids = User::where('id', $res['id'])->column('role_id');
+            //$role_ids = AuthRoleAdmin::where('admin_id', $res['id'])->column('role_id');
             if ($role_ids){
                 $permission_rules = AuthPermission::where('role_id','in',$role_ids)
                     ->field(['permission_rule_id'])

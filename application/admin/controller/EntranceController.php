@@ -87,6 +87,9 @@ class EntranceController
         'enterprise_edit'=>'/business/BusinessController/edit',
         'enterprise_state'=>'/business/BusinessController/state',
         
+        /*商品相关*/
+        'menu_list'=>'/business/MenuController/index',
+        'menu_details'=>'/business/MenuController/details',
 
     ];
 
