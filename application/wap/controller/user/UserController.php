@@ -11,6 +11,7 @@ use think\facade\Config;
 use think\route\Resource;
 use redis\Redis;
 use think\db;
+use app\model\source_log;
 
 /**
  * 用户相关
@@ -45,7 +46,6 @@ class UserController extends Base
     $token = $this->jwtAuthApi->setUid($uid)->encode()->getToken();
     return ResultVo::success($token);
   }
-
   /**
    * H5-登录-并获取用户信息
    *  array(11) { 
@@ -73,10 +73,9 @@ class UserController extends Base
     if (empty($get_uifno['openid'])) {
       return  ResultVo::error(400, $get_uifno);
     }
-
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '"');
     if ($uinfo) {
-      //更新 有-返回(并替换相关信息)
+      // 更新 有-返回(并替换相关信息)
       $up_data = array(
         // 'username'=>'',
         'gender' => $get_uifno['sex'],
@@ -84,7 +83,7 @@ class UserController extends Base
       );
       $this->WeDb->update($this->table, 'id = ' . $uinfo['id'], $up_data);
     } else {
-      //没-插入  
+      // 没-插入  
       $in_data = array(
         'username' => $get_uifno['nickname'],
         'gender' => $get_uifno['sex'],
@@ -101,7 +100,6 @@ class UserController extends Base
       );
       $in_result = $this->WeDb->insertGetId($this->table, $in_data);
     }
-    //-
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '" and delete_time is null');
     $token = $this->jwtAuthApi->setUid($uinfo['id'])->encode()->getToken();
     $redata = array(
@@ -172,13 +170,13 @@ class UserController extends Base
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
       $user[0]['business'] = $business; 
     }
-    return ResultVo::success($user);
+    return ResultVo::success($user[0]);
   }
   // 溯源历史
   public function this_source_log()
   {
     $userid = $this->uid;
-    $log = $this->WeDb->selectView('source_log', "user_id = {$userid}", '', 0, 500, 'track_time easc');
+    $log = source_log::with('Source')->where("user_id = {$userid}")->order("track_time desc")->select();
     return ResultVo::success($log);
   }
 
@@ -195,12 +193,12 @@ class UserController extends Base
     if ($check_repeat) {
       return ResultVo::error(ErrorCode::PHONE_IS_TWO['code'], ErrorCode::PHONE_IS_TWO['message']);
     }
-    //Loader::import('Sms_YunPian', EXTEND_PATH);
+    // Loader::import('Sms_YunPian', EXTEND_PATH);
     // var_dump($check_repeat);
     // exit;
     $sms = new \Sms_YunPian();
     $code = mt_rand(100000, 999999);
-    //测试
+    // 测试
     // $code = '123456';
     // $redis::set('phonecode_'.$this->uid,$code,180);
     // $redis::set('phonecode_'.$this->uid.'_mobile',$mobile,180);

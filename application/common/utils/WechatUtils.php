@@ -171,8 +171,11 @@ class WechatUtils
     // 发送模板消息
     public function sendMessage($data)
     {
-        $appid = 'wxd49aee67b33932b2';
-        $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+        $ii = Config::pull('wechat');
+        $appid = $ii["official_account"]["default"]["app_id"];
+        $secret = $ii["official_account"]["default"]["secret"];
+        // $appid = 'wxd49aee67b33932b2';
+        // $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
         //模板消息
         $template = array(
             'touser' => $data['openid'],  //用户openid

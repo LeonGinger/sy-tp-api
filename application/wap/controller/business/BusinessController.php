@@ -10,9 +10,11 @@ use app\common\utils\WechatUtils;
 use app\common\vo\ResultVo;
 use Workerman\Events\Select;
 use think\db;
+use think\facade\Config;
 use app\model\Business;
 use app\model\Business_notice;
 use app\wap\controller\wechat\WechatController;
+use app\model\Menu;
 
 /**
  * 商家相关
@@ -43,7 +45,7 @@ class BusinessController extends Base
         }
         $business = $this->WeDb->selectView('business','','business_name');
         for($i = 0;$i<count($business);$i++){
-            if($business_name == $business[$i]['business_name']){
+            if($business_name == $business[$i]['business_name'] && $business[$i]['delete_time'] != null){
                 return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
             }
         }
@@ -99,6 +101,7 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $businessid = $this->request->param('business_id');
+        $business = $this->WeDb->find('business',"id = {$businessid}");
         $user = $this->WeDb->find('user', "id={$userid}");
         if ($businessid != $user['business_notice']) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
@@ -107,7 +110,22 @@ class BusinessController extends Base
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
         $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d h:i:s')]);
-        $roleupdate = $this->WeDb->update('user', "business_notice={$businessid}", ['role_id' => 4, 'business_notice' => '']);
+        // 推送给商家的所有人员↓
+        $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
+        for($i=0;$i<count($foruser);$i++){
+            $da_content = [
+                'business'=>['value' => $business['business_name'], 'color' => "#ff0000"],
+            ];
+            $data = [
+                'Template_id'=>'kpULPN1XJZBpdCY1GBt3LQwsbRzLEwZUp9b0AHjBLj4',
+                'openid'=>$foruser[$i]['open_id'],
+                'url'=>'https://sy.zsicp.com/h5/#/my/my',
+                'content'=>$da_content,
+            ];
+            $return = $this->Wechat_tool->sendMessage($data);
+        }
+        // * //
+        $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}", ['role_id' => 4, 'business_notice' => '']);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
@@ -119,9 +137,9 @@ class BusinessController extends Base
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
         $businessid = $user['business_notice'];
-        $select = business::with('BusinessAppraisal')
+        $select = business::with(['BusinessAppraisal','BusinessImg'])
             // ->with('BusinessImg')
-            ->join('business_img', 'business_img.business_id = business.id')
+            // ->join('business_img', 'business_img.business_id = business.id')
             ->where("business.id={$businessid} and business.delete_time is null")
             ->select();
         return ResultVo::success($select);
@@ -148,7 +166,7 @@ class BusinessController extends Base
             'responsible_name' => $responsible_name,
             'responsible_phone' => $responsible_phone,
             'business_address' => $business_address,
-            'business_images' => $business_images,
+            'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             'verify_if' => 3,
         ];
@@ -157,12 +175,12 @@ class BusinessController extends Base
         if($business_images_injson != null){
             $img_data = [
                 'business_image_injson' => json_encode($business_images_injson),
-                'business_img_contentjson' => json_encode($business_img_contentjson),
+                'business_img_contentjson' => json_encode($business_img_contentjson,JSON_UNESCAPED_UNICODE),
             ];
             $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         }
         $ap_data = [
-            'appraisal_image' => $appraisal_image
+            'appraisal_image' => json_encode($appraisal_image)
         ];
         $business = $this->WeDb->find($this->table, "id = {$business_id}");
         $update3 = $this->WeDb->update('business_appraisal', "id = {$business['business_appraisal_id']}", $ap_data);
@@ -189,25 +207,26 @@ class BusinessController extends Base
         $business_introduction = $this->request->param('business_introduction');
         $business_images_injson = $this->request->param('business_images_injson');
         $business_img_contentjson = $this->request->param('business_img_contentjson');
+        if($business_images == null || $business_introduction == null || 
+        $business_images_injson == null){
+            return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
+        }
         // $appraisal_image = $this->request->param('appraisal_image'); 
         $data = [
             // 'business_name'=>$business_name,
             // 'responsible_name'=>$responsible_name,
             // 'responsible_phone'=>$responsible_phone,
             // 'business_address'=>$business_address,
-            'business_images' => $business_images,
+            'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             // 'verify_if'=>3,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
-        $update2 = false;
-        if( $business_images_injson != null){
-            $img_data = [
-                'business_image_injson' => json_encode($business_images_injson),
-                'business_img_contentjson' => json_encode($business_img_contentjson),
-            ];
-            $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
-        }
+        $img_data = [
+            'business_image_injson' => json_encode($business_images_injson),
+            'business_img_contentjson' => json_encode($business_img_contentjson,JSON_UNESCAPED_UNICODE),
+        ];
+        $update2 = $this->WeDb->update('business_img', "business_id = {$business_id}", $img_data);
         // $ap_data = [
         //     'appraisal_image'=>$appraisal_image
         // ];
@@ -289,10 +308,14 @@ class BusinessController extends Base
     public function join_my()
     {
         $userid = $this->uid;
+        $user = $this->WeDb->find('user',"id = {$userid}");
         $grant_code = $this->request->param('grant_code');
         $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         // var_dump($select);
         // exit;
+        if($user['role_id'] != 3 || $user['role_id'] !=2){
+            return ResultVo::error(ErrorCode::ROLE_NOT_THIS['code'],ErrorCode::ROLE_NOT_THIS['message']);
+        }
         $businessid =  $business['id'];
         $business_user = $this->WeDb->find('user', "business_notice = {$businessid} and role_id = 2");
         $business_mane = $this->WeDb->selectView('user', "business_notice = {$businessid}");
@@ -347,7 +370,11 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $find = $this->WeDb->find('user', "id={$userid}");
-        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']} and role_id = 3", '*');
+        $role = $find['role_id'];
+        if($role != 1 && $role != 2 && $role != 3){
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
+        }
+        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']}", '*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品
@@ -355,8 +382,15 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $find = $this->WeDb->find('user', "id={$userid}");
-        $businessid = $find['business_notice'];
-        $select = $this->WeDb->selectSQL('menu', "where business_id = {$businessid} and if_delete = 0 ", '*');
+        $businessid = $find['business_notice']; 
+        $role = $find['role_id'];
+        if($role != 1 && $role != 2 && $role != 3){
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
+        }
+        $select = Menu::
+                with(['MenuMonitor','MenuCertificate'])
+                ->where("business_id = {$businessid} and if_delete != 1")
+                ->select();
         return ResultVo::success($select);
     }
     // 操作员注销接口

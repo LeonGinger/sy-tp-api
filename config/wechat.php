@@ -36,9 +36,9 @@ return [
     'official_account' => [
         'default' => [
             // AppID
-            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'wxd49aee67b33932b2'),
+            'app_id' => 'wxd49aee67b33932b2',
             // AppSecret
-            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', '7af33c205b5bfe0d4f55ae00995fff0e'),
+            'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
             // Token
             'token' => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'your-token'),
             // EncodingAESKey

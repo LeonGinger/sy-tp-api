@@ -28,6 +28,12 @@ class MenuController extends Base
       $quality_time = $this->request->param('quality_time');
       $menu_money = $this->request->param('menu_money');
       $menu_images_json = $this->request->param('menu_images_json');
+      if($menu_name == null ||$menu_address == null ||$menu_weight == null ||
+         $production_time == null ||$quality_time == null ||$menu_money == null ||
+         $menu_images_json == null){
+            return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'],ErrorCode::UPLOAD_IS_NULL['message']);
+      }
+      // var_dump($menu_images_json);
       // $menu_images_json = ['123123123'=>123456,];
       $date = date('Y-m-d h:i:s');
       $insert = [
@@ -147,7 +153,7 @@ class MenuController extends Base
       $monitoring_time = $this->request->param('monitoring_time');
       $test_location = $this->request->param('test_location');
       $update2 = [
-        'monitor_image'=>$monitor_image,
+        'monitor_image'=>json_encode($monitor_image),
         'sample_name'=>$sample_name,
         'monitoring_time'=>$monitoring_time,
         'test_location'=>$test_location,
@@ -156,7 +162,7 @@ class MenuController extends Base
       // exit;
       $certificate_image = $this->request->param('certificate_image');
       $update3 = [
-        'certificate_image'=>$certificate_image,
+        'certificate_image'=>json_encode($certificate_image),
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->update('menu_certificate',"menu_id = {$menu_id}",$update3);
@@ -178,6 +184,11 @@ class MenuController extends Base
         $return = $this->Wechat_tool->sendMessage($data);
       }
       // * //
+      $return = [
+        'update'=>$menuid,
+        'update2'=>$menu_monitor,
+        'update3'=>$certificate,
+      ];
       return ResultVo::success($certificate);
     }
 }
