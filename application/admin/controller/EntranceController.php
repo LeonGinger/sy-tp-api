@@ -92,8 +92,10 @@ class EntranceController
         'menu_details'=>'/business/MenuController/details',
 
         //批次管理
+        'orderAdd'=>'/source/SourcecodeController/orderAdd',
         'order_list'=>'/source/SourcecodeController/order_list',
         'source_list'=>'/source/SourcecodeController/source_list',
+        'scode_list'=>'/source/SourcecodeController/scode_list',
     ];
 
 }

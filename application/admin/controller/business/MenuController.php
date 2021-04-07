@@ -21,7 +21,8 @@ class MenuController extends BaseCheckUser
 	 */
 	public function index(){
 		$data = $this->request->param('');
-
+		// var_dump($data);
+		// exit;
         $where = '';
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';

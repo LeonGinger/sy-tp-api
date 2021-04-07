@@ -71,7 +71,7 @@ class UserController extends Base
     $redis = new Redis();
     $get_uifno = $this->Wechat_tool->userinfo_oa($code);
     if (empty($get_uifno['openid'])) {
-      return  ResultVo::error(400, $get_uifno);
+      return  ResultVo::error(400, "您未关注公众号，请重试");
     }
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '"');
     if ($uinfo) {

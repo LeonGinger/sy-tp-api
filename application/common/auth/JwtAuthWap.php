@@ -121,7 +121,7 @@ class JwtAuthWap{
          //echo $e->getMessage();
          //return [$e->getCode(),$e->getMessage()];
          return false;
-    }catch(\Firebase\JWT\ExpiredException  $e) {  //其他错误
+    }catch(\Firebase\JWT\Expired $e) {  //其他错误
          //echo $e->getMessage();
          //return [$e->getCode(),$e->getMessage()];
          return false;

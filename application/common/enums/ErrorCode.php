@@ -49,7 +49,7 @@ class ErrorCode
     const USER_ROLE_REPEAT = ['code'=>28,'message'=>'您已经是操作员了，请注销后重试'];
     const OUT_LIMIT_NOT = ['code'=>29,'message'=>'sorry,您无权限进行此操作'];
     const BUSINESS_REPEAT = ['code'=>30,'message'=>'sorry,您所注册的公司名已被注册，请重试'];
-    const ROLE_NOT_THIS = ['code'=>31,'message'=>'因您绑定了另一个商家，所以您无法成为此商家操作员'];
+    const ROLE_NOT_THIS = ['code'=>31,'message'=>"因您绑定了另一个商家\n所以您无法成为此商家操作员\n"];
     const NOT_PHONE_CODE = [ 'code' => 33, 'message' => '验证码错误'];
     const DATA_NOT_CONTRNT = ['code'=>44, 'message' =>'数据不完整，请重试' ];
     const USER_NOT_BUSINESS = ['code'=>55,'message' =>'您不是操作员，无需注销'];

@@ -7,7 +7,7 @@ use think\Model;
 class Menu extends Model
 {
     //
-    protected $table = 'view_menu';
+    protected $table = 'menu';
     public function RecommendMenu(){
     	return $this->hasOne('MenuCertificate','menu_id','id');
     }
