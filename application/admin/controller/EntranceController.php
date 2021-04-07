@@ -48,6 +48,12 @@ class EntranceController
     private $methodApi = [
         'test'=>'/auth/LoginController/index',
         'codestatus'=>'/source/SourcecodeController/createcodestatus',
+        /*资源相关 */
+        'image_upload'=>'/file/ResourceController/add',
+        'image_list'=>'/file/ResourceController/index',
+        'imagetag_list'=>'/file/ResourceTagController/index',
+        'imagetag_add'=>'/file/ResourceTagController/add',
+
         /*面板数据 */
         'index_data'=>'/sys/AdminController/get_index_data',
         /*登出登录、用户信息 */
