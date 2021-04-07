@@ -19,7 +19,7 @@ class ResourceTagController extends Base
      */
     public function index()
     {
-        $limit = request()->get('limit/d', 20);
+        $limit = request()->get('limit', 20);
         //分页配置
         $paginate = [
             'type' => 'bootstrap',

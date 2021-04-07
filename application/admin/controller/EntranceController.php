@@ -96,6 +96,8 @@ class EntranceController
         /*商品相关*/
         'menu_list'=>'/business/MenuController/index',
         'menu_details'=>'/business/MenuController/details',
+        'menu_add'=>'/business/MenuController/add',
+        'menu_update'=>'/business/MenuController/edit',
 
         //批次管理
         'orderAdd'=>'/source/SourcecodeController/orderAdd',

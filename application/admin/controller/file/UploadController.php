@@ -50,7 +50,8 @@ class UploadController extends Base
         }
 
         $exts = request()->param("exts");
-        $size = request()->param("size/d");
+        $size = request()->param("size");
+        //$size = request()->param("size/d");
         $filePath = request()->param("filePath");
         $config = [];
         if ($size > 0) {

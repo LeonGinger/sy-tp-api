@@ -20,13 +20,13 @@ class ResourceController extends Base
     public function index()
     {
         $where = [];
-        $type = request()->get('type/d', 0);
+        $type = request()->get('type', 0);
         $where[] = ['type', '=', $type];
-        $tagId = request()->get('tagId/d', 0);
+        $tagId = request()->get('tagId', 0);
         if (!empty($tagId)) {
             $where[] = ['tag_id', '=', $tagId];
         }
-        $size = request()->get('size/d', 20);
+        $size = request()->get('size', 20);
         //分页配置
         $paginate = [
             'type' => 'bootstrap',
@@ -55,8 +55,8 @@ class ResourceController extends Base
      */
     public function add()
     {
-        $type = request()->param('type/d',0);
-        $tag_id = request()->post('tagId/d',0);
+        $type = request()->param('type')?:0;
+        $tag_id = request()->post('tag_id')?:0;
         $filename = request()->post("filename");
         $path = request()->post("path");
         $path = $path ? $path : request()->post("key");
@@ -64,7 +64,7 @@ class ResourceController extends Base
             return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL, "文件路径不存在");
         }
 
-        $size = request()->post("size/d");
+        $size = request()->post("size");
         $ext = request()->post("ext");
         $file_resource = new FileResource();
         $file_resource->tag_id = $tag_id;
@@ -75,9 +75,11 @@ class ResourceController extends Base
         $file_resource->ext = $ext;
         $file_resource->create_time = date("Y-m-d H:i:s");
         $file_resource->save();
-        $res = [];
-        $res["id"] = intval($file_resource->id);
-        return ResultVo::success($res);
+        // $res = [];
+        // $res["id"] = intval($file_resource->id);
+        
+
+        return ResultVo::success($file_resource);
     }
 
 }

@@ -23,6 +23,7 @@ class MenuController extends BaseCheckUser
 		$data = $this->request->param('');
 		// var_dump($data);
 		// exit;
+        $order = isset($data['order'])?$data['order']:'create_time desc';
         $where = '';
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
@@ -39,6 +40,7 @@ class MenuController extends BaseCheckUser
         $list = Menu::with(['RecommendMenu','MonitorMenu','CertificateMenu'])
         				->where($where)
         				->page($data['page'],$data['size'])
+                        ->order($order)
         				->select()
         				->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
@@ -70,7 +72,65 @@ class MenuController extends BaseCheckUser
         if(isset($details['monitor_menu']['monitor_image'])){$details['monitor_menu']['monitor_image'] = json_decode($details['monitor_menu']['monitor_image']);}
         return ResultVo::success($details);
 	}
+    /**
+     * 添加商品
+     * @HtttpRequest                               get|post
+     * @Author       GNLEON
+     * @Param
+     * @DateTime     2021-04-07T16:47:47+0800
+     * @LastTime     2021-04-07T16:47:47+0800
+     */
+    public function add(){
+        $data = $this->request->param('');
+        $in_data = array(
+            'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
+            'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
+            'menu_weight'=>isset($data['menu_weight'])?$data['menu_weight']:'',
+            'production_time'=>isset($data['production_time'])?$data['production_time']:'',
+            'quality_time'=>isset($data['quality_time'])?$data['quality_time']:'',
+            'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
+            'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
+// 'if_delete'=>isset($data[''])
+            'business_id'=>isset($data['business_id'])?$data['business_id']:'',
+// 'update_user_id'=>isset($data[''])
+            'create_time'=>date('Y-m-d H:i:s',time()),
+// 'update_time'=>isset($data[''])
+            'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
 
-    
+        );
+
+        $re_mid = $this->WeDb->insertGetId($this->tables,$in_data);
+        return ResultVo::success($re_mid);
+    }
+    /**
+     * [编辑商品]
+     * @HtttpRequest                               get|post
+     * @Author       GNLEON
+     * @Param
+     * @DateTime     2021-04-07T16:54:32+0800
+     * @LastTime     2021-04-07T16:54:32+0800
+     * @return       [type]                        [description]
+     */
+    public function edit(){
+        $data = $this->request->param('');
+        if(!isset($data['id'])){return ResultVo::error();}
+        $id = $data['id'];
+        $up_data = array(
+            'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
+            'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
+            'menu_weight'=>isset($data['menu_weight'])?$data['menu_weight']:'',
+            'production_time'=>isset($data['production_time'])?$data['production_time']:'',
+            'quality_time'=>isset($data['quality_time'])?$data['quality_time']:'',
+            'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
+            'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
+            'business_id'=>isset($data['business_id'])?$data['business_id']:'',
+            'update_user_id'=>isset($data['update_user_id'])?$data['update_user_id']:'',
+            'create_time'=>date('Y-m-d H:i:s',time()),
+            'update_time'=>date('Y-m-d H:i:s',time()),
+            'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
+        );
+        $result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
+        return ResultVo::success($data['id']);
+    }
 
 }
