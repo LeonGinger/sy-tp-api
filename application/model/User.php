@@ -8,6 +8,7 @@ class User extends Model
 {
     //
     protected $table = 'user';
+    //protected $table = 'view_user';
     public function getRole(){
     	return $this->hasOne('role','id','role_id')->field('id,role_name,remark');
     }

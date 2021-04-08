@@ -42,6 +42,7 @@ class UploadController extends Base
         }
 
         // 上传文件
+        $type = request()->param('type')?:'';
         $uploadName = request()->param('uploadName');
         $uploadName = !empty($uploadName) ? $uploadName : "file";
         $uploadFile = request()->file($uploadName);
@@ -74,6 +75,7 @@ class UploadController extends Base
 
         $res = [];
         $res["key"] = $path;
+        $res["type"] = $type;
         return ResultVo::success($res);
     }
 

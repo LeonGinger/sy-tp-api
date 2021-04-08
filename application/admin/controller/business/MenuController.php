@@ -26,6 +26,7 @@ class MenuController extends BaseCheckUser
         $order = isset($data['order'])?$data['order']:'create_time desc';
         $where = '';
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
+        $search[1] = 'if_delete = 0 ';
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
@@ -100,6 +101,25 @@ class MenuController extends BaseCheckUser
         );
 
         $re_mid = $this->WeDb->insertGetId($this->tables,$in_data);
+        //证书
+        // if(isset($data['certificate_menu'])){
+        //     $re_cerid = $this->WeDb->insertGetId('menu_certificate',array(
+        //         'certificate_name' => "",
+        //         'certificate_image' => $data['certificate_menu'],
+        //         'certificate_menu_name'=> $in_data['menu_name'],
+        //         'menu_id' => $re_mid
+        //     ));
+        // }
+        //商品检测信息
+        // if(isset($data['monitor_image'])){
+        //     $re_monitorid = $this->WeDb->insertGetId('menu_monitor',array(
+        //         'menu_id' => $re_mid,
+        //         'monitor_image' => $data['monitor_image'],
+        //         'sample_name' =>  "",
+        //         'monitoring_time' =>  "",
+        //         'test_location' => "",
+        //     ));
+        // }
         return ResultVo::success($re_mid);
     }
     /**
@@ -125,12 +145,29 @@ class MenuController extends BaseCheckUser
             'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
             'business_id'=>isset($data['business_id'])?$data['business_id']:'',
             'update_user_id'=>isset($data['update_user_id'])?$data['update_user_id']:'',
-            'create_time'=>date('Y-m-d H:i:s',time()),
+            //'create_time'=>date('Y-m-d H:i:s',time()),
             'update_time'=>date('Y-m-d H:i:s',time()),
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
         );
         $result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
         return ResultVo::success($data['id']);
+    }
+
+    /**
+     * 删除商品
+     * @HtttpRequest                               get|post
+     * @Param
+     * @DateTime     2021-04-08T16:50:02+0800
+     * @LastTime     2021-04-08T16:50:02+0800
+     * @return       [type]                        [description]
+     */
+    public function del(){
+        $data = $this->request->param('');
+        $id = $data['id'];
+        $menu_details = $this->WeDb->find($this->tables,'id = '.$id.' and if_delete !=1');
+        if(!$menu_details){return ResultVo::error("商品不存在");}
+        $result = $this->WeDb->update($this->tables,'id = '.$id,['if_delete'=>1]);
+        return ResultVo::success();
     }
 
 }

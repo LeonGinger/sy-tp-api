@@ -6,8 +6,12 @@ use think\Model;
 
 class Menu extends Model
 {
-    //
-    protected $table = 'menu';
+    /**
+     * 仅用于查询
+     */
+    // protected $table = 'menu';
+    protected $table = 'view_menu';
+
     public function RecommendMenu(){
     	return $this->hasOne('MenuCertificate','menu_id','id');
     }
