@@ -35,6 +35,9 @@ class RouteNo
         'web/auth/send_code'=>'/auth/LoginController/send_code',
         'web/file/uploadfile'=>'/file/UploadController/createFile',
         // 'wap/user/user/set_token',
+        // 'web/wechat/index'=>'/wechat/FansController/index',
+        // 'web/wechat/sysfans'=>'/wechat/FansController/sysfans',
+        
     ];
     // 管理员相关
 

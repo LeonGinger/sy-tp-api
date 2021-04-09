@@ -106,6 +106,9 @@ class EntranceController
         'source_list'=>'/source/SourcecodeController/source_list',
         'scode_list'=>'/source/SourcecodeController/scode_list',
         'order_demo'=>'/source/SourcecodeController/order_demo',
+        //公众号管理
+        'fans_list'=>'/wechat/FansController/index',
+        'fans_sync'=>'/wechat/FansController/sysfans',
     ];
 
 }
