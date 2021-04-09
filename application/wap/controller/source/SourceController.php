@@ -12,6 +12,7 @@ use think\route\Resource;
 use think\db;
 use think\Queue;
 use redis\Redis;
+use app\model\Business;
 
 /**
  * 用户相关
@@ -24,11 +25,14 @@ class SourceController extends Base
   public function open_source()
   {
     $userid = $this->uid;
-    $user = $this->WeDb->find('user', "id= {$userid}");
+    $user = $this->WeDb->find('user',"id={$userid}");
     $code = $this->request->param('source_code');
+    if($code == '' || $code == null){
+      return ResultVo::error(ErrorCode::DATA_NOT['code'], ErrorCode::DATA_NOT['message']);
+    }
     $key = $this->request->param('key');
     $time = date('Y-m-d h:i:s');
-    $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
+    $source = $this->WeDb->find('source', 'source_code ="'. $code .'"');
     if ($key == 1) { // 入库操作
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
@@ -37,7 +41,7 @@ class SourceController extends Base
         'storage_time' => $time,
         'enter_user_id' => $userid,
       ];
-      $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
+      $update = $this->WeDb->update($this->table, 'source_code = "'. $code .'" ',$sc_data);
       // 推送给操作员↓
       $da_content = [
         'content1' => ['value' => '批次已入库成功', 'color' => "#000000"],
@@ -55,6 +59,9 @@ class SourceController extends Base
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
     } else if ($key == 2) { // 出库操作
+      if($source['enter_user_id'] == null){
+        return ResultVo::error(110,"您的操作违规了，请重试!");
+      }
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
@@ -80,6 +87,9 @@ class SourceController extends Base
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
     } else if ($key == 3) { // 用户查询溯源信息操作
+      if($source['out_user_id'] == null){
+        return ResultVo::error(110,"您的操作违规了，请重试!");
+      }
       $numberii = $source['order_key_number'];
       $numberi = $source['source_number'];
       $order_number = $source['order_number'];
@@ -95,7 +105,7 @@ class SourceController extends Base
       } else {
         $numberi += 1;
       }
-      $source_log = db::table('source_log')->where("user_id = {$userid} and source_code = '{$code}'")->find();
+      $source_log = db::table('source_log')->where('user_id = '.$userid.' and source_code = "'.$code.'"')->find();
       if ($source_log == null) {
         $data = [
           'user_id' => $userid,
@@ -116,7 +126,7 @@ class SourceController extends Base
         ];
         $update = $this->WeDb->update('source_log', "id = {$source_log['id']}", $data);
       }
-
+      $source = $this->WeDb->find('source', 'source_code ="'. $code .'"');
       $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
       // var_dump($update1);
       // exit;
@@ -125,6 +135,17 @@ class SourceController extends Base
         'scan_time' => $time,
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
+     
+      $business = Business::with(['BusinessAppraisal','BusinessImg'])
+                ->where("id = {$source['business_id']}")
+                ->select();
+      $pull_user = $this->WeDb->find('user',"id = {$source['enter_user_id']}");
+      $push_user = $this->WeDb->find('user',"id = {$source['out_user_id']}");
+      // var_dump($source['enter_user_id']);
+      // exit;
+      $source['business']=$business;
+      $source['pull_user']=$pull_user['username'];
+      $source['push_user']=$push_user['username'];
       return ResultVo::success($source);
     }
     return ResultVo::success($update);
@@ -135,46 +156,23 @@ class SourceController extends Base
     $userid = $this->uid;
     $code = $this->request->param('source_code');
     $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
-    $numberii = $source['order_key_number'];
-    $numberi = $source['source_number'];
-    $order_number = $source['order_number'];
-    $id = $source['id'];
-    if ($numberii == null) {
-      $numberii = 1;
-    } else {
-      $numberii += 1;
+    if($source == null){
+      return ResultVo::error('963','您的溯源码错误，请重试');
     }
-    if ($numberi == null) {
-      $numberi = 1;
-    } else {
-      $numberi += 1;
+    $business = Business::where("id = {$source['business_id']}")
+                ->select();
+    $source['business']=$business;
+    if($source['enter_user_id']){
+      $pull_user = $this->WeDb->find('user',"id = {$source['enter_user_id']}");
+      $source['pull_user'] = $pull_user['username'];
+      $source['pull_phone']= $pull_user['phone'];
     }
-    $source_log = db::table('source_log')->where("user_id = {$userid} and source_code = '{$code}'")->find();
-    if ($source_log == null) {
-      $data = [
-        'user_id' => $userid,
-        'source_code' => $code,
-        'menu_id' => $source['menu_id'],
-        'track' => 1,
-        'track_time' => date('Y-m-d h:i:s'),
-        'state' => 1,
-        'create_time' => date('Y-m-d h:i:s'),
-      ];
-      $log_insert = $this->WeDb->insert('source_log', $data);
-    } else {
-      $track = $source_log['track'];
-      $track += 1;
-      $data = [
-        'track' => $track,
-        'track_time' => date('Y-m-d h:i:s'),
-      ];
-      $update = $this->WeDb->update('source_log', "id = {$source_log['id']}", $data);
+    $user = $this->WeDb->find('user',"id = {$userid}");
+    if($user['business_notice'] == $source['business_id']){
+      $source['business_key'] = true;
+    }else{
+      $source['business_key'] = false;
     }
-
-    $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
-    // var_dump($update1);
-    // exit;
-    $update = $this->WeDb->update($this->table, 'id = "' . $id . '" ', ['source_number' => $numberi]);
     return ResultVo::success($source);
   }
   // 出入库记录

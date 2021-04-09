@@ -46,6 +46,7 @@ class EntranceController
                 try{
                     $find_method = $this->methodApi_POST[$method];
                 }catch(\Throwable $th){
+                    
                     throw new \think\Exception(ErrorCode::HTTP_METHOD_NOT_ALLOWED['message'],ErrorCode::HTTP_METHOD_NOT_MEHOTDS['code']);
                 }
                 # code...
@@ -103,11 +104,13 @@ class EntranceController
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',
         'update_menu'=>'/menu/MenuController/update_menu',
+        'find_menu'=>'/menu/MenuController/find_menu',
         // sourceController操作
         'Add_order'=>'/source/SourceController/Add_order',
         'open_source'=>'/source/SourceController/open_source', //出入库
         'opend_list'=>'/source/SourceController/opend_list', //出入库记录
         'SelectAll'=>'/source/SourceController/SelectAll',
+        
     ];
     private $methodApi_GET = [
         //'upload_headimg'=>'/user/UserController/upload_headimg',

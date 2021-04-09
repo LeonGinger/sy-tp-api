@@ -119,6 +119,14 @@ class MenuController extends Base
       // * //
       return ResultVo::success($menuDelete);
     }
+    // 查询单个商品
+    function find_menu(){
+      $userid = $this->uid;
+      $menu_id = $this->request->param('');
+      $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
+      $menu['business'] = $this->WeDb->find('business',"id = {$menu['business_id']}");
+      return ResultVo::success($menu);
+    }
     // 修改商品
     function update_menu(){
       // exit;

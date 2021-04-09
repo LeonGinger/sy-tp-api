@@ -313,7 +313,7 @@ class BusinessController extends Base
         $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         // var_dump($select);
         // exit;
-        if($user['role_id'] != 3 || $user['role_id'] !=2){
+        if($user['role_id'] == 3 || $user['role_id'] ==2){
             return ResultVo::error(ErrorCode::ROLE_NOT_THIS['code'],ErrorCode::ROLE_NOT_THIS['message']);
         }
         $businessid =  $business['id'];

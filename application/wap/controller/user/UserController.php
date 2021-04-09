@@ -142,12 +142,16 @@ class UserController extends Base
   public function upload_headimg()
   {
     $file = request()->file('imgurl');  
+    // var_dump($file);
+    // exit;
     if($file == null){
       return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'], ErrorCode::UPLOAD_IS_NULL['message']);
     } 
     $info = $file->validate(['ext' => 'jpg,jpeg,png'])
       ->move(Config::get('upload_headimg_path'));
-    $source = Config::get('upload_headimg_path') . $info->getSaveName();
+      // var_dump($file);
+      // exit;
+    $source = Config::get('upload_headimg_path').$info->getSaveName();
     // $url = Config::get('domain_http').''.$info->getSaveName();
     $url  = str_replace(Config::get('upload_headimg_path'), Config::get('domain_http') . 'uploads/headimg/', $source);
     /**

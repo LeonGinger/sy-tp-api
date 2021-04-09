@@ -125,6 +125,8 @@ class SourcecodeController extends BaseCheckUser
             }
             $order[$i]['order_code_number'] = $Max_code_number;
         }
+        // var_dump($order);
+        // exit;
         $total = $this->WeDb->totalView('order', $where, 'id');
         return ResultVo::success(['list' => $order, 'total' => $total]);
     }
@@ -152,7 +154,7 @@ class SourcecodeController extends BaseCheckUser
         }
         $where = substr($where, 0, strlen($where) - 5);
         $source = $this->WeDb->selectView('source', $where, $field, $data['page'], $data['limit'], 'id desc');
-        $total = $this->WeDb->totalView('order', $where, 'id');
+        $total = $this->WeDb->totalView('source', $where, 'id');
         for ($i = 0; $i < count($source); $i++) {
             if ($source[$i]['enter_user_id'] == null) {
                 $source[$i]['state'] = '未入库';
@@ -240,19 +242,36 @@ class SourcecodeController extends BaseCheckUser
                 // *** //
             }
         }
-        return ResultVo::success($source_code_array);
+        return ResultVo::success($order_number);
     }
     public function scode_list(){
         $data = $this->request->param('');
         $order_number = $data['order_number'];
         $code = $this->WeDb->selectView('source','order_number = "'.$order_number.'"');
-        $codeMax = []; 
-        for($i=0;$i<count($code);$i++){
-            $codeMax[] = $code[$i]['source_code'];
-            for($o=0;$o<$code[$i]['source_code_number'];$o++){
+        if($code){
+            $codeMax = []; 
+            for($i=0;$i<count($code);$i++){
                 $codeMax[] = $code[$i]['source_code'];
+                for($o=0;$o<$code[$i]['source_code_number'];$o++){
+                    $codeMax[] = $code[$i]['source_code'];
+                }
             }
+            return ResultVo::success($codeMax);
+        }else{
+            return ResultVo::error('555','输入的订单号错误');;
         }
-        return ResultVo::success($codeMax);
+        
+    }
+    public function order_demo(){
+        $data = $this->request->param('');
+        $order_number = $data['order_number'];
+        $order = $this->WeDb->find('order','order_number =  "'.$order_number.'"');
+        $json = json_decode($order['source_injson'],true);
+        for($i=0;$i<count($json);$i++){
+            $menu_id = $json[$i]['menu_id'];
+            $menu = $this->WeDb->find('menu',"id = {$menu_id}");
+            $json[$i]['menu_id'] = $menu['menu_name'];
+        }
+        return ResultVo::success($json);
     }
 }

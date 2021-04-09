@@ -105,6 +105,7 @@ class EntranceController
         'order_list'=>'/source/SourcecodeController/order_list',
         'source_list'=>'/source/SourcecodeController/source_list',
         'scode_list'=>'/source/SourcecodeController/scode_list',
+        'order_demo'=>'/source/SourcecodeController/order_demo',
     ];
 
 }
