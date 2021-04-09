@@ -4,6 +4,7 @@ namespace app\common\utils;
 
 use Naixiaoxin\ThinkWechat\Facade;
 use think\facade\Config;
+use EasyWeChat\OfficialAccount\Application;
 
 /**
  * 微信工具类
@@ -25,7 +26,14 @@ class WechatUtils
     public $app;
     private function __construct()
     {
-        $this->app = Facade::officialAccount();
+        $this->configoffice = [
+        'debug'  => true,
+        'app_id' => 'wxd49aee67b33932b2',
+        'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
+        'token'  => '',
+        ];
+        //$this->app = Facade::officialAccount();
+        $this->app = new Application($this->configoffice);
         /*微信应用平台*/
         $this->configYY = [
             'app_id'   => 'wx4640de1eee48017d',
@@ -127,7 +135,7 @@ class WechatUtils
         $user = $this->app->oauth->user();
         $new_user = $user->getOriginal();
         try {
-            //是否关注公众号
+            //是否关注公众号   
             $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id);
             $user_info = json_decode($user_info);
             $new_user['subscribe'] = $user_info->subscribe;
@@ -166,7 +174,16 @@ class WechatUtils
         $user_info1 = json_decode($user_info1);
         return $user_info1;     
     }
-
+    /**
+     * 获取粉丝列表
+     * 一次10000 超过通过nextOpenId再次获取
+     * nextOpenIdzui 拉取的最后一个粉丝openid
+     */
+    public function fanslist($nextOpenId = null){
+        $instance = self::getInstance();
+        $list = $this->app->user->list($nextOpenId = null);  // $nextOpenId 可选
+        return $list;
+    }
     
     // 发送模板消息
     public function sendMessage($data)
