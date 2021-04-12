@@ -111,6 +111,16 @@ class EntranceController
         //公众号管理
         'fans_list'=>'/wechat/FansController/index',
         'fans_sync'=>'/wechat/FansController/sysfans',
+
+        //系统管理
+        'setting_index'=> '/sys/SettingController/sys_get',
+        'sys_save' => '/sys/SettingController/sys_set',
+        'pb_index' => '/sys/SettingController/porblem_index',
+        'pb_add' => '/sys/SettingController/porblem_add',
+        'pb_edit' => '/sys/SettingController/problem_edit',
+        'pb_del' => '/sys/SettingController/problem_del',
+        'bn_index' => '/sys/SettingController/BusinessNotice_index',
+        'bn_edit' => '/sys/SettingController/BusinessNotice_edit',
     ];
 
 }
