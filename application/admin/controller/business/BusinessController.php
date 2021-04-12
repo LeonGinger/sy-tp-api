@@ -121,4 +121,14 @@ class BusinessController extends BaseCheckUser
     	}
     	return $state;
     }
+
+	public function businessAll(){
+		$data = $this->request->param('');
+		$userid = $data['ADMIN_ID'];
+		$user = $this->WeDb->find('user',"id = {$userid}");
+		$business = business::with(['BusinessAppraisal','BusinessImg'])
+		->where("id = {$user['business_notice']}")
+		->find();
+		return ResultVo::success($business);
+	}
 }	

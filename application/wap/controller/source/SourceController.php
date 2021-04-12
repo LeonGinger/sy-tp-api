@@ -13,6 +13,7 @@ use think\db;
 use think\Queue;
 use redis\Redis;
 use app\model\Business;
+use app\model\Menu;
 
 /**
  * 用户相关
@@ -141,11 +142,15 @@ class SourceController extends Base
                 ->select();
       $pull_user = $this->WeDb->find('user',"id = {$source['enter_user_id']}");
       $push_user = $this->WeDb->find('user',"id = {$source['out_user_id']}");
+      $menu = Menu::with(['CertificateMenu','MenuMonitor'])
+              ->where("business_id = {$source['business_id']}")
+              ->select();
       // var_dump($source['enter_user_id']);
       // exit;
       $source['business']=$business;
       $source['pull_user']=$pull_user['username'];
       $source['push_user']=$push_user['username'];
+      $source['menu']=$menu;
       return ResultVo::success($source);
     }
     return ResultVo::success($update);

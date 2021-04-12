@@ -9,6 +9,7 @@ use app\common\vo\ResultVo;
 use think\facade\Validate;
 use think\facade\Config;
 use think\route\Resource;
+use app\model\Menu;
 
 /**
  * 用户相关
@@ -17,7 +18,7 @@ class MenuController extends Base
 {
     private $table = 'menu';
     //新建商品接口
-    function create_menu(){
+    public function create_menu(){
       $userid = $this->uid;
       $user = $this->WeDb->find('user',"id={$userid}");
       $businessid = $user['business_notice'];
@@ -90,7 +91,7 @@ class MenuController extends Base
       return ResultVo::success($certificate);
     }
     // 软删除此商品
-    function delete_menu(){
+    public function delete_menu(){
       $userid = $this->uid;
       $user = $this->WeDb->find('user',"id = {$userid}");
       $businessid = $user['business_notice'];
@@ -120,15 +121,17 @@ class MenuController extends Base
       return ResultVo::success($menuDelete);
     }
     // 查询单个商品
-    function find_menu(){
+    public function find_menu(){
       $userid = $this->uid;
       $menu_id = $this->request->param('');
-      $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
+      // $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
+      $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id['menu_id']}")->find();
       $menu['business'] = $this->WeDb->find('business',"id = {$menu['business_id']}");
+      
       return ResultVo::success($menu);
     }
     // 修改商品
-    function update_menu(){
+    public function update_menu(){
       // exit;
       $userid = $this->uid;
       $user = $this->WeDb->find('user',"id = {$userid}");

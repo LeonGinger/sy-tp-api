@@ -24,9 +24,11 @@ class MenuController extends BaseCheckUser
 		// var_dump($data);
 		// exit;
         $order = isset($data['order'])?$data['order']:'create_time desc';
+        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $where = '';
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = 'if_delete = 0 ';
+        $search[2] = "business_id = {$user['business_notice']}";
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
@@ -46,6 +48,11 @@ class MenuController extends BaseCheckUser
         				->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);
+        for($i=0 ; $i<count($list);$i++){
+            $business = $this->WeDb->find('business',"id = {$list[$i]['business_id']}");
+            $list[$i]['business_name'] = $business['business_name'];
+            $list[$i]['menu_images_json'] = json_decode($list[$i]['menu_images_json']);
+        }
         return ResultVo::success(['list'=>$list,'total'=>$total]);
 	}
 
@@ -83,6 +90,9 @@ class MenuController extends BaseCheckUser
      */
     public function add(){
         $data = $this->request->param('');
+        // var_dump($data['business_id']);
+        // exit;
+        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $in_data = array(
             'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
             'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
@@ -92,34 +102,33 @@ class MenuController extends BaseCheckUser
             'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
             'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
 // 'if_delete'=>isset($data[''])
-            'business_id'=>isset($data['business_id'])?$data['business_id']:'',
+            'business_id'=>isset($data['business_id'])?$data['business_id']:$user['business_notice'],
 // 'update_user_id'=>isset($data[''])
             'create_time'=>date('Y-m-d H:i:s',time()),
 // 'update_time'=>isset($data[''])
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
+            'update_user_id'=>$data['ADMIN_ID'],
+            'update_time'=>date('Y-m-d h:i:s'),
 
         );
 
         $re_mid = $this->WeDb->insertGetId($this->tables,$in_data);
-        //证书
-        // if(isset($data['certificate_menu'])){
-        //     $re_cerid = $this->WeDb->insertGetId('menu_certificate',array(
-        //         'certificate_name' => "",
-        //         'certificate_image' => $data['certificate_menu'],
-        //         'certificate_menu_name'=> $in_data['menu_name'],
-        //         'menu_id' => $re_mid
-        //     ));
-        // }
-        //商品检测信息
-        // if(isset($data['monitor_image'])){
-        //     $re_monitorid = $this->WeDb->insertGetId('menu_monitor',array(
-        //         'menu_id' => $re_mid,
-        //         'monitor_image' => $data['monitor_image'],
-        //         'sample_name' =>  "",
-        //         'monitoring_time' =>  "",
-        //         'test_location' => "",
-        //     ));
-        // }
+        if(isset($data['certificate_menu'])){
+            $re_cerid = $this->WeDb->insertGetId('menu_certificate',[
+                'certificate_name' => "",
+                'certificate_image' => $data['certificate_menu'],
+                'certificate_menu_name'=> $in_data['menu_name'],
+                'menu_id' => $re_mid
+            ]);
+        }
+        if(isset($data['monitor_image'])){
+            $re_monitorid = $this->WeDb->insertGetId('menu_monitor',[
+                'menu_id' => $re_mid,
+                'monitor_image' => $data['monitor_image'],
+                'sample_name' =>  "",
+                'test_location' => "",
+            ]);
+        }
         return ResultVo::success($re_mid);
     }
     /**

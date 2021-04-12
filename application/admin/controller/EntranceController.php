@@ -92,6 +92,7 @@ class EntranceController
         'enterprise_list'=>'/business/BusinessController/index',
         'enterprise_edit'=>'/business/BusinessController/edit',
         'enterprise_state'=>'/business/BusinessController/state',
+        'businessAll'=>'/business/BusinessController/businessAll',
         
         /*商品相关*/
         'menu_list'=>'/business/MenuController/index',
@@ -106,6 +107,7 @@ class EntranceController
         'source_list'=>'/source/SourcecodeController/source_list',
         'scode_list'=>'/source/SourcecodeController/scode_list',
         'order_demo'=>'/source/SourcecodeController/order_demo',
+        'order_delete'=>'/source/SourcecodeController/orderdelete',
         //公众号管理
         'fans_list'=>'/wechat/FansController/index',
         'fans_sync'=>'/wechat/FansController/sysfans',

@@ -28,6 +28,9 @@ class UserController extends BaseCheckUser
     public function index(){
 
         $data = $this->request->param('');
+        $user = User::where("id = {$data["ADMIN_ID"]}")->find();
+        $data['business_notice'] = $user['business_notice'];
+        $data['role_id'] = 3;
         if($this->adminInfo['role_id']!='1' && empty($data['business_notice'])){return ResultVo::error(ErrorCode::USER_NOT_LIMIT);}
         $where = '';
 
@@ -130,9 +133,59 @@ class UserController extends BaseCheckUser
      * @remark       移除权限恢复普通消费者
      */
     public function del(){
+        parent::initialize();
         $data= $this->request->param('');
-        $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['role_id'=>4]);
-        return ResultVo::success();
+        // var_dump($data);
+        // exit;
+        // $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['role_id'=>4]);
+        // return ResultVo::success();
+        $userid = $data['ADMIN_ID'];
+        $out_id = $data['out_id'];
+        $user = $this->WeDb->find('user', "id = {$userid}");
+        $out_user = $this->WeDb->find('user', "id = {$out_id}");
+        $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
+        $time = date('Y-m-d h:i:s');
+        if ($user['role_id'] != 2 && $user['role_id'] != 1) {
+            return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
+        }
+        $out_data = [
+            'role_id' => 4,
+            'business_notice' => ''
+        ];
+        $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
+        // 推送模板消息
+        // 推送给操作员↓
+        $da_content = [
+            'content1' => ['value' => '您已被移出公司', 'color' => "#000000"],
+            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
+            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
+            'content4' => ['value' => '你的账号已更改为消费者', 'color' => "#000000"],
+            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'openid' => $out_user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // 推送给商家↓
+        $bs_content = [
+            'content1' => ['value' => "{$out_user['username']} 已被你移出公司", 'color' => "#000000"],
+            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
+            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
+            'content4' => ['value' => "{$out_user['username']}的账号已进行变更", 'color' => "#000000"],
+            'remark' => ['value' => '操作成功', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'content' => $bs_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        //*//
+        return ResultVo::success($update);
     }
     /**
      * [edit 修改员工信息]
@@ -146,6 +199,7 @@ class UserController extends BaseCheckUser
      */
     public function edit(){
         $data = $this->request->param('');
+        $data['id'] = $data['ADMIN_ID'];
         if (empty($data['id']) || empty($data['username'])){
             return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);
         }
