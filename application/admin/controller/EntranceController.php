@@ -108,9 +108,16 @@ class EntranceController
         'scode_list'=>'/source/SourcecodeController/scode_list',
         'order_demo'=>'/source/SourcecodeController/order_demo',
         'order_delete'=>'/source/SourcecodeController/orderdelete',
+
+        //查询管理
+        'sourcelog_index' => '/source/CertifyesultController/index',
+        'soucelog_del' => '/source/CertifyesultController/souce_del',
+        'sroucelog_echarts' => '/source/CertifyesultController/total_echarts',
+
         //公众号管理
         'fans_list'=>'/wechat/FansController/index',
         'fans_sync'=>'/wechat/FansController/sysfans',
+        'fans_syncstate'=>'/wechat/FansController/fans_state',
 
         //系统管理
         'setting_index'=> '/sys/SettingController/sys_get',
@@ -121,6 +128,7 @@ class EntranceController
         'pb_del' => '/sys/SettingController/problem_del',
         'bn_index' => '/sys/SettingController/BusinessNotice_index',
         'bn_edit' => '/sys/SettingController/BusinessNotice_edit',
+
     ];
 
 }

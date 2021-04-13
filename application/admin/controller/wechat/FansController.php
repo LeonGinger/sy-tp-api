@@ -7,6 +7,7 @@ use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 
 use think\Queue;
+use redis\Redis;
 /**
  * 公众号粉丝管理
  */
@@ -26,21 +27,21 @@ class FansController extends BaseCheckUser
 		$data = $this->request->param();
 
 		$where = '';
-    $search[0] = '';
-    //$search[0] = !empty($data['business_notice'])?'business_notice = '.$data['business_notice']:'';
-    foreach ($search as $key => $value) {
-          # code...
-          if($value){
-              $where=$where.$value.' and ';
-          }
-    }
-
-    $where=substr($where,0,strlen($where)-5);
-    if($data['page']==1){$data['page']=0;}
-    if($data['page']>1){$data['page'] = $data['page']-1;}
-
-    $list = $this->WeDb->selectView('wechat_fans',$where,$field,$data['page'],$data['size'],'create_at desc');
-    $total = $this->WeDb->totalView('wechat_fans',$where,'id');
+        $search[0] = '';
+        //$search[0] = !empty($data['business_notice'])?'business_notice = '.$data['business_notice']:'';
+        foreach ($search as $key => $value) {
+              # code...
+              if($value){
+                  $where=$where.$value.' and ';
+              }
+        }
+    
+        $where=substr($where,0,strlen($where)-5);
+        if($data['page']==1){$data['page']=0;}
+        if($data['page']>1){$data['page'] = $data['page']-1;}
+    
+        $list = $this->WeDb->selectView('view_wechat_fans',$where,'*',$data['page'],$data['size'],'create_at desc');
+        $total = $this->WeDb->totalView('view_wechat_fans',$where,'id');
 		return ResultVo::success(['list'=>$list,'total'=>$total]);
 	}
 
@@ -54,6 +55,7 @@ class FansController extends BaseCheckUser
 	 * @remark   根据粉丝数量-控制循环阈值
 	 */
 	public function sysfans(){
+        $redis = new Redis;
 
         $jobHandlerClassName  = 'app\admin\controller\job\Wechat';
 
@@ -63,7 +65,9 @@ class FansController extends BaseCheckUser
         if(!$list){return ResultVo::error();}
         $openid_list = $list['data']['openid'];
         $sys_num = ceil($list['total']/200);
-
+       
+        $need_count = $redis->llen('queues:SysncFans')?:0;
+        $redis->set('sy_sysfans_count',$sys_num+$need_count);
         $start_index = 200;
 
         for ($i=0; $i <$sys_num ; $i++) { 
@@ -79,4 +83,28 @@ class FansController extends BaseCheckUser
        return ResultVo::success('添加同步粉丝任务成功');
 
 	}
+    /**
+     * [fans_state 获取粉丝同步任务状态]
+     * @auth         true
+     * @throws       \think\Exception
+     * @throws       \think\exception\PDOException
+     * @HtttpRequest                               get|post
+     * @Author       GNLEON
+     * @Param
+     * @DateTime     2021-04-13T10:43:24+0800
+     * @LastTime     2021-04-13T10:43:24+0800
+     * @return       [type]                        [description]
+     */
+    public function fans_state(){
+        $redis = new Redis;
+        $count = $redis->get('sy_sysfans_count');
+        $result = $redis->llen('queues:SysncFans');
+        try{
+            $is_done = 100-round($result/$count*100,2).'%';
+        } catch (\Throwable $th) {
+            $is_done = '100%';
+        }
+        $data = ['percen'=>$is_done,'need'=>$result];
+        return ResultVo::success($data);
+    }
 }

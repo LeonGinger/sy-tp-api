@@ -25,8 +25,9 @@ class Wechat
         }
         
         if ($isJobDone) {
-        
-               $job->delete();
+
+            $redis->set('sy_sysfans_count',0);
+            $job->delete();
             //如果任务执行成功， 记得删除任务
             
             print("<info>Hello Job has been done and deleted"."</info>\n");
@@ -34,6 +35,7 @@ class Wechat
             if ($job->attempts() > 3) {
                 //通过这个方法可以检查这个任务已经重试了几次了
                 print("<warn>Hello Job has been retried more than 3 times!"."</warn>\n");
+                $redis->set('sy_sysfans_count',0);
                 $job->delete();
             }
         }
@@ -49,9 +51,9 @@ class Wechat
         $WeDb = WeDbUtils::getInstance();
         foreach ($data as $key => $value) {
             $user = $Wechat_tool->userinfo_openid($value);
-            $is_user = $WeDb->find('wechat_fans','openid = "'.$user['openid'].'"');
+            $is_user = $WeDb->find('wechat_fans','unionid = "'.$user['unionid'].'"');
             if($is_user){
-                $WeDb->update('wechat_fans','openid = "'.$user['openid'].'"',array(
+                $WeDb->update('wechat_fans','unionid = "'.$user['unionid'].'"',array(
                     // 'appid'=>
                     'unionid'=>$user['unionid'],
                     'tagid_list'=>$user['tagid_list'],

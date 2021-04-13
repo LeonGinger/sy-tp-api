@@ -24,11 +24,11 @@ class MenuController extends BaseCheckUser
 		// var_dump($data);
 		// exit;
         $order = isset($data['order'])?$data['order']:'create_time desc';
-        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        // $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $where = '';
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = 'if_delete = 0 ';
-        $search[2] = "business_id = {$user['business_notice']}";
+        $search[2] = !empty($data['business_id'])?"business_id = {$data['business_id']}":'';
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
@@ -92,17 +92,17 @@ class MenuController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data['business_id']);
         // exit;
-        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        // $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $in_data = array(
             'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
             'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
-            'menu_weight'=>isset($data['menu_weight'])?$data['menu_weight']:'',
+            'menu_weight'=>isset($data['menu_weight_copy'])?$data['menu_weight_copy']:'',
             'production_time'=>isset($data['production_time'])?$data['production_time']:'',
-            'quality_time'=>isset($data['quality_time'])?$data['quality_time']:'',
+            'quality_time'=>isset($data['quality_time_copy'])?$data['quality_time_copy']:'',
             'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
             'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
 // 'if_delete'=>isset($data[''])
-            'business_id'=>isset($data['business_id'])?$data['business_id']:$user['business_notice'],
+            'business_id'=>isset($data['business_id'])?$data['business_id']:'',
 // 'update_user_id'=>isset($data[''])
             'create_time'=>date('Y-m-d H:i:s',time()),
 // 'update_time'=>isset($data[''])
@@ -111,6 +111,7 @@ class MenuController extends BaseCheckUser
             'update_time'=>date('Y-m-d h:i:s'),
 
         );
+        if(!$in_data['business_id']){return ResultVo::error("商家必须");}
 
         $re_mid = $this->WeDb->insertGetId($this->tables,$in_data);
         if(isset($data['certificate_menu'])){

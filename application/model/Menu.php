@@ -10,7 +10,7 @@ class Menu extends Model
      * 仅用于查询
      */
     // protected $table = 'menu';
-    protected $table = 'menu';
+    protected $table = 'view_menu';
 
     public function RecommendMenu(){
     	return $this->hasOne('MenuCertificate','menu_id','id');

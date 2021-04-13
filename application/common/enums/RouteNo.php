@@ -37,6 +37,8 @@ class RouteNo
         // 'wap/user/user/set_token',
         // 'web/wechat/index'=>'/wechat/FansController/index',
         // 'web/wechat/sysfans'=>'/wechat/FansController/sysfans',
+        // 'web/wechat/fans_state'=>'/wechat/FansController/fans_state',
+        // 'web/source/total_echarts'=>'/source/CertifyesultController/total_echarts',
         
     ];
     // 管理员相关
