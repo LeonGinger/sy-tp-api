@@ -9,6 +9,7 @@ use app\common\vo\ResultVo;
 use app\model\source;
 use think\Queue;
 use redis\Redis;
+use think\db;
 
 /**
  * 溯源码
@@ -94,7 +95,7 @@ class SourcecodeController extends BaseCheckUser
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
-        // $search[4] = !empty($data['business_name'])?'business_name like "%'.trim($data['business_name']).'%"':'1=1';
+        $search[4] = !empty($data['order_number'])?'order_number like "%'.trim($data['order_number']).'%"':'1=1';
         foreach ($search as $key => $value) {
             # code...
             if ($value) {
@@ -145,7 +146,7 @@ class SourcecodeController extends BaseCheckUser
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
-        // $search[4] = !empty($data['business_name'])?'business_name like "%'.trim($data['business_name']).'%"':'1=1';
+        $search[4] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
         foreach ($search as $key => $value) {
             # code...
             if ($value) {
@@ -161,11 +162,21 @@ class SourcecodeController extends BaseCheckUser
             } else if ($source[$i]['out_user_id'] == null) {
                 $source[$i]['state'] = '未出库';
             } else if ($source[$i]['out_user_id'] != null) {
-                $source[$i]['state'] = '已入库';
+                $source[$i]['state'] = '已出库';
             }
             if ($source[$i]['source_number'] == null) {
                 $source[$i]['source_number'] = 0;
             }
+            if($source[$i]['enter_user_id'] != null){
+                $user = $this->WeDb->find('user', "id = {$source[$i]['enter_user_id']}");
+                $source[$i]['enter_user'] = $user['username'];
+            }
+            if($source[$i]['out_user_id'] != null){
+                $user = $this->WeDb->find('user', "id = {$source[$i]['out_user_id']}");
+                $source[$i]['out_user'] = $user['username'];
+            }
+            $business = $this->WeDb->find('business',"id = {$source[$i]['business_id']}");
+            $source[$i]['business']=$business;
         }
         return ResultVo::success(['list' => $source, 'total' => $total]);
     }
@@ -276,7 +287,17 @@ class SourcecodeController extends BaseCheckUser
     }
     public function orderdelete(){
         $data = $this->request->param('');
-        var_dump($data);
-        exit;
+        // var_dump($data);
+        // exit;
+        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        if($user['role_id'] != 1 && $user['role_id'] != 2){
+            return ResultVo::error(300,'您的权限不足，请联系负责人或管理员完成此操作');
+        }
+        $order_id = $data['order_id'];
+        $order = $this->WeDb->find('order',"id = {$order_id}");
+        $order_number = $order['order_number'];
+        $order = db::name('order')->where('order_number = "'.$order_number.'"')->delete();
+        $source = db::name('source')->where('order_number = "'.$order_number.'"')->delete();
+        return ResultVo::success(['order' => $order , 'source' => $source]);
     }
 }

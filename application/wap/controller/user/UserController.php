@@ -11,7 +11,7 @@ use think\facade\Config;
 use think\route\Resource;
 use redis\Redis;
 use think\db;
-use app\model\source_log;
+use app\model\SourceLog;
 
 /**
  * 用户相关
@@ -70,7 +70,7 @@ class UserController extends Base
     $code = $this->request->param('code');
     $redis = new Redis();
     $get_uifno = $this->Wechat_tool->userinfo_oa($code);
-    if (empty($get_uifno['openid'])) {
+    if(empty($get_uifno['openid'])) {
       return  ResultVo::error(400, "您未关注公众号，请重试");
     }
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '"');
@@ -180,10 +180,9 @@ class UserController extends Base
   public function this_source_log()
   {
     $userid = $this->uid;
-    $log = source_log::with('Source')->where("user_id = {$userid}")->order("track_time desc")->select();
+    $log = SourceLog::with('Source')->where("user_id = {$userid}")->order("track_time desc")->select();
     return ResultVo::success($log);
   }
-
   // 短信验证码
   function iphone_code()
   {
@@ -220,7 +219,12 @@ class UserController extends Base
   }
   // 常见问题查询接口
   public function common_problem(){
-    $select = db::table('common_problem')->where('onoff = 1')->select();
+    $select = db::table('common_problem')->select();
+    return ResultVo::success($select);
+  }
+  // 商家须知查询接口
+  public function business_notice(){
+    $select = db::table('business_notice')->where('id = 1')->select();
     return ResultVo::success($select);
   }
 }

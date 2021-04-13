@@ -20,7 +20,11 @@ class MenuController extends Base
     //新建商品接口
     public function create_menu(){
       $userid = $this->uid;
-      $user = $this->WeDb->find('user',"id={$userid}");
+      $user = $this->WeDb->find('user', "id={$userid}");
+      $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+      if( $business['state'] != 1){
+          return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+      }
       $businessid = $user['business_notice'];
       $menu_name = $this->request->param('menu_name');
       $menu_address = $this->request->param('menu_address');
@@ -93,7 +97,11 @@ class MenuController extends Base
     // 软删除此商品
     public function delete_menu(){
       $userid = $this->uid;
-      $user = $this->WeDb->find('user',"id = {$userid}");
+      $user = $this->WeDb->find('user', "id={$userid}");
+      $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+      if( $business['state'] != 1){
+          return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+      }
       $businessid = $user['business_notice'];
       $menu_id = $this->request->param('menu_id');
       $menu = $this->WeDb->find('menu',"id = {$menu_id}");
@@ -123,18 +131,28 @@ class MenuController extends Base
     // 查询单个商品
     public function find_menu(){
       $userid = $this->uid;
+      $user = $this->WeDb->find('user', "id={$userid}");
+      $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+      if( $business['state'] != 1){
+          return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+      }
       $menu_id = $this->request->param('');
       // $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
       $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id['menu_id']}")->find();
       $menu['business'] = $this->WeDb->find('business',"id = {$menu['business_id']}");
-      
+      $menuAll = Menu::with(['MenuMonitor','MenuCertificate'])->where("business_id = {$menu['business_id']}")->select();
+      $menu['menuAll'] = $menuAll;
       return ResultVo::success($menu);
     }
     // 修改商品
     public function update_menu(){
       // exit;
       $userid = $this->uid;
-      $user = $this->WeDb->find('user',"id = {$userid}");
+      $user = $this->WeDb->find('user', "id={$userid}");
+      $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+      if( $business['state'] != 1){
+          return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+      }
       $businessid = $user['business_notice'];
       $menu_id = $this->request->param('menu_id');
       $Y_menu = $this->WeDb->find('menu',"id = {$menu_id}");

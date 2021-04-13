@@ -90,6 +90,7 @@ class EntranceController
         'this_source_log'=>'/user/UserController/this_source_log',
         'iphone_code'=>'/user/UserController/iphone_code',
         'common_problem'=>'/user/UserController/common_problem',
+        'business_notice'=>'/user/UserController/business_notice',
         // BusinessController操作
         'my_user'=>'/business/BusinessController/my_user',
         'my_menu'=>'/business/BusinessController/my_menu',

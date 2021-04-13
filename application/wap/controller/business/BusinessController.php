@@ -28,6 +28,10 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $time = date('Y-m-d h:i:s');
         if ($user['role_id'] == 2 || $user['role_id'] == 3) {
             return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
@@ -56,7 +60,7 @@ class BusinessController extends Base
             'responsible_name' => $responsible_name,
             'responsible_phone' => $responsible_phone,
             'create_time' => date('Y-m-d h:i:s'),
-            'state' => 1,
+            'state' => 2,
             'business_appraisal_id' => $appraisal,
             // 'business_introduction'=>$this->request->param('business_introduction'),
             'verify_if' => 3,
@@ -103,6 +107,10 @@ class BusinessController extends Base
         $businessid = $this->request->param('business_id');
         $business = $this->WeDb->find('business',"id = {$businessid}");
         $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         if ($businessid != $user['business_notice']) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
@@ -133,6 +141,14 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         if ($user['role_id'] != 1 && $user['role_id'] != 2) {
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
@@ -149,6 +165,10 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -169,6 +189,7 @@ class BusinessController extends Base
             'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             'verify_if' => 3,
+            'state'=>2,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
         $update2 = false;
@@ -196,6 +217,10 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
@@ -243,8 +268,12 @@ class BusinessController extends Base
     public function out_my_user()
     {
         $userid = $this->uid;
-        $out_id = $this->request->param('out_user_id');
-        $user = $this->WeDb->find('user', "id = {$userid}");
+        $out_id = $this->request->param('');
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $out_user = $this->WeDb->find('user', "id = {$out_id}");
         $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
         $time = date('Y-m-d h:i:s');
@@ -308,7 +337,11 @@ class BusinessController extends Base
     public function join_my()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user',"id = {$userid}");
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $grant_code = $this->request->param('grant_code');
         $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         // var_dump($select);
@@ -369,26 +402,36 @@ class BusinessController extends Base
     public function my_user()
     {
         $userid = $this->uid;
-        $find = $this->WeDb->find('user', "id={$userid}");
-        $role = $find['role_id'];
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
+        $role = $user['role_id'];
         if($role != 1 && $role != 2 && $role != 3){
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
-        $select = $this->WeDb->selectSQL('user', "where business_notice = {$find['business_notice']} and role_id != 2", '*');
+        $select = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']} and role_id != 2", '*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品
     public function my_menu()
     {
         $userid = $this->uid;
-        $find = $this->WeDb->find('user', "id={$userid}");
-        $businessid = $find['business_notice']; 
-        $role = $find['role_id'];
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
+        $businessid = $user['business_notice']; 
+        $role = $user['role_id'];
         if($role != 1 && $role != 2 && $role != 3){
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
-        $select = Menu::
-                with(['MenuMonitor','MenuCertificate'])
+        $select = Menu::with(['MenuMonitor','MenuCertificate'])
                 ->where("business_id = {$businessid} and if_delete != 1")
                 ->select();
         return ResultVo::success($select);
@@ -397,7 +440,11 @@ class BusinessController extends Base
     public function my_quit()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user', "id = {$userid}");
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        }
         $business_user = $this->WeDb->find('user', "business_notice = {$user['business_notice']} and role_id = 2");
         $business = $this->WeDb->find('business', "id = {$business_user['business_notice']}");
         if ($user['role_id'] != 3) {

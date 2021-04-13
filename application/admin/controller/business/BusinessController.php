@@ -79,8 +79,10 @@ class BusinessController extends BaseCheckUser
 
     /*审核*/
     private function verify_if($data){
+		// var_dump($data);
+		// exit;
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
-    	$business_user = $this->WeDb->find('user','role_id = 2 and business_notice = '.$data['id']);
+    	$business_user = $this->WeDb->find('user','business_notice = '.$data['id']);
     	switch ($data['verify_if']) {
     		case '1':
     			//通过
@@ -95,7 +97,9 @@ class BusinessController extends BaseCheckUser
     				),
 
     			);
-    			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+    			// $send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
+				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1]);
                 $state = 1;
     			break;
     		case '2':
@@ -112,6 +116,8 @@ class BusinessController extends BaseCheckUser
 
     			);
     			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>4]);
+				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2]);
                 $state = 2;
     			break;
     		
