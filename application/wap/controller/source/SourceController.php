@@ -25,6 +25,10 @@ class SourceController extends Base
   // 操作员扫码出入库客户查询溯源接口
   public function open_source()
   {
+    // $remote_info = $this->getIPaddress();
+    // var_dump($remote_info);
+    // exit();
+
     $userid = $this->uid;
     $user = $this->WeDb->find('user',"id={$userid}");
     $code = $this->request->param('source_code');
@@ -268,4 +272,48 @@ class SourceController extends Base
     }
     return ResultVo::success($source_code_array);
   }
+
+  /**
+   * [getIP 获取用户IP地址与真实地址]
+   * @Param
+   * ip IP地址      
+    db_type IP数据库代号 1 2 3
+    需要查询的数据库代号编号 1 为混合库，2 为纯真库，3 为县区库.  PS 默认为 1  
+    cn_to_unicode 汉字Unicode转码 1 0
+    本设置是对服务器返回数据时是否对中文汉字进行unicode转码，为增强兼容性，默认以unicode转码 
+    token 密匙    您的token密匙 是 
+    datatype  返回的数据类型 json
+    xml
+    json/xml 可选，默认为json格式
+   * @DateTime     2021-04-14T13:38:25+0800
+   * @LastTime     2021-04-14T13:38:25+0800
+   * @return       [type]                        [description]
+   * w      纬度  如：22.3712
+     j      经度  如：114.0412
+     p      省份  如：北京市,广东省,广西省
+     c      城市  如：广州市
+     d      区,县 
+   */
+  private function getIPaddress(){
+      $ip = $this->request->ip();
+      if($ip=="127.0.0.1"){return false;}
+      //测试
+      //$ip = "120.79.52.222";
+      $param = array(
+        'ip' => $ip,
+        'token' => "485e236f52574f710cac6e25fe1b74f7",
+        'db_type' => 1,
+        'cn_to_unicode' => 0,
+        'datatype' => 'json',
+
+      );
+      $url = "api.djapi.cn/ipaddr/get?";
+      // foreach ($param as $key => $value) {
+      //   # code...
+      //   $url = $url.$key."=".$value.'&';
+      // }
+      $result = $this->Gemini_GetReq($url,$param);
+      $result = json_decode($result,true);
+      return $result;
+  } 
 }
