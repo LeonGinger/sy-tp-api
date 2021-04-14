@@ -73,7 +73,14 @@ class MenuController extends BaseCheckUser
         //商品图片
         if(isset($details['menu_images_json'])){$details['menu_images_json'] = json_decode($details['menu_images_json']);}
         //证书图片
-        if(isset($details['certificate_menu']['certificate_image'])){$details['certificate_menu']['certificate_image'] = json_decode($details['certificate_menu']['certificate_image']);}
+        if(isset($details['certificate_menu']['certificate_image'])){
+            if($details['certificate_menu']['certificate_image']=="[]"){
+                $details['certificate_menu']['certificate_image'] = [];
+            }else{
+                $details['certificate_menu']['certificate_image'] = json_decode($details['certificate_menu']['certificate_image']);
+            }
+            
+        }
         //推荐商品图片
         if(isset($details['recommend_menu'])){$details['recommend_menu'] = json_decode($details['recommend_menu']);}
         //检验报告
@@ -107,7 +114,7 @@ class MenuController extends BaseCheckUser
             'create_time'=>date('Y-m-d H:i:s',time()),
 // 'update_time'=>isset($data[''])
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
-            'update_user_id'=>$data['ADMIN_ID'],
+            'update_user_id'=>$this->adminInfo['id'],
             'update_time'=>date('Y-m-d h:i:s'),
 
         );
@@ -148,9 +155,9 @@ class MenuController extends BaseCheckUser
         $up_data = array(
             'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
             'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
-            'menu_weight'=>isset($data['menu_weight'])?$data['menu_weight']:'',
+            'menu_weight'=>isset($data['menu_weight_copy'])?$data['menu_weight_copy']:'',
             'production_time'=>isset($data['production_time'])?$data['production_time']:'',
-            'quality_time'=>isset($data['quality_time'])?$data['quality_time']:'',
+            'quality_time'=>isset($data['quality_time_copy'])?$data['quality_time_copy']:'',
             'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
             'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
             'business_id'=>isset($data['business_id'])?$data['business_id']:'',
@@ -160,6 +167,12 @@ class MenuController extends BaseCheckUser
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
         );
         $result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
+
+        /*检测报告*/
+        $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,['monitor_image'=>$data['monitor_image']]);
+        /*商品证书*/
+        $res_certificate = $this->WeDb->update('menu_certificate','menu_id = '.$id,['certificate_image'=>$data['certificate_image']]);
+
         return ResultVo::success($data['id']);
     }
 

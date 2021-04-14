@@ -10,11 +10,55 @@ use think\facade\Validate;
 use think\facade\Config;
 use think\route\Resource;
 
+use EasyWeChat\OfficialAccount\Application;
+
 /**
  * 用户相关
  */
 class WechatController extends Base
 {
+
+  /**
+   * 测试乐乡游公众号-待删除
+   * 测试添加notRouter
+   */
+  public function testLogin(){
+    //测试用
+    //   ["openid"]=>
+    //   string(28) "obQVU0eB798KUQWoaBdjiSZ-swrU"
+      $configoffice = [
+        'debug'  => true,
+        'app_id' => 'wxde8d5214f18aa7e4',
+        'secret' => 'ca85c9b9f0894719e2cc2e359eea113a',
+        'token'  => '',
+        ];
+         $app = new Application($configoffice);
+//       $user = $app->oauth->user();
+//         $new_user = $user->getOriginal();
+//   $accessToken = $app->access_token;
+//         $token = $accessToken->getToken();
+//       测试推送
+       $res = $app->template_message->send([
+    'touser' => 'obQVU0eB798KUQWoaBdjiSZ-swrU',
+    'template_id' => '0qhH4ea1aaUwdP9fswV5R_rB2thpJfmue4sL2sN1wWI',
+    'data' => [
+        'first'=> "来自溯源系统-测试",
+        'keyword1' => '来自溯源系统',
+        'keyword2' => '来自溯源系统',
+    ],
+]);
+        var_dump($res);
+        exit();
+            //是否关注公众号
+            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' .$token['access_token'] . '&openid=' . $user->id);
+            $user_info = json_decode($user_info);
+            var_dump($user_info);
+            exit();
+  }
+  /*End 待删除-- LastTime:2021年4月14日16:14:24*/
+
+
+
   public function index()
   {
     $Config = $this->getConfig();
