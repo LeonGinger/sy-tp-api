@@ -70,8 +70,8 @@ class BusinessController extends Base
         $res = $this->WeDb->insertGetId($this->table, $re_data);
         $img_date = [
             'business_id' => $res,
-            'business_image_injson' => ' ',
-            'business_img_contentjson' => ' ',
+            'business_image_injson' => '',
+            'business_img_contentjson' => '',
         ];
         $insert = $this->WeDb->insertGetId('business_img', $img_date);
         // var_dump($this->uid);
@@ -141,10 +141,6 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
-        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
-            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-        }
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
         if( $business['state'] != 1){
             return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
@@ -337,15 +333,12 @@ class BusinessController extends Base
     public function join_my()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user', "id={$userid}");
-        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        $user = $this->WeDb->find('user', "id={$userid}");   
+        $grant_code = $this->request->param('grant_code');
+        $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         if( $business['state'] != 1){
             return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
         }
-        $grant_code = $this->request->param('grant_code');
-        $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
-        // var_dump($select);
-        // exit;
         if($user['role_id'] == 3 || $user['role_id'] ==2){
             return ResultVo::error(ErrorCode::ROLE_NOT_THIS['code'],ErrorCode::ROLE_NOT_THIS['message']);
         }
@@ -420,9 +413,6 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
-            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-        }
         if( $business['state'] != 1){
             return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
         }

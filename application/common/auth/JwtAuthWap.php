@@ -99,17 +99,17 @@ class JwtAuthWap{
             if(!$this->decodeToken){
                 $this->decodeToken = $this->getToken();
             }
-
+            
             JWT::$leeway = 0;//当前时间减去60，把时间留点余地
 
             $decoded = JWT::decode($this->decodeToken, $this->key, ['HS256']); //HS256方式，这里要和签发的时候对应
-
             $arr = (array)$decoded;
-
+            
             $this->uid = $arr['data']->userid;
  
             return $this->decodeToken;
      } catch(\Firebase\JWT\SignatureInvalidException $e) {  //签名不正确
+        
          //echo $e->getMessage();
          //return [$e->getCode(),$e->getMessage()];
          return false;

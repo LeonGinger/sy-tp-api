@@ -116,11 +116,10 @@ class BusinessController extends BaseCheckUser
 
     			);
     			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
-				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>4]);
+				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
 				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2]);
                 $state = 2;
     			break;
-    		
     		default:
     			# code...
     			break;
@@ -132,9 +131,20 @@ class BusinessController extends BaseCheckUser
 		$data = $this->request->param('');
 		$userid = $data['ADMIN_ID'];
 		$user = $this->WeDb->find('user',"id = {$userid}");
-		$business = business::with(['BusinessAppraisal','BusinessImg'])
-		->where("id = {$user['business_notice']}")
+		$business = Business::where("id = {$user['business_notice']}")
 		->find();
+		$business['business_images'] = json_decode($business['business_images']);
+		$business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
+		$business_img = $this->WeDb->find('business_img',"business_id = {$business['id']}");
+		$business_appraisal['appraisal_image'] = json_decode($business_appraisal['appraisal_image']);
+		$business_img['business_image_injson'] = json_decode($business_img['business_image_injson']);
+		$business_img['business_img_contentjson'] = json_decode($business_img['business_img_contentjson']); 
+		if($business_appraisal){
+			$business['business_appraisal'] = $business_appraisal;
+		}
+		if($business_img){
+			$business['business_img'] = $business_img;
+		}
 		return ResultVo::success($business);
 	}
 }	

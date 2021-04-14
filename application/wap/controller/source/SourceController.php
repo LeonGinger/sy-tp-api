@@ -25,9 +25,7 @@ class SourceController extends Base
   // 操作员扫码出入库客户查询溯源接口
   public function open_source()
   {
-    // $remote_info = $this->getIPaddress();
-    // var_dump($remote_info);
-    // exit();
+    
 
     $userid = $this->uid;
     $user = $this->WeDb->find('user',"id={$userid}");
@@ -111,6 +109,9 @@ class SourceController extends Base
         $numberi += 1;
       }
       $source_log = db::table('source_log')->where('user_id = '.$userid.' and source_code = "'.$code.'"')->find();
+      $remote_info = $this->getIPaddress();
+      // var_dump($remote_info["Result"]['ip']);
+      // exit();
       if ($source_log == null) {
         $data = [
           'user_id' => $userid,
@@ -120,14 +121,29 @@ class SourceController extends Base
           'track_time' => $time,
           'state' => 1,
           'create_time' => $time,
+          'ip'=>$remote_info["Result"]['ip'],
+          'longitude'=>$remote_info["Result"]['address']['j'],
+          'latitude'=>$remote_info["Result"]['address']['w'],
+          'city'=>$remote_info["Result"]['address']['c'],
+          'province'=>$remote_info["Result"]['address']['p'],
+          'county'=>$remote_info["Result"]['address']['d'],
         ];
         $log_insert = $this->WeDb->insert('source_log', $data);
       } else {
+        $remote_info = $this->getIPaddress();
+        // var_dump($remote_info);
+        // exit;
         $track = $source_log['track'];
         $track += 1;
         $data = [
           'track' => $track,
           'track_time' => $time,
+          'ip'=>$remote_info["Result"]['ip'],
+          'longitude'=>$remote_info["Result"]['address']['j'],
+          'latitude'=>$remote_info["Result"]['address']['w'],
+          'city'=>$remote_info["Result"]['address']['c'],
+          'province'=>$remote_info["Result"]['address']['p'],
+          'county'=>$remote_info["Result"]['address']['d'],
         ];
         $update = $this->WeDb->update('source_log', "id = {$source_log['id']}", $data);
       }
@@ -135,12 +151,11 @@ class SourceController extends Base
       $update1 = $this->WeDb->update($this->table, 'order_number = "' . $order_number . '" ', ['order_key_number' => $numberii]);
       // var_dump($update1);
       // exit;
-      $update = $this->WeDb->update($this->table, 'id = "' . $id . '" ', ['source_number' => $numberi]);
+      $update = $this->WeDb->update($this->table, 'id = "'.$id.'"', ['source_number' => $numberi]);
       $sc_data = [
         'scan_time' => $time,
       ];
-      $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
-     
+      $update = $this->WeDb->update($this->table,'source_code = "'. $code .'"', $sc_data);
       $business = Business::with(['BusinessAppraisal','BusinessImg'])
                 ->where("id = {$source['business_id']}")
                 ->select();
@@ -151,6 +166,7 @@ class SourceController extends Base
               ->select();
       // var_dump($source['enter_user_id']);
       // exit;
+
       $source['business']=$business;
       $source['pull_user']=$pull_user['username'];
       $source['push_user']=$push_user['username'];
@@ -296,9 +312,9 @@ class SourceController extends Base
    */
   private function getIPaddress(){
       $ip = $this->request->ip();
-      if($ip=="127.0.0.1"){return false;}
+      // if($ip=="127.0.0.1"){return false;}
       //测试
-      //$ip = "120.79.52.222";
+      $ip = "120.79.52.222";
       $param = array(
         'ip' => $ip,
         'token' => "485e236f52574f710cac6e25fe1b74f7",
