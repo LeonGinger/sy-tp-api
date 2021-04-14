@@ -6,10 +6,7 @@ use think\Model;
 
 class SourceLog extends Model
 {
-<<<<<<< Updated upstream
     //
-=======
->>>>>>> Stashed changes
     protected $table = 'source_log';
     public function Source(){
         return $this->hasMany('Source','source_code','source_code');
