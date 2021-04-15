@@ -93,6 +93,7 @@ class EntranceController
         'enterprise_edit'=>'/business/BusinessController/edit',
         'enterprise_state'=>'/business/BusinessController/state',
         'businessAll'=>'/business/BusinessController/businessAll',
+        'business_update'=>'/business/BusinessController/business_update',
         
         /*商品相关*/
         'menu_list'=>'/business/MenuController/index',

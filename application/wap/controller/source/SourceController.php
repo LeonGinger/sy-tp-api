@@ -43,6 +43,7 @@ class SourceController extends Base
       $sc_data = [
         'storage_time' => $time,
         'enter_user_id' => $userid,
+        'operator_name' => $user['username'],
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "'. $code .'" ',$sc_data);
       // 推送给操作员↓
@@ -65,7 +66,7 @@ class SourceController extends Base
       if($source['enter_user_id'] == null){
         return ResultVo::error(110,"您的操作违规了，请重试!");
       }
-      if ($user['business_notice'] == "" || $user['role_id'] == 4) {
+      if($user['business_notice'] == "" || $user['role_id'] == 4){
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       $sc_data = [
@@ -129,7 +130,7 @@ class SourceController extends Base
           'county'=>$remote_info["Result"]['address']['d'],
         ];
         $log_insert = $this->WeDb->insert('source_log', $data);
-      } else {
+      }else{
         $remote_info = $this->getIPaddress();
         // var_dump($remote_info);
         // exit;
@@ -159,17 +160,12 @@ class SourceController extends Base
       $business = Business::with(['BusinessAppraisal','BusinessImg'])
                 ->where("id = {$source['business_id']}")
                 ->select();
-      $pull_user = $this->WeDb->find('user',"id = {$source['enter_user_id']}");
-      $push_user = $this->WeDb->find('user',"id = {$source['out_user_id']}");
       $menu = Menu::with(['CertificateMenu','MenuMonitor'])
               ->where("business_id = {$source['business_id']}")
               ->select();
       // var_dump($source['enter_user_id']);
       // exit;
-
       $source['business']=$business;
-      $source['pull_user']=$pull_user['username'];
-      $source['push_user']=$push_user['username'];
       $source['menu']=$menu;
       return ResultVo::success($source);
     }

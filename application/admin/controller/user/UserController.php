@@ -29,7 +29,9 @@ class UserController extends BaseCheckUser
 
         $data = $this->request->param('');
         $user = User::where("id = {$data["ADMIN_ID"]}")->find();
-        $data['business_notice'] = $user['business_notice'];
+        if($data['business_notice'] == ""){
+            $data['business_notice'] = $user['business_notice'];
+        }
         $data['role_id'] = 3;
         if($this->adminInfo['role_id']!='1' && empty($data['business_notice'])){return ResultVo::error(ErrorCode::USER_NOT_LIMIT);}
         $where = '';
@@ -56,6 +58,7 @@ class UserController extends BaseCheckUser
         if($data['page']>1){$data['page'] = $data['page']-1;}
 
         $list = $this->WeDb->selectView('view_user',$where,$field,$data['page'],$data['size'],'create_time desc');
+        $business = $this->WeDb->find('business',"id = {$data['business_notice']}");
         $total = $this->WeDb->totalView('view_user',$where,'id');
 
 
@@ -118,7 +121,7 @@ class UserController extends BaseCheckUser
         //    ->count();
         /*可能总数不对-待修*/
         //$total =  $this->WeDb->totalView($this->tables,$where);
-        return ResultVo::success(['list'=>$list,'total'=>$total]);
+        return ResultVo::success(['list'=>$list,'total'=>$total,'business'=>$business]);
 
     }
 

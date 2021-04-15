@@ -78,6 +78,7 @@ class SourcecodeController extends BaseCheckUser
         var_dump($res);
         var_dump($status);
     }
+    // 批次列表
     public function order_list()
     {
         $data = $this->request->param('');
@@ -91,7 +92,6 @@ class SourcecodeController extends BaseCheckUser
         $where = '';
         
         $search[0] = !empty($data['ADMIN_ID']) ? 'business_id = ' . $user['business_notice'] : '';
-        
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
@@ -131,6 +131,7 @@ class SourcecodeController extends BaseCheckUser
         $total = $this->WeDb->totalView('order', $where, 'id');
         return ResultVo::success(['list' => $order, 'total' => $total]);
     }
+    // 溯源列表查询
     public function source_list()
     {
         $data = $this->request->param('');
@@ -180,6 +181,7 @@ class SourcecodeController extends BaseCheckUser
         }
         return ResultVo::success(['list' => $source, 'total' => $total]);
     }
+    // 新建一个批次
     public function orderAdd()
     {
         // 新建订单（一次建立多个溯源码）
@@ -255,6 +257,7 @@ class SourcecodeController extends BaseCheckUser
         }
         return ResultVo::success($order_number);
     }
+    // 溯源二维码生成/批次
     public function scode_list(){
         $data = $this->request->param('');
         $order_number = $data['order_number'];
@@ -271,8 +274,8 @@ class SourcecodeController extends BaseCheckUser
         }else{
             return ResultVo::error('555','输入的订单号错误');;
         }
-        
     }
+    // 批次订单内容
     public function order_demo(){
         $data = $this->request->param('');
         $order_number = $data['order_number'];
@@ -285,6 +288,7 @@ class SourcecodeController extends BaseCheckUser
         }
         return ResultVo::success($json);
     }
+    // 删除订单及溯源码
     public function orderdelete(){
         $data = $this->request->param('');
         // var_dump($data);

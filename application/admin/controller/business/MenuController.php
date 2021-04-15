@@ -26,6 +26,10 @@ class MenuController extends BaseCheckUser
         $order = isset($data['order'])?$data['order']:'create_time desc';
         // $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $where = '';
+        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        if($user['role_id'] != 1){
+            $data['business_id'] = $user['business_notice'];
+        }
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = 'if_delete = 0 ';
         $search[2] = !empty($data['business_id'])?"business_id = {$data['business_id']}":'';
@@ -99,7 +103,10 @@ class MenuController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data['business_id']);
         // exit;
-        // $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        if($user['role_id'] != 1){
+            $data['business_id'] =$user['business_notice'];
+        }
         $in_data = array(
             'menu_name'=>isset($data['menu_name'])?$data['menu_name']:'',
             'menu_address'=>isset($data['menu_address'])?$data['menu_address']:'',
@@ -108,17 +115,17 @@ class MenuController extends BaseCheckUser
             'quality_time'=>isset($data['quality_time_copy'])?$data['quality_time_copy']:'',
             'menu_money'=>isset($data['menu_money'])?$data['menu_money']:'',
             'menu_images_json'=>isset($data['menu_images_json'])?$data['menu_images_json']:'',
-// 'if_delete'=>isset($data[''])
+            // 'if_delete'=>isset($data[''])
             'business_id'=>isset($data['business_id'])?$data['business_id']:'',
-// 'update_user_id'=>isset($data[''])
+            // 'update_user_id'=>isset($data[''])
             'create_time'=>date('Y-m-d H:i:s',time()),
-// 'update_time'=>isset($data[''])
+            // 'update_time'=>isset($data[''])
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
             'update_user_id'=>$this->adminInfo['id'],
             'update_time'=>date('Y-m-d h:i:s'),
 
         );
-        if(!$in_data['business_id']){return ResultVo::error("商家必须");}
+        if(!$in_data['business_id']){return ResultVo::error(640,"商家");}
 
         $re_mid = $this->WeDb->insertGetId($this->tables,$in_data);
         if(isset($data['certificate_menu'])){

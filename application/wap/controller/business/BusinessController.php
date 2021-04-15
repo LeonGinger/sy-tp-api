@@ -73,12 +73,12 @@ class BusinessController extends Base
             'business_image_injson' => '',
             'business_img_contentjson' => '',
         ];
-        $insert = $this->WeDb->insertGetId('business_img', $img_date);
+        $insert = $this->WeDb->insertGetId('business_img',$img_date);
         // var_dump($this->uid);
         // exit ;
         $ue_data = [
             'business_notice' => $res,
-            'role_id' => 2,
+            'role_id' => 4,
         ];
         $userupdate = $this->WeDb->update('user', "id={$this->uid}", $ue_data);
         // 模板消息
@@ -96,7 +96,6 @@ class BusinessController extends Base
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
-        // var_dump($return);
         // * // 
         return ResultVo::success($userupdate);
     }
@@ -185,7 +184,7 @@ class BusinessController extends Base
             'business_images' => json_encode($business_images),
             'business_introduction' => $business_introduction,
             'verify_if' => 3,
-            'state'=>2,
+            'state'=>1,
         ];
         $update = $this->WeDb->update($this->table, "id = {$business_id}", $data);
         $update2 = false;
