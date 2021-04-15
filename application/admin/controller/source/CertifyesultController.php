@@ -29,6 +29,7 @@ class CertifyesultController extends BaseCheckUser
         $where = '';
         $search[0] = !empty($data['source_code'])?'source_code = "'.$data['source_code'].'"':'';
         $search[1] = !empty($data['user_id'])?'user_id ='.$data['user_id']:'';
+        $search[2] = !empty($data['business_id'])?'business_id = '.$data['business_id']:'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
         foreach ($search as $key => $value) {
@@ -46,7 +47,7 @@ class CertifyesultController extends BaseCheckUser
         				->select()
         				->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
-        $total =  $this->WeDb->totalView("source_log",$where);
+        $total =  $this->WeDb->totalView("view_source_log",$where);
         return ResultVo::success(['list'=>$list,'total'=>$total]);
 	}
 	/**
@@ -82,6 +83,7 @@ class CertifyesultController extends BaseCheckUser
         }else{
         	$search[0] = "";
         }
+        $search[1] = !empty($this->adminInfo['business_notice'])?'business_id = '.$this->adminInfo['business_notice']:'';
 
         foreach ($search as $key => $value) {
             # code...
@@ -97,11 +99,12 @@ class CertifyesultController extends BaseCheckUser
 												->limit(10)
 												->group('menu_id')
 												->select();
+
+												
 		if($Topten_search){
 			// $menu_id = array_column($Topten_search, "menu_id");
 			foreach ($Topten_search as $key => $value) {
 				# code...
-				
 				$Topten_search[$key]['first_count'] = db::table('source_log')->where('menu_id = '.$value['menu_id'].' and track = 1')->count();
 			}
 

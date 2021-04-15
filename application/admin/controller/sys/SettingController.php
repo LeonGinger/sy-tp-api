@@ -7,6 +7,7 @@ use app\common\vo\ResultVo;
 use redis\Redis;
 use think\db;
 use think\facade\Config;
+use databackup\Backup;
 /**
  * 后台设置相关
  */
@@ -205,6 +206,74 @@ class SettingController extends BaseCheckUser
 		if(!$id){return ResultVo::error();}
 		$resutl = db::table('business_notice')->where('id = '.$id)->delete();
 		return ResultVo::success();
+
+	}
+	/**
+	 * [dump_base 备份数据库列表]
+	 * @Param
+	 * @DateTime     2021-04-15T16:04:14+0800
+	 * @LastTime     2021-04-15T16:04:14+0800
+	 * @return       [type]                        [description]
+	 * @remark https://blog.csdn.net/ging_ko/article/details/88336254
+	 */
+	public function index_base(){
+		$db= new Backup(Config::get('databackup'));
+		//数据库备份列表
+		$backup_list = $db->fileList();
+		$re_data = ['list'=>$backup_list,'total'=>count($backup_list)];
+		return ResultVo::success($re_data);
+	}
+	/**
+	 * [dump_base 备份数据库]
+	 * @auth         true
+	 * @throws       \think\Exception
+	 * @throws       \think\exception\PDOException
+	 * @HtttpRequest                               get|post
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-04-15T16:16:20+0800
+	 * @LastTime     2021-04-15T16:16:20+0800
+	 * @return       [type]                        [description]
+	 */
+	public function dump_base(){
+		$db= new Backup(Config::get('databackup'));
+
+		$table_list = $db->dataList();
+		$file=['name'=>date('Ymd-His'),'part'=>1];
+		$file=['name'=>date('Ymd-His'),'part'=>1];
+		foreach ($table_list as $key => $value) {
+		 $res=  $db->setFile($file)->backup($value['name'], 0);
+		}
+
+		
+
+	}
+	/**
+	 * [down_base 下载数据库]
+	 * @Param
+	 * @DateTime     2021-04-15T16:11:17+0800
+	 * @LastTime     2021-04-15T16:11:17+0800
+	 * @return       [type]                        [description]
+	 */
+	public function down_base(){
+		$time = $this->request->param('time');
+		if($time=='0'){return ResultVo::error();}
+		$db= new Backup(Config::get('databackup'));
+		$db->downloadFile($time);
+
+	}
+	/**
+	 * [del_base 删除备份数据库]
+	 * @Param
+	 * @DateTime     2021-04-15T16:11:26+0800
+	 * @LastTime     2021-04-15T16:11:26+0800
+	 * @return       [type]                        [description]
+	 */
+	public function del_base(){
+		$time = $this->request->post('time');
+		if($time=='0'){return ResultVo::error();}
+		$db= new Backup(Config::get('databackup'));
+		$db->delFile($time);
 
 	}
 }

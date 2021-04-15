@@ -129,6 +129,12 @@ class EntranceController
         'pb_del' => '/sys/SettingController/problem_del',
         'bn_index' => '/sys/SettingController/BusinessNotice_index',
         'bn_edit' => '/sys/SettingController/BusinessNotice_edit',
+        /*数据备份*/
+        'database_index'=>'/sys/SettingController/index_base',
+        'database_dump'=>'/sys/SettingController/dump_base',
+        'database_down'=>'/sys/SettingController/down_base',
+        'database_del'=>'/sys/SettingController/del_base',
+
 
     ];
 

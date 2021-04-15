@@ -39,7 +39,12 @@ class RouteNo
         // 'web/wechat/index'=>'/wechat/FansController/index',
         // 'web/wechat/sysfans'=>'/wechat/FansController/sysfans',
         // 'web/wechat/fans_state'=>'/wechat/FansController/fans_state',
-        // 'web/source/total_echarts'=>'/source/CertifyesultController/total_echarts',
+        //'web/source/total_echarts'=>'/source/CertifyesultController/total_echarts',
+        // 'web/sys/dataindex'=>'/sys/SettingController/index_base',
+        // 'web/sys/datadump'=>'/sys/SettingController/dump_base',
+        // 'web/sys/datadown'=>'/sys/SettingController/down_base',
+        // 'web/sys/dataindex'=>'/sys/SettingController/index_base',
+        // 'web/sys/dataindex'=>'/sys/SettingController/index_base',
         
     ];
     // 管理员相关

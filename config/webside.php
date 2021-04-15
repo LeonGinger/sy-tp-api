@@ -6,6 +6,6 @@
 
 return [
 	'website'=>'溯源管理系统',
-	'sitelogo'=>'http://sy.zsicp.com/uploads/resources/20210412/ab1fe3f6e0f0e79410e8ca4f71e15190.jpg',
+	'sitelogo'=>'http://sy.zsicp.com/uploads/resources/20210415/a58174fd751493dc38c7488976289ac8.png',
 
 ];

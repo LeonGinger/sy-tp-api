@@ -32,7 +32,6 @@ class BusinessController extends BaseCheckUser
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
-        
         foreach ($search as $key => $value) {
             # code...
             if($value){
