@@ -26,22 +26,7 @@ class WechatUtils
     public $app;
     private function __construct()
     {
-        $this->configoffice = [
-        'debug'  => true,
-        'app_id' => 'wxd49aee67b33932b2',  // *app_id
-        'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
-        'token'  => '',
-        ];
-        //$this->app = Facade::officialAccount();
-        $this->app = new Application($this->configoffice);
-        /*微信应用平台*/
-        $this->configYY = [
-            'app_id'   => 'wx4640de1eee48017d',
-            'secret'   => '4b86123ba6622d42c4a0a1c699668518',
-            'token'    => '开放平台第三方平台 Token',
-            'aes_key'  => '开放平台第三方平台 AES Key'
-
-        ];
+        $this->app = new Application(Config::get('wechat.official_account')['default']);
     }
 
     /**
@@ -135,7 +120,7 @@ class WechatUtils
         $user = $this->app->oauth->user();
         $new_user = $user->getOriginal();
         try {
-            //是否关注公众号   
+            //是否关注公众号
             $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id);
             $user_info = json_decode($user_info);
             $new_user['subscribe'] = $user_info->subscribe;
@@ -156,9 +141,10 @@ class WechatUtils
      *请求微信接口 返回用户信息
     */
     public function webuser_info( $code ){
+        $config = Config::get('wechat.open_platform');
         $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?';
 
-        $param = 'appid='.$this->configYY['app_id'].'&secret='.$this->configYY['secret'].'&code='.$code.'&grant_type=authorization_code';
+        $param = 'appid='.$config['default']['app_id'].'&secret='.$config['default']['secret'].'&code='.$code.'&grant_type=authorization_code';
         $result = get_by_curl( $url . $param);
         $data = json_decode($result);
 

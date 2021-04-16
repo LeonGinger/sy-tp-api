@@ -58,14 +58,14 @@ return [
     ],
 
     //第三方开发平台
-    //'open_platform'    => [
-    //    'default' => [
-    //        'app_id'  => env('WECHAT_OPEN_PLATFORM_APPID', ''),
-    //        'secret'  => env('WECHAT_OPEN_PLATFORM_SECRET', ''),
-    //        'token'   => env('WECHAT_OPEN_PLATFORM_TOKEN', ''),
-    //        'aes_key' => env('WECHAT_OPEN_PLATFORM_AES_KEY', ''),
-    //    ],
-    //],
+    'open_platform'    => [
+       'default' => [
+           'app_id'  => env('WECHAT_OPEN_PLATFORM_APPID', 'wx4640de1eee48017d'),
+           'secret'  => env('WECHAT_OPEN_PLATFORM_SECRET', '4b86123ba6622d42c4a0a1c699668518'),
+           'token'   => env('WECHAT_OPEN_PLATFORM_TOKEN', ''),
+           'aes_key' => env('WECHAT_OPEN_PLATFORM_AES_KEY', ''),
+       ],
+    ],
 
     //小程序
     //'mini_program'     => [

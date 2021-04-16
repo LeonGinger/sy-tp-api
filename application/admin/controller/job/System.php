@@ -50,6 +50,5 @@ class System
     private function dumpbase($data) {
  		$db= new Backup(Config::get('databackup'));
  		$res= $db->setFile($data['file'])->backup($data['table'], 0);
- 		var_dump($res);
     }
 }
