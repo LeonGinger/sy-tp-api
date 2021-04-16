@@ -91,6 +91,7 @@ class EntranceController
         'iphone_code'=>'/user/UserController/iphone_code',
         'common_problem'=>'/user/UserController/common_problem',
         'business_notice'=>'/user/UserController/business_notice',
+        'subscribeMassage'=>'/user/UserController/subscribeMassage', //订阅消息推送
         // BusinessController操作
         'my_user'=>'/business/BusinessController/my_user',
         'my_menu'=>'/business/BusinessController/my_menu',
@@ -101,6 +102,7 @@ class EntranceController
         'business_update'=>'/business/BusinessController/Apply_update',
         'out_my_user'=>'/business/BusinessController/out_my_user',
         'my_quit'=>'/business/BusinessController/my_quit',
+        'businessfind'=>'/business/BusinessController/businessfind',
         // MenuController操作
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',

@@ -36,7 +36,7 @@ return [
     'official_account' => [
         'default' => [
             // AppID
-            'app_id' => 'wxd49aee67b33932b2',
+            'app_id' => 'wxd49aee67b33932b2',  // *app_id
             // AppSecret
             'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
             // Token

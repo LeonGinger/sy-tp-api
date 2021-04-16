@@ -28,10 +28,6 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
-        $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
-            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-        }
         $time = date('Y-m-d h:i:s');
         if ($user['role_id'] == 2 || $user['role_id'] == 3) {
             return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
@@ -476,4 +472,15 @@ class BusinessController extends Base
         //*//
         return ResultVo::success($update);
     }
+    public function businessfind(){
+		$business_id = $this->request->param('business_id');
+		$business = Business::with(['BusinessAppraisal','BusinessImg'])
+					->where("id = {$business_id}")
+					->find();
+        $menu = Menu::with(['CertificateMenu','MenuMonitor'])
+                    ->where("business_id = {$business_id}")
+                    ->select();
+        $business['menuAll'] = $menu;
+        return ResultVo::success($business);
+	}
 }

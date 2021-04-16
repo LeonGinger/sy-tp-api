@@ -28,7 +28,7 @@ class WechatUtils
     {
         $this->configoffice = [
         'debug'  => true,
-        'app_id' => 'wxd49aee67b33932b2',
+        'app_id' => 'wxd49aee67b33932b2',  // *app_id
         'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
         'token'  => '',
         ];
@@ -279,5 +279,38 @@ class WechatUtils
         $res = curl_exec($curl);
         curl_close($curl);
         return $res;
+    }
+
+    // 订阅通知推送
+    public function subscribeMassage($data){
+        $ii = Config::pull('wechat');
+        $appid = $ii["official_account"]["default"]["app_id"];
+        $secret = $ii["official_account"]["default"]["secret"];
+        // $appid = 'wxd49aee67b33932b2';
+        // $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+        //模板消息
+        $template = array(
+            'touser' => $data['openid'],  //用户openid
+            'template_id' =>$data['Template_id'], //在公众号下配置的模板id
+            'url' => $data['url'], //点击模板消息会跳转的链接
+            'topcolor' => "#7B68EE",
+            'title'=> $data['title'],
+            'data' => $data['content'],
+            'scene'=> '123456'
+        );
+        
+        $json_template = json_encode($template, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        // var_dump($json_template);
+        
+        $access_token = $this->get_token($appid, $secret);
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
+        $result = $this->https_request($url, $json_template);
+        // var_dump($result);
+        // exit;
+        $result = json_decode($result);
+        if ($result->errcode > 0) {
+            return false;
+        }
+        return true;
     }
 }

@@ -28,8 +28,8 @@ class WechatController extends Base
     //   string(28) "obQVU0eB798KUQWoaBdjiSZ-swrU"
       $configoffice = [
         'debug'  => true,
-        'app_id' => 'wxde8d5214f18aa7e4',
-        'secret' => 'ca85c9b9f0894719e2cc2e359eea113a',
+        'app_id' => 'wxd49aee67b33932b2',  // *app_id
+        'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
         'token'  => '',
         ];
          $app = new Application($configoffice);
@@ -69,8 +69,11 @@ class WechatController extends Base
   public function getConfig()
   {
     // 微信 JS 接口签名校验工具: https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=jsapisign
-    $appid = 'wxd49aee67b33932b2';
-    $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+    $ii = Config::pull('wechat');
+    $appid = $ii["official_account"]["default"]["app_id"];
+    $secret = $ii["official_account"]["default"]["secret"];
+    // $appid = 'wxd49aee67b33932b2';
+    // $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
     // 获取token
     $token = $this->get_token($appid, $secret);
     // 获取ticket
@@ -206,8 +209,11 @@ class WechatController extends Base
   // 模板消息
   public function send_message($data)
   {
-    $appid = 'wxd49aee67b33932b2';
-    $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+    $ii = Config::pull('wechat');
+    $appid = $ii["official_account"]["default"]["app_id"];
+    $secret = $ii["official_account"]["default"]["secret"];
+    // $appid = 'wxd49aee67b33932b2';
+    // $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
     //模板消息
     $template = array(
       'touser' => $data['openid'],  //用户openid
@@ -237,8 +243,11 @@ class WechatController extends Base
 
   public function send_diymessage($openid, $data, $url = '')
   {
-    $appid = 'wxd49aee67b33932b2';
-    $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
+    $ii = Config::pull('wechat');
+    $appid = $ii["official_account"]["default"]["app_id"];
+    $secret = $ii["official_account"]["default"]["secret"];
+    // $appid = 'wxd49aee67b33932b2';
+    // $secret = '7af33c205b5bfe0d4f55ae00995fff0e';
     //模板消息
     $template = array(
       'touser' => $openid,  //用户openid

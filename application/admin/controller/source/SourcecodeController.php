@@ -95,7 +95,14 @@ class SourcecodeController extends BaseCheckUser
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
-        $search[4] = !empty($data['order_number'])?'order_number like "%'.trim($data['order_number']).'%"':'1=1';
+        $search[1] = !empty($data['order_number'])?'order_number like "%'.trim($data['order_number']).'%"':'1=1';
+        if($user['role_id'] == 1){
+            $search[0] = $search[1];
+            $search[1] = '';
+            
+        }
+        // var_dump($user);
+        // exit;
         foreach ($search as $key => $value) {
             # code...
             if ($value) {
@@ -103,6 +110,7 @@ class SourcecodeController extends BaseCheckUser
             }
         }
         $where = substr($where, 0, strlen($where) - 5);
+        
         $order = $this->WeDb->selectView('order', $where, $field, $data['page'], $data['limit'], 'create_time desc');
         for ($i = 0; $i < count($order); $i++) {
             $user_in = $this->WeDb->find('user', "id = {$order[$i]['user_id']}");
@@ -147,7 +155,10 @@ class SourcecodeController extends BaseCheckUser
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
-        $search[4] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
+        $search[1] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
+        if($user['role_id'] == 1){
+            $search[0] = '';
+        }
         foreach ($search as $key => $value) {
             # code...
             if ($value) {
@@ -194,7 +205,12 @@ class SourcecodeController extends BaseCheckUser
         }
         $userid = $data['ADMIN_ID'];
         $user = $this->WeDb->find('user', "id= {$userid}");
-        $business_id = $user['business_notice'];
+        if($data['business_id'] == ""){
+            $business_id = $user['business_notice'];
+        }else{
+            $business_id = $data['business_id'];
+        }
+        
         // $sourceANDnumber = $this->request->param("sourceANDnumber");
         $order_number = round_Code();
         // var_dump(json_encode($sourceANDnumbe));
