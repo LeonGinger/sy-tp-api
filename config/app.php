@@ -128,11 +128,8 @@ return [
     //商家证书
     'upload_business_path' => Env::get('root_path').'/public/uploads/headimg/bcert',
 
-
-
-
     'databackup' =>[
-        'path'     => './Data/',//数据库备份路径
+        'path'     => Env::get('root_path').'public/Data/',//数据库备份路径
         'part'     => 20971520,//数据库备份卷大小
         'compress' => 0,//数据库备份文件是否启用压缩 0不压缩 1 压缩
         'level'    => 9 //数据库备份文件压缩级别 1普通 4 一般  9最高

@@ -8,6 +8,7 @@ use redis\Redis;
 use think\db;
 use think\facade\Config;
 use databackup\Backup;
+use think\Queue;
 /**
  * 后台设置相关
  */
@@ -24,6 +25,11 @@ class SettingController extends BaseCheckUser
 		$result = Config::get('webside.');
 		return ResultVo::success($result);
 	}
+	//无需路由
+	public function sys_getno(){
+		$res = $this->sys_get();
+		return $res;
+	}
 	/**
 	 * [sys_set 设置网站配置]
 	 * @Author       GNLEON
@@ -37,6 +43,7 @@ class SettingController extends BaseCheckUser
 		$conf = array(
 			'website'=>$re_data['website'],
 			'sitelogo'=>$re_data['sitelogo'],
+			'copyright'=>$re_data['copyright'],
 		);
 		$pat = [];
 		$rep = [];
@@ -238,15 +245,22 @@ class SettingController extends BaseCheckUser
 	public function dump_base(){
 		$db= new Backup(Config::get('databackup'));
 
+		$jobHandlerClassName  = 'app\admin\controller\job\System';
+        $jobQueueName        = "dumpBase";
+
 		$table_list = $db->dataList();
 		$file=['name'=>date('Ymd-His'),'part'=>1];
-		$file=['name'=>date('Ymd-His'),'part'=>1];
 		foreach ($table_list as $key => $value) {
-		 $res=  $db->setFile($file)->backup($value['name'], 0);
+			$job_data = array(
+				'file' => $file,
+				'table' => $value['name'],
+				'jobname' => 'dumpbase',
+			);
+        	$isPushed = Queue::push($jobHandlerClassName, $job_data, $jobQueueName);
+
+		 // $res=  $db->setFile($file)->backup($value['name'], 0);
 		}
-
-		
-
+		return ResultVo::success();
 	}
 	/**
 	 * [down_base 下载数据库]
@@ -258,8 +272,10 @@ class SettingController extends BaseCheckUser
 	public function down_base(){
 		$time = $this->request->param('time');
 		if($time=='0'){return ResultVo::error();}
+
 		$db= new Backup(Config::get('databackup'));
 		$db->downloadFile($time);
+		return ResultVo::success();
 
 	}
 	/**
@@ -270,10 +286,28 @@ class SettingController extends BaseCheckUser
 	 * @return       [type]                        [description]
 	 */
 	public function del_base(){
-		$time = $this->request->post('time');
+		$data = $this->request->post('');
+		$time = $data['time'];
+		$type = $data['type'];
 		if($time=='0'){return ResultVo::error();}
 		$db= new Backup(Config::get('databackup'));
+		//批量
+		if($type=="list"){
+			$time_list = explode(",",$time);
+			var_dump($time_list);
+
+			foreach ($time_list as $key => $value) {
+				# code...
+			var_dump($value);
+				$db->delFile($value);
+				
+			}
+			exit();
+			return ResultVo::success();
+		}
+		//单个
 		$db->delFile($time);
+		return ResultVo::success();
 
 	}
 }
