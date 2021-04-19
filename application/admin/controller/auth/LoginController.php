@@ -247,7 +247,9 @@ class LoginController extends Base
     public function send_code(){
         $sms = new \Sms_YunPian();
         $tel = $this->request->param('mobile');
-        $check_tel = User::where('delete_time is null and phone = '.$tel)->find();
+        // var_dump($tel);
+        // exit;
+        $check_tel = User::where('delete_time is null and phone = "'.$tel.'"')->find();
         if(!$check_tel){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户不存在');}
 
         $code = mt_rand(100000,999999);
@@ -259,7 +261,7 @@ class LoginController extends Base
 
         if($sms->send($tel,$code)){
 
-            $redis::set('admin_phonecode_mobile_'.$tel,$code,180);
+            $this->redis::set('admin_phonecode_mobile_'.$tel,$code,180);
 
             //返回结果        
             return ResultVo::success();

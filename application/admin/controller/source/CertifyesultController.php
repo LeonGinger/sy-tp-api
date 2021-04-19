@@ -83,7 +83,7 @@ class CertifyesultController extends BaseCheckUser
         }else{
         	$search[0] = "";
         }
-        $search[1] = !empty($this->adminInfo['business_notice'])?'business_id = '.$this->adminInfo['business_notice']:'';
+        $search[1] = !empty($this->adminInfo['business_notice'])?"business_id = {$this->adminInfo['business_notice']}":'';
 
         foreach ($search as $key => $value) {
             # code...

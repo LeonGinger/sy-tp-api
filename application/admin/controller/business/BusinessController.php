@@ -45,7 +45,7 @@ class BusinessController extends BaseCheckUser
             'BusinessImg',
             'BossUser'=>function($query){
                 $query->where("role_id = 2")->find();
-        }])->where($where)->page($data['page'],$data['size'])->select()->toarray();
+        }])->where($where)->page($data['page'],$data['size'])->order('verify_if desc,create_time desc')->select()->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);
         return ResultVo::success(['list'=>$list,'total'=>$total]);

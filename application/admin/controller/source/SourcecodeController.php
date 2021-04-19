@@ -115,19 +115,14 @@ class SourcecodeController extends BaseCheckUser
         for ($i = 0; $i < count($order); $i++) {
             $user_in = $this->WeDb->find('user', "id = {$order[$i]['user_id']}");
             $order[$i]['user_name'] = $user_in['username'];
-            $source_json = json_decode($order[$i]['source_injson'], true);
-            // var_dump($order[1]);
-            // exit;
-            $max_number = 0;
-            // exit;
-            for ($o = 0; $o < count($source_json); $o++) {
-                $max_number += (int)$source_json[$o]['number'] * (int)$source_json[$o]['menu_number'] + 1;
-                // $max_number += 1; 
-            }
-            $order[$i]['source_code_number'] = $max_number;
             // exit;
             $li_source = $this->WeDb->find('source', 'order_number = "' . $order[$i]['order_number'] . '"');
-
+            $source = $this->WeDb->selectView('source','order_number = "'.$order[$i]['order_number'].'"');
+            $Max_source_code = 0;
+            for($o=0;$o<count($source);$o++){
+                $Max_source_code += (int)$source[$o]['source_code_number']+1;
+            }
+            $order[$i]['source_code_number'] = $Max_source_code;
             $Max_code_number = $li_source['order_key_number'];
             if ($Max_code_number == null) {
                 $Max_code_number = 0;
@@ -205,11 +200,12 @@ class SourcecodeController extends BaseCheckUser
         }
         $userid = $data['ADMIN_ID'];
         $user = $this->WeDb->find('user', "id= {$userid}");
-        if($data['business_id'] == ""){
-            $business_id = $user['business_notice'];
-        }else{
-            $business_id = $data['business_id'];
-        }
+        // if(empty($data['business_id'])){
+        //     $business_id = $data['business_id'];
+        // }else{
+        //     $business_id = $user['business_notice'];
+        // }
+        $business_id = !empty($data['business_id'])?$data['business_id']:$user['business_notice'];
         
         // $sourceANDnumber = $this->request->param("sourceANDnumber");
         $order_number = round_Code();
@@ -226,16 +222,18 @@ class SourcecodeController extends BaseCheckUser
         // var_dump(count($sourceANDnumber));
         // exit;
         $source_code_array = array();
+        $total=0;
         for ($i = 0; $i < count($sourceANDnumber); $i++) {  //第一维箱种类
             $menu_id = $sourceANDnumber[$i]['menu_id'];
             $number = $sourceANDnumber[$i]['number']; //多少箱
             $menu_number = $sourceANDnumber[$i]['menu_number']; //一箱有多少个
-            $menu = $this->WeDb->find('Menu', "id = {$menu_id}");
+            $menu = $this->WeDb->find('menu', "id = {$menu_id}");
             $menu_certificate = $this->WeDb->find('menu_certificate', "menu_id={$menu_id}");
             $menu_monitor = $this->WeDb->find('menu_monitor', "menu_id={$menu_id}");
             $sourceinsert = array();
             for ($o = 0; $o < $number; $o++) {  //第二维多少箱
                 $source_code = round_code(14);
+                $total += 1;
                 $in_data = [
                     'order_id' => $orderid,
                     'business_id' => $business_id,
@@ -271,24 +269,42 @@ class SourcecodeController extends BaseCheckUser
                 // *** //
             }
         }
-        return ResultVo::success($order_number);
+        $data = [
+            'order_number'=>$order_number,
+            'total'=>$total,
+        ];
+        return ResultVo::success($data);
     }
     // 溯源二维码生成/批次
     public function scode_list(){
         $data = $this->request->param('');
         $order_number = $data['order_number'];
+        $total = 0;
+        $source = $this->WeDb->selectView('source','order_number = "'.$order_number.'"');
+        $source_total = count($source);
+        if(isset($data['total'])){
+            $total = $data['total'] - $source_total;
+            if($total != 0 ){
+                return ResultVo::error('963','');
+            }
+        }else{
+            $total = 0;
+        }
+        if($order_number == null){
+            return ResultVo::error(ErrorCode::DATA_NOT['code'], ErrorCode::DATA_NOT['message']);
+        }
         $code = $this->WeDb->selectView('source','order_number = "'.$order_number.'"');
         if($code){
-            $codeMax = []; 
+            $codeMax = [];
             for($i=0;$i<count($code);$i++){
-                $codeMax[] = $code[$i]['source_code'];
-                for($o=0;$o<$code[$i]['source_code_number'];$o++){
-                    $codeMax[] = $code[$i]['source_code'];
-                }
+                $codeMax[$i]['source_code'] = $code[$i]['source_code'];
+                $codeMax[$i]['source_number'] = $code[$i]['source_code_number']+1;
             }
+            // var_dump($codeMax);
+            // exit;
             return ResultVo::success($codeMax);
         }else{
-            return ResultVo::error('555','输入的订单号错误');;
+            return ResultVo::error('555','输入的订单号错误');
         }
     }
     // 批次订单内容

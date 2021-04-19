@@ -123,7 +123,6 @@ class UserController extends Base
       );
       $in_result = $this->WeDb->insertGetId($this->table, $in_data);
       $in_authroleadmin  =$this->WeDb->insertGetId("auth_role_admin",['role_id'=>4,'admin_id'=>$in_result]);
-
     }
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '" and delete_time is null');
     $token = $this->jwtAuthApi->setUid($uinfo['id'])->encode()->getToken();
@@ -143,7 +142,7 @@ class UserController extends Base
     $user_image = $this->request->param('user_image');
     $phone = $this->request->param('phone');
     // 传入数据不能为空
-    if($username == '' || $user_image == '' || $phone == ''){
+    if($username == '' || $user_image == ''){
       return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
     }
     $user = $this->WeDb->find('user', "id = {$userid}");
@@ -158,7 +157,7 @@ class UserController extends Base
     $set_data = [
       'username' => $username,
       'user_image' => $user_image,
-      'phone' => $phone,
+      'phone' => !empty($phone) ? $phone: '',
     ];
     $result = $this->WeDb->update('user', "id = {$userid}", $set_data);
     return  ResultVo::success($result);
@@ -195,6 +194,9 @@ class UserController extends Base
   {
     $userid = $this->uid;
     $user = $this->WeDb->selectlink($this->table, 'role', "{$this->table}.role_id = role.id ", '' . $this->table . '.id = "' . $userid . '"');
+    // var_dump($user);
+    // exit;
+    if(!$user){return ResultVo::error(406,"查询不到此用户，请退出重试");}
     if($user[0]['business_notice'] != '' && $user[0]['business_notice']!= null){
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
       $user[0]['business'] = $business; 
