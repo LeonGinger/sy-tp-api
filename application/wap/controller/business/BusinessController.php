@@ -77,6 +77,7 @@ class BusinessController extends Base
             'role_id' => 4,
         ];
         $userupdate = $this->WeDb->update('user', "id={$this->uid}", $ue_data);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>4]);
         // 模板消息
         // 推送给申请人↓
         $da_content = [
@@ -129,6 +130,7 @@ class BusinessController extends Base
         }
         // * //
         $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}", ['role_id' => 4, 'business_notice' => '']);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>4]);
         return ResultVo::success($roleupdate);
     }
     // 商家查询接口all
@@ -276,6 +278,7 @@ class BusinessController extends Base
             'business_notice' => ''
         ];
         $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>4]);
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
@@ -353,6 +356,7 @@ class BusinessController extends Base
             return ResultVo::error(ErrorCode::USER_ROLE_REPEAT['code'], ErrorCode::USER_ROLE_REPEAT['message']);
         }
         $userupdate = $this->WeDb->update('user', "id={$userid}", $us_data);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>$us_data['role_id']]);
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
@@ -440,6 +444,7 @@ class BusinessController extends Base
             'business_notice' => '',
         ];
         $update = $this->WeDb->update('user', "id ={$userid}", $qt_data);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$userid}", ['role_id'=>$qt_data['role_id']]);
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [

@@ -12,6 +12,7 @@ use think\route\Resource;
 use redis\Redis;
 use think\db;
 use app\model\SourceLog;
+use app\common\model\auth\AuthRoleAdmin;
 
 /**
  * 用户相关
@@ -73,7 +74,7 @@ class UserController extends Base
     if(empty($get_uifno['openid'])) {
       return  ResultVo::error(400, "您未关注公众号，请重试");
     }
-    $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '"');
+    $uinfo = $this->WeDb->find($this->table, 'unionid = "' . $get_uifno['unionid'] . '"');
     if ($uinfo) {
       // 更新 有-返回(并替换相关信息)
       $up_data = array(
@@ -82,6 +83,7 @@ class UserController extends Base
         'subscribe' => $get_uifno['subscribe']
       );
       $this->WeDb->update($this->table, 'id = ' . $uinfo['id'], $up_data);
+      $up_authroleadmin  =$this->WeDb->update("auth_role_admin",'admin_id = '.$uinfo['id'],['role_id'=>$uinfo['role_id']]);
     } else {
       // 没-插入  
       $in_data = array(
@@ -99,6 +101,8 @@ class UserController extends Base
         // 'deleteTime'=>'',
       );
       $in_result = $this->WeDb->insertGetId($this->table, $in_data);
+      $in_authroleadmin  =$this->WeDb->insertGetId("auth_role_admin",['role_id'=>4,'admin_id'=>$in_result]);
+
     }
     $uinfo = $this->WeDb->find($this->table, 'open_id = "' . $get_uifno['openid'] . '" and delete_time is null');
     $token = $this->jwtAuthApi->setUid($uinfo['id'])->encode()->getToken();
