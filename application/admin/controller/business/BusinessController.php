@@ -100,6 +100,7 @@ class BusinessController extends BaseCheckUser
     			);
     			// $send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
 				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
+                $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
 				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
                 $state = 1;
     			break;
@@ -118,6 +119,7 @@ class BusinessController extends BaseCheckUser
     			);
     			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
 				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
+                $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
 				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2,'state'=>2]);
                 $state = 2;
     			break;

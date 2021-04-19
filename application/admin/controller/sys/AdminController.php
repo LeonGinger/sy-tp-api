@@ -39,8 +39,8 @@ class AdminController extends BaseCheckUser
 
 			$data['menu_count'] = $this->WeDb->totalView('menu',"if_delete = 0 and business_id = {$this->adminInfo['business_notice']}");
 			$data['menumonth_count'] = $this->WeDb->totalView('menu',"if_delete = 0 and business_id = {$this->adminInfo['business_notice']} and create_time between \"".$BeginMonthDate."\" and \"".$EndmonthDate."\"");
-			$data['user_count'] = $this->WeDb->totalView('user',"delete_time is null and business_id = {$this->adminInfo['business_notice']}");
-			$data['usermonth_count'] = $this->WeDb->totalView('user',"delete_time is null and business_id = {$this->adminInfo['business_notice']} and create_time between \"".$BeginMonthDate."\" and \"".$EndmonthDate."\"");
+			$data['user_count'] = $this->WeDb->totalView('user',"delete_time is null and business_notice = {$this->adminInfo['business_notice']}");
+			$data['usermonth_count'] = $this->WeDb->totalView('user',"delete_time is null and business_notice = {$this->adminInfo['business_notice']} and create_time between \"".$BeginMonthDate."\" and \"".$EndmonthDate."\"");
 			
 		}
 

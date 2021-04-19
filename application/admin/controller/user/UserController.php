@@ -156,6 +156,7 @@ class UserController extends BaseCheckUser
             'business_notice' => ''
         ];
         $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$out_id}", ['role_id'=>4]);
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
@@ -236,6 +237,7 @@ class UserController extends BaseCheckUser
         $auth_admin->username = $username;
         $auth_admin->phone = $phone;
         $auth_admin->role_id = $role_id;
+        $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$id}", ['role_id'=>$role_id]);
         $result = $auth_admin->save();
         if(!$result){
             return ResultVo::error(ErrorCode::DATA_CHANGE);

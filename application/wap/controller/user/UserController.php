@@ -13,6 +13,7 @@ use redis\Redis;
 use think\db;
 use app\model\SourceLog;
 use app\common\model\auth\AuthRoleAdmin;
+use think\facade\Env;
 
 /**
  * 用户相关
@@ -38,6 +39,25 @@ class UserController extends Base
   // 获取一个token
   public function set_token()
   {
+
+//     $filee = file_get_contents(Env::get('root_path')."public\chinaeasy.json");
+
+//     $filee = json_decode($filee,true);
+//     $city = [];
+//     foreach ($filee as $key => $value) {
+//       # code...
+//       //var_dump($value['name']);
+//       array_push($city, $value['name']);
+//     }
+
+// var_dump($city);
+//     exit();
+//     foreach ($filee['features'] as $key => $value) {
+//       var_dump($value['properties']['name']);
+//       # code...
+//     }
+//     //var_dump($filee['features']);
+//     exit();
     $uid = $this->request->param('uid');
     // 
     //         var_dump($this->Wechat_tool->userinfo($code));
@@ -71,7 +91,7 @@ class UserController extends Base
     $code = $this->request->param('code');
     $redis = new Redis();
     $get_uifno = $this->Wechat_tool->userinfo_oa($code);
-    if(empty($get_uifno['openid'])) {
+    if(empty($get_uifno['subscribe'])) {
       return  ResultVo::error(400, "您未关注公众号，请重试");
     }
     $uinfo = $this->WeDb->find($this->table, 'unionid = "' . $get_uifno['unionid'] . '"');
@@ -98,6 +118,7 @@ class UserController extends Base
         'subscribe' => $get_uifno['subscribe'],
         'create_time' => date('Y-m-d H:i:s', time()),
         'unionid' => $get_uifno['unionid'],
+        'status' =>　1,
         // 'deleteTime'=>'',
       );
       $in_result = $this->WeDb->insertGetId($this->table, $in_data);
