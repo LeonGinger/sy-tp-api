@@ -114,6 +114,7 @@ class EntranceController
         'sourcelog_index' => '/source/CertifyesultController/index',
         'soucelog_del' => '/source/CertifyesultController/souce_del',
         'sroucelog_echarts' => '/source/CertifyesultController/total_echarts',
+        'sroucearea_echarts' => '/source/CertifyesultController/area_echarts',
 
         //公众号管理
         'fans_list'=>'/wechat/FansController/index',
