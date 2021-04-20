@@ -28,7 +28,7 @@ class BusinessController extends Base
     {
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
-        $time = date('Y-m-d h:i:s');
+        $time = date('Y-m-d H:i:s');
         if ($user['role_id'] == 2 || $user['role_id'] == 3) {
             return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
         }
@@ -55,7 +55,7 @@ class BusinessController extends Base
             'business_address' => $business_address,
             'responsible_name' => $responsible_name,
             'responsible_phone' => $responsible_phone,
-            'create_time' => date('Y-m-d h:i:s'),
+            'create_time' => date('Y-m-d H:i:s'),
             'state' => 2,
             'business_appraisal_id' => $appraisal,
             // 'business_introduction'=>$this->request->param('business_introduction'),
@@ -113,7 +113,7 @@ class BusinessController extends Base
         if ($user['role_id'] != 2 && $user['role_id'] != 1) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
-        $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d h:i:s')]);
+        $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d H:i:s')]);
         // 推送给商家的所有人员↓
         $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
         for($i=0;$i<count($foruser);$i++){
@@ -165,6 +165,16 @@ class BusinessController extends Base
         $business_id = $user['business_notice'];
         // $img_key = $this->request->param('img_key');
         // $business_img_id_json  = $this->request->param('$business_img_id_json');
+        $business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
+        $log_data = [
+            'business_name'=>$business['business_name'],
+            'responsible_name'=>$business['responsible_name'],            
+            'responsible_phone'=>$business['responsible_phone'],            
+            'business_address'=>$business['business_address'],            
+            'appraisal_image'=>$business_appraisal['appraisal_image'],
+            'business_id'=>$business['id'],
+        ];
+        //////////////////////////////////////////////////////////////
         $business_name = $this->request->param('business_name');
         $responsible_name = $this->request->param('responsible_name');
         $responsible_phone = $this->request->param('responsible_phone');
@@ -269,7 +279,7 @@ class BusinessController extends Base
         }
         $out_user = $this->WeDb->find('user', "id = {$out_id}");
         $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
-        $time = date('Y-m-d h:i:s');
+        $time = date('Y-m-d H:i:s');
         if ($user['role_id'] != 2 && $user['role_id'] != 1) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
@@ -344,7 +354,7 @@ class BusinessController extends Base
         $business_user = $this->WeDb->find('user', "business_notice = {$businessid} and role_id = 2");
         $business_mane = $this->WeDb->selectView('user', "business_notice = {$businessid}");
         $business_number = count($business_mane) - 1;
-        $time = date('Y-m-d h:i:s');
+        $time = date('Y-m-d H:i:s');
         $us_data = [
             'business_notice' => (int)$businessid,
             'role_id' => 3,

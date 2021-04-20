@@ -34,7 +34,7 @@ class SourceController extends Base
       return ResultVo::error(ErrorCode::DATA_NOT['code'], ErrorCode::DATA_NOT['message']);
     }
     $key = $this->request->param('key');
-    $time = date('Y-m-d h:i:s');
+    $time = date('Y-m-d H:i:s');
     $source = $this->WeDb->find('source', 'source_code ="'. $code .'"');
     if ($key == 1) { // 入库操作
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
@@ -233,7 +233,7 @@ class SourceController extends Base
       'user_id' => $userid,
       'business_id' => $business_id,
       'order_number' => $order_number,
-      'create_time' => date('Y-m-d h:i:s'),
+      'create_time' => date('Y-m-d H:i:s'),
       'source_injson' => json_encode($sourceANDnumber),
     ];
     $orderid = $this->WeDb->insertGetId('order', $data);

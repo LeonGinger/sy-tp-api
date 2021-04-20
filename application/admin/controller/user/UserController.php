@@ -150,7 +150,7 @@ class UserController extends BaseCheckUser
         $user = $this->WeDb->find('user', "id = {$userid}");
         $out_user = $this->WeDb->find('user', "id = {$out_id}");
         $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
-        $time = date('Y-m-d h:i:s');
+        $time = date('Y-m-d H:i:s');
         if ($user['role_id'] != 2 && $user['role_id'] != 1) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }

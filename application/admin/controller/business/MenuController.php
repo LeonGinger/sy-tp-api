@@ -33,6 +33,7 @@ class MenuController extends BaseCheckUser
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = 'if_delete = 0 ';
         $search[2] = !empty($data['business_id'])?"business_id = {$data['business_id']}":'';
+        $search[3] = !empty($data['menu_name'])?'menu_name like "%'.$data['menu_name'].'%"':'';
         // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
@@ -122,7 +123,7 @@ class MenuController extends BaseCheckUser
             // 'update_time'=>isset($data[''])
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
             'update_user_id'=>$this->adminInfo['id'],
-            'update_time'=>date('Y-m-d h:i:s'),
+            'update_time'=>date('Y-m-d H:i:s'),
 
         );
         if(!$in_data['business_id']){return ResultVo::error(640,"商家");}

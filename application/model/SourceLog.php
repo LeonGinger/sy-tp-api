@@ -16,7 +16,7 @@ class SourceLog extends Model
     	return $this->hasOne('menu','id','menu_id');
     }
     /*对应的用户*/
-     public function Guser(){
+    public function Guser(){
     	return $this->hasOne('user','id','user_id');
     }
 }

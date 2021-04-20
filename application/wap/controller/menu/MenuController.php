@@ -40,7 +40,7 @@ class MenuController extends Base
       }
       // var_dump($menu_images_json);
       // $menu_images_json = ['123123123'=>123456,];
-      $date = date('Y-m-d h:i:s');
+      $date = date('Y-m-d H:i:s');
       $insert = [
         'business_id'=>$businessid,
         'menu_name'=>$menu_name,
@@ -106,7 +106,7 @@ class MenuController extends Base
       $menu_id = $this->request->param('menu_id');
       $menu = $this->WeDb->find('menu',"id = {$menu_id}");
       $menu_name = $menu['menu_name'];
-      $date = date('Y-m-d h:i:s');
+      $date = date('Y-m-d H:i:s');
       $menuDelete = $this->WeDb->update($this->table,"id = {$menu_id}",['if_delete'=>1]);
       // 推送给商家的所有人员↓
       $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
@@ -164,7 +164,7 @@ class MenuController extends Base
       $menu_money = $this->request->param('menu_money');
       $menu_images_json = $this->request->param('menu_images_json');
       // $menu_images_json = ['123123123'=>123456,];
-      $date = date('Y-m-d h:i:s');
+      $date = date('Y-m-d H:i:s');
       $update = [
         'menu_name'=>$menu_name,
         'menu_address'=>$menu_address,

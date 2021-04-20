@@ -86,16 +86,21 @@ class SourcecodeController extends BaseCheckUser
         // exit;
         $userid = $data['ADMIN_ID'];
         $user = $this->WeDb->find('user', "id = {$userid}");
+        
         $field = "*";
         // var_dump($order);
         // exit;
         $where = '';
-        
+        if(isset($data['username'])){
+            $in_user = $this->WeDb->find('user','username like "%'.$data['username'].'%"');
+            $data['set_userid'] = $in_user['id'];
+        }
         $search[0] = !empty($data['ADMIN_ID']) ? 'business_id = ' . $user['business_notice'] : '';
+        $search[2] = !empty($data['set_userid']) ? 'user_id = ' . $data['set_userid'] : '';
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
-        // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
         $search[1] = !empty($data['order_number'])?'order_number like "%'.trim($data['order_number']).'%"':'1=1';
+        // $search[2] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
         if($user['role_id'] == 1){
             $search[0] = $search[1];
             $search[1] = '';
@@ -146,10 +151,19 @@ class SourcecodeController extends BaseCheckUser
         // var_dump($order);
         // exit;
         $where = '';
+        if(isset($data['value'])){
+            if($data['value']==1){
+                $search[2] = 'enter_user_id is null and out_user_id is null';
+            }else if($data['value']==2){
+                $search[2] = 'enter_user_id is not null and out_user_id is null';
+            }else if($data['value']==3){
+                $search[2] = 'enter_user_id is not null and out_user_id is not null';
+            }
+        }
         $search[0] = !empty($data['ADMIN_ID']) ? 'business_id = ' . $user['business_notice'] : '';
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
-        // $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
+        // $search[2] = !empty($data['value'])?'username like "%'.trim($data['username']).'%"':'';
         $search[1] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
         if($user['role_id'] == 1){
             $search[0] = '';
@@ -185,6 +199,7 @@ class SourcecodeController extends BaseCheckUser
             $business = $this->WeDb->find('business',"id = {$source[$i]['business_id']}");
             $source[$i]['business']=$business;
         }
+        
         return ResultVo::success(['list' => $source, 'total' => $total]);
     }
     // 新建一个批次
@@ -215,7 +230,7 @@ class SourcecodeController extends BaseCheckUser
             'user_id' => $userid,
             'business_id' => $business_id,
             'order_number' => $order_number,
-            'create_time' => date('Y-m-d h:i:s'),
+            'create_time' => date('Y-m-d H:i:s'),
             'source_injson' => json_encode($sourceANDnumber),
         ];
         $orderid = $this->WeDb->insertGetId('order', $data);
@@ -284,8 +299,8 @@ class SourcecodeController extends BaseCheckUser
         $source_total = count($source);
         if(isset($data['total'])){
             $total = $data['total'] - $source_total;
-            if($total != 0 ){
-                return ResultVo::error('963','');
+            if($total > 0 ){
+                return ResultVo::error('963',$total);
             }
         }else{
             $total = 0;
