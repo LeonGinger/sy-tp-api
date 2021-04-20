@@ -25,8 +25,6 @@ class SourceController extends Base
   // 操作员扫码出入库客户查询溯源接口
   public function open_source()
   {
-    
-
     $userid = $this->uid;
     $user = $this->WeDb->find('user',"id={$userid}");
     $code = $this->request->param('source_code');
@@ -310,7 +308,7 @@ class SourceController extends Base
       $ip = $this->request->ip();
       // if($ip=="127.0.0.1"){return false;}
       //测试
-      $ip = "120.79.52.222";
+      // $ip = "118.113.246.135";
       $param = array(
         'ip' => $ip,
         'token' => "485e236f52574f710cac6e25fe1b74f7",
@@ -326,6 +324,17 @@ class SourceController extends Base
       // }
       $result = $this->Gemini_GetReq($url,$param);
       $result = json_decode($result,true);
+      //对应echarts china去除省字
+      try{
+        if($result["Result"]['address']['p']){
+          $count=strpos($result["Result"]['address']['p'],"省");
+          $result["Result"]['address']['p']=substr_replace($result["Result"]['address']['p'],"",$count,4);
+
+        }
+      }catch (\Throwable $th) {
+
+      }
+      //end 
       return $result;
   } 
 }

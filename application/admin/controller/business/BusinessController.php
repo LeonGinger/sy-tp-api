@@ -132,9 +132,9 @@ class BusinessController extends BaseCheckUser
 	// 商家信息页
 	public function businessAll(){
 		$data = $this->request->param('');
-		$userid = $data['ADMIN_ID'];
-		$user = $this->WeDb->find('user',"id = {$userid}");
-		$business = Business::where("id = {$user['business_notice']}")
+        $id = $data['business_id']?:$this->adminInfo['id'];
+
+		$business = Business::where("id = {$id}")
 		->find();
 		$business['business_images'] = json_decode($business['business_images']);
 		$business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");

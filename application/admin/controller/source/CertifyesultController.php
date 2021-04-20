@@ -115,5 +115,54 @@ class CertifyesultController extends BaseCheckUser
 		);
 		return ResultVo::success($data);
 	}
+	/**
+	 * [area_echarts 地区统计]
+	 * @auth         true
+	 * @throws       \think\Exception
+	 * @throws       \think\exception\PDOException
+	 * @HtttpRequest                               get|post
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-04-20T10:59:34+0800
+	 * @LastTime     2021-04-20T10:59:34+0800
+	 * @return       [type]                        [description]
+	 */
+	public function area_echarts(){
+		$re_data = $this->request->param('');
+
+        $where = '';
+        if(!empty($re_data['month'])){
+			$Y = date('Y', $re_data['month']);
+			$M = date('m', $re_data['month']);
+			$date = mFristAndLast($Y,$M);
+			$search[0] = 'create_time BETWEEN "'.date('Y-m-d H:i:s',$date['firstday']).'" and "'.date('Y-m-d H:i:s',$date['lastday']).'"';
+        }else{
+        	$search[0] = "";
+        }
+        $search[1] = !empty($this->adminInfo['business_notice'])?"business_id = {$this->adminInfo['business_notice']}":'';
+
+        foreach ($search as $key => $value) {
+            # code...
+            if($value){
+                $where=$where.$value.' and ';
+            }
+        }
+        $where=substr($where,0,strlen($where)-5);
+
+        $list = db::table('view_source_log')->field('province,sum(track) as track')
+											->where($where)
+											->order('track desc')
+											->group('province')
+											->select();
+											
+		$total_search = $this->WeDb->selectView('view_source_log','','sum(track) as track');
+											
+		$data = array(
+			'list'=>$list,
+			'total_search'=>@$total_search[0]['track']?:0,
+		);
+		return ResultVo::success($data);
+
+	}
 
 }
