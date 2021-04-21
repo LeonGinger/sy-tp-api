@@ -103,6 +103,7 @@ class EntranceController
         'out_my_user'=>'/business/BusinessController/out_my_user',
         'my_quit'=>'/business/BusinessController/my_quit',
         'businessfind'=>'/business/BusinessController/businessfind',
+        'business_open'=>'/business/BusinessController/Apply_open',
         // MenuController操作
         'create_menu'=>'/menu/MenuController/create_menu',
         'delete_menu'=>'/menu/MenuController/delete_menu',

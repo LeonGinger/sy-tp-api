@@ -159,7 +159,7 @@ class SourceController extends Base
                 ->where("id = {$source['business_id']}")
                 ->select();
       $menu = Menu::with(['CertificateMenu','MenuMonitor'])
-              ->where("business_id = {$source['business_id']}")
+              ->where("business_id = {$source['business_id']} and if_delete != 1")
               ->select();
       // var_dump($source['enter_user_id']);
       // exit;

@@ -140,7 +140,7 @@ class MenuController extends Base
       // $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
       $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id['menu_id']}")->find();
       $menu['business'] = $this->WeDb->find('business',"id = {$menu['business_id']}");
-      $menuAll = Menu::with(['MenuMonitor','MenuCertificate'])->where("business_id = {$menu['business_id']}")->select();
+      $menuAll = Menu::with(['MenuMonitor','MenuCertificate'])->where("business_id = {$menu['business_id']} and if_delete != 1")->select();
       $menu['menuAll'] = $menuAll;
       return ResultVo::success($menu);
     }

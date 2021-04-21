@@ -73,7 +73,7 @@ class BusinessController extends BaseCheckUser
     	}
     	if(@$data['verify_if']){
     		$result_verif = $this->verify_if($data);
-    		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if'],'state'=>$result_verif]);
+    		// $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if'],'state'=>$result_verif]);
     	}
 		return ResultVo::success();
     }
@@ -84,6 +84,8 @@ class BusinessController extends BaseCheckUser
 		// exit;
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
     	$business_user = $this->WeDb->find('user','business_notice = '.$data['id']);
+		
+		// var_dump($business_user);
     	switch ($data['verify_if']) {
     		case '1':
     			//通过
@@ -99,10 +101,13 @@ class BusinessController extends BaseCheckUser
 
     			);
     			// $send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
+				// var_dump($data['id']);
+				// exit;
 				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
                 $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
 				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
                 $state = 1;
+				
     			break;
     		case '2':
     			//不通过
@@ -118,9 +123,25 @@ class BusinessController extends BaseCheckUser
 
     			);
     			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
-				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
-                $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
-				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2,'state'=>2]);
+				// $user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
+                // $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
+				if($business_user['role_id']==2){//判别是否是修改，角色为2是修改，角色为4是加入
+					// 恢复历史信息
+					$log_business = $this->WeDb->selectView('business_update_log',"business_id = {$business_user['business_notice']}",'*','update_time desc');
+					$log_business = $log_business[0];
+					$lg_data1=[
+						'business_name'=>$log_business['business_name'],
+						'responsible_name'=>$log_business['responsible_name'],
+						'responsible_phone'=>$log_business['responsible_phone'],
+						'business_address'=>$log_business['business_address'],
+					];
+					$lg_data2=['appraisal_image'=>$log_business['appraisal_image']];
+					$business_log_update = $this->WeDb->update('business',"id = {$business_user['business_notice']}",$lg_data1);
+					$business_appraisal_update = $this->WeDb->update('business_appraisal',"id = {$business_info['business_appraisal_id']}",$lg_data2);
+					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
+				}else{
+					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2,'state'=>2]);
+				}
                 $state = 2;
     			break;
     		default:
@@ -153,7 +174,27 @@ class BusinessController extends BaseCheckUser
 	// 商家信息更新
 	public function business_update(){
 		$data = $this->request->param('');
+		// var_dump($data);
+		// exit;
 		$business = json_decode($data['business'],true);
+		$log_business = $this->WeDb->find('business',"id = {$business['id']}");
+		$log_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
+		if($business['business_name'] != $log_business['business_name'] || $business['responsible_name'] != $log_business['responsible_name'] || 
+		   $business['responsible_phone'] != $log_business['responsible_phone'] || $business['business_address'] != $log_business['business_address'] ||
+		   $business['business_appraisal']['appraisal_image'] != $log_appraisal['appraisal_image']){
+				// 更改未核审状态并存历史记录
+				$state = $this->WeDb->update('business',"id = {$business['id']}",['verify_if'=>3]);
+				$log_data = [
+					'business_name'=>$log_business['business_name'],
+					'responsible_name'=>$log_business['responsible_name'],            
+					'responsible_phone'=>$log_business['responsible_phone'],            
+					'business_address'=>$log_business['business_address'],            
+					'appraisal_image'=>$log_appraisal['appraisal_image'],
+					'business_id'=>$log_business['id'],
+					'update_time'=>date('Y-m-d H:i:s'),
+				];
+				$insert = $this->WeDb->insert('business_update_log',$log_data);
+		   }
 		$data_a=[
 			'business_name'=>$business['business_name'],
 			'responsible_name'=>$business['responsible_name'],
@@ -175,11 +216,6 @@ class BusinessController extends BaseCheckUser
 		$update2 = $this->WeDb->update('business_appraisal',"id = {$my_business['business_appraisal_id']}",$data_b);
 		$update3 = $this->WeDb->update('business_img',"business_id = {$my_business['id']}",$data_c);
 		$key = 0;
-		if($update2 != "无需要更新的值" || $business['business_name']!=$my_business['business_name'] ||$business['responsible_name']!=$my_business['responsible_name'] ||$business['responsible_phone']!=$my_business['responsible_phone'] ||$business['business_address']!=$my_business['business_address']){
-				// var_dump($business['business_address'],$my_business['business_address']);
-				// exit;
-				$key = $this->WeDb->update('business',"id = {$my_business['id']}",['verify_if'=>3]);
-			}
 		$Max_data=[
 			'inster1' => $update1,
 			'inster2' => $update2,

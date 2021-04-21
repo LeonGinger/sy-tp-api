@@ -125,7 +125,7 @@ class WechatUtils
             $user_info = json_decode($user_info);
             $new_user['subscribe'] = $user_info->subscribe;
         } catch (\Throwable $th) {
-            $new_user['subscribe'] = 0;
+            $new_user['subscribe'] = 1;
         }
         return $new_user;
     }

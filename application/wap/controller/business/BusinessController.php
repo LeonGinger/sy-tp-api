@@ -96,6 +96,67 @@ class BusinessController extends Base
         // * // 
         return ResultVo::success($userupdate);
     }
+    // 核审不通过重新申请
+    public function Apply_open(){
+        $userid = $this->uid;
+        $user = $this->WeDb->find('user', "id={$userid}");
+        $this_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if($this_business['verify_if'] != 2 && $this_business['state'] != 2){
+            return ResultVo::error(144,"您的商家发生了错误，请联系管理员");
+        }
+        $time = date('Y-m-d H:i:s');
+        if($user['role_id'] == 2 || $user['role_id'] == 3){
+            return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
+        }
+        $code = round_code(16);
+        $business_name = $this->request->param('business_name');
+        $business_address = $this->request->param('business_address');
+        $responsible_name = $this->request->param('responsible_name');
+        $responsible_phone = $this->request->param('responsible_phone');
+        $appraisal_img = $this->request->param('appraisal_img');
+        // var_dump($appraisal_img);
+        // exit;
+        if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
+            return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
+        }
+        $business = $this->WeDb->selectView('business','','business_name');
+        for($i = 0;$i<count($business);$i++){
+            if($business_name == $business[$i]['business_name'] && $business[$i]['delete_time'] != null){
+                return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
+            }
+        }
+        $appraisal = $this->WeDb->update('business_appraisal',"id = {$this_business['business_appraisal_id']}", ['appraisal_image' => json_encode($appraisal_img)]);
+        $re_data = array(
+            'business_name' => $business_name,
+            'business_address' => $business_address,
+            'responsible_name' => $responsible_name,
+            'responsible_phone' => $responsible_phone,
+            'state' => 2,
+            // 'business_introduction'=>$this->request->param('business_introduction'),
+            'verify_if' => 3,
+            'img_info' => 0,
+        );
+        $res = $this->WeDb->update($this->table,"id = {$this_business['id']}", $re_data);
+        // var_dump($this->uid);
+        // exit ;
+        // 模板消息
+        // 推送给申请人↓
+        $da_content = [
+            'title' => ['value' => '您的申请已提交', 'color' => "#000000"],
+            'business_name' => ['value' => $business_name, 'color' => "#000000"],
+            'time' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '待管理员核审，请稍后...', 'color' => "#000000"],
+        ];
+        $data = [
+            'Template_id' => 'feLgG3FxLHR3F8WfH1vrrT1CcrnDWDjAJSm9Fv8FKU8',
+            'openid' => $user['open_id'],
+            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // * // 
+        return ResultVo::success($res);
+    }
     // 商家软删除
     public function Apply_delete()
     {
@@ -173,8 +234,9 @@ class BusinessController extends Base
             'business_address'=>$business['business_address'],            
             'appraisal_image'=>$business_appraisal['appraisal_image'],
             'business_id'=>$business['id'],
+            'update_time'=>date('Y-m-d H:i:s'),
         ];
-        //////////////////////////////////////////////////////////////
+        $insert = $this->WeDb->insert('business_update_log',$log_data);
         $business_name = $this->request->param('business_name');
         $responsible_name = $this->request->param('responsible_name');
         $responsible_phone = $this->request->param('responsible_phone');
@@ -212,6 +274,7 @@ class BusinessController extends Base
             'update1' => $update,
             'update2' => $update2,
             'update3' => $update3,
+            'update_log' => $insert,
         ];
         return ResultVo::success($data);
     }
@@ -344,6 +407,12 @@ class BusinessController extends Base
         $user = $this->WeDb->find('user', "id={$userid}");   
         $grant_code = $this->request->param('grant_code');
         $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
+        if($user['business_notice']){
+            $us_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+            if($us_business['verify_if'] == 3){
+                return ResultVo::error(145,"你的商家申请再核审，不能进行其他操作哦！");
+            }
+        }
         if( $business['state'] != 1){
             return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
         }
@@ -493,7 +562,7 @@ class BusinessController extends Base
 					->where("id = {$business_id}")
 					->find();
         $menu = Menu::with(['CertificateMenu','MenuMonitor'])
-                    ->where("business_id = {$business_id}")
+                    ->where("business_id = {$business_id} and if_delete != 1")
                     ->select();
         $business['menuAll'] = $menu;
         return ResultVo::success($business);
