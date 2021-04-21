@@ -84,7 +84,7 @@ class SourcecodeController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data);
         // exit;
-        $userid = $data['ADMIN_ID'];
+        $userid = $this->adminInfo['id'];
         $user = $this->WeDb->find('user', "id = {$userid}");
         
         $field = "*";
@@ -95,7 +95,7 @@ class SourcecodeController extends BaseCheckUser
             $in_user = $this->WeDb->find('user','username like "%'.$data['username'].'%"');
             $data['set_userid'] = $in_user['id'];
         }
-        $search[0] = !empty($data['ADMIN_ID']) ? 'business_id = ' . $user['business_notice'] : '';
+        $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';
         $search[2] = !empty($data['set_userid']) ? 'user_id = ' . $data['set_userid'] : '';
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
@@ -145,7 +145,7 @@ class SourcecodeController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data);
         // exit;
-        $userid = $data['ADMIN_ID'];
+        $userid = $this->adminInfo['id'];
         $user = $this->WeDb->find('user', "id = {$userid}");
         $field = "*";
         // var_dump($order);
@@ -160,7 +160,7 @@ class SourcecodeController extends BaseCheckUser
                 $search[2] = 'enter_user_id is not null and out_user_id is not null';
             }
         }
-        $search[0] = !empty($data['ADMIN_ID']) ? 'business_id = ' . $user['business_notice'] : '';
+        $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';
         // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         // $search[2] = !empty($data['value'])?'username like "%'.trim($data['username']).'%"':'';
@@ -213,7 +213,7 @@ class SourcecodeController extends BaseCheckUser
         for($i=0;$i<count($data['data']);$i++){
             $sourceANDnumber[$i] = json_decode($data['data'][$i],true);
         }
-        $userid = $data['ADMIN_ID'];
+        $userid = $this->adminInfo['id'];
         $user = $this->WeDb->find('user', "id= {$userid}");
         // if(empty($data['business_id'])){
         //     $business_id = $data['business_id'];
@@ -340,7 +340,7 @@ class SourcecodeController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data);
         // exit;
-        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        $user = $this->WeDb->find('user',"id = {$this->adminInfo['id']}");
         if($user['role_id'] != 1 && $user['role_id'] != 2){
             return ResultVo::error(300,'您的权限不足，请联系负责人或管理员完成此操作');
         }

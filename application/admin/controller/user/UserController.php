@@ -28,7 +28,7 @@ class UserController extends BaseCheckUser
     public function index(){
 
         $data = $this->request->param('');
-        $user = User::where("id = {$data['ADMIN_ID']}")->find();
+        $user = User::where("id = {$this->adminInfo['id']}")->find();
         
         if($data['business_notice'] == ""){
             $data['business_notice'] = $user['business_notice'];
@@ -145,7 +145,7 @@ class UserController extends BaseCheckUser
         // exit;
         // $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['role_id'=>4]);
         // return ResultVo::success();
-        $userid = $data['ADMIN_ID'];
+        $userid = $this->adminInfo['id'];
         $out_id = $data['out_id'];
         $user = $this->WeDb->find('user', "id = {$userid}");
         $out_user = $this->WeDb->find('user', "id = {$out_id}");
@@ -206,7 +206,7 @@ class UserController extends BaseCheckUser
      */
     public function edit(){
         $data = $this->request->param('');
-        $data['id'] = $data['ADMIN_ID'];
+        $data['id'] = $this->adminInfo['id'];
         if (empty($data['id']) || empty($data['username'])){
             return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);
         }

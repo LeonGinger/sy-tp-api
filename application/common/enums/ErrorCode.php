@@ -31,7 +31,7 @@ class ErrorCode
     const HTTP_METHOD_NOT_ALLOWED = [ 'code' => 3, 'message' => '网络请求不予许'];
     const VALIDATION_FAILED = [ 'code' => 4, 'message' => '身份验证失败'];
     const USER_AUTH_FAIL = [ 'code' => 5, 'message' => '用户名或者密码错误'];
-    const USER_NOT_PERMISSION = [ 'code' => 6, 'message' => ' '];
+    const USER_NOT_PERMISSION = [ 'code' => 6, 'message' => '登录验证失效'];
     const AUTH_FAILED = [ 'code' => 7, 'message' => '权限验证失败'];
     const DATA_CHANGE = [ 'code' => 8, 'message' => '数据没有任何更改'];
     const DATA_REPEAT = [ 'code' => 9, 'message' => '数据重复'];

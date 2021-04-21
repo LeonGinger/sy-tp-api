@@ -21,20 +21,17 @@ class MenuController extends BaseCheckUser
 	 */
 	public function index(){
 		$data = $this->request->param('');
-		// var_dump($data);
-		// exit;
         $order = isset($data['order'])?$data['order']:'create_time desc';
-        // $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
         $where = '';
-        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
-        if($user['role_id'] != 1){
-            $data['business_id'] = $user['business_notice'];
+
+        if($this->adminInfo['role_id'] != '1'){
+            $data['business_id'] = $this->adminInfo['business_notice'];
         }
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = 'if_delete = 0 ';
         $search[2] = !empty($data['business_id'])?"business_id = {$data['business_id']}":'';
         $search[3] = !empty($data['menu_name'])?'menu_name like "%'.$data['menu_name'].'%"':'';
-        // $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
+        // $search[4] = !empty($data['business_name'])?'business_name like "%'.$data['business_name'].'%"':'';
         // $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
         
         foreach ($search as $key => $value) {
@@ -104,7 +101,7 @@ class MenuController extends BaseCheckUser
         $data = $this->request->param('');
         // var_dump($data['business_id']);
         // exit;
-        $user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+        $user = $this->WeDb->find('user',"id = {$this->adminInfo['id']}");
         if($user['role_id'] != 1){
             $data['business_id'] =$user['business_notice'];
         }

@@ -27,12 +27,13 @@ class CheckAuth
     public function run(Request $request, $params)
     {
         // 行为逻辑
-        $id = request()->get('ADMIN_ID');
-        $token = request()->get('ADMIN_TOKEN');
+        $id = request()->header('admin-id');
+        $token = request()->header('admin-token');
 
         if (!$id || !$token) {
             throw new JsonException(ErrorCode::LOGIN_FAILED);
         }
+
         $loginInfo = AuthAdmin::loginInfo($id, (string)$token);
         if ($loginInfo == false) {
             throw new JsonException(ErrorCode::LOGIN_FAILED);

@@ -210,7 +210,7 @@ class BusinessController extends BaseCheckUser
 			'business_image_injson'=>json_encode($business['business_img']['business_image_injson']),
 			'business_img_contentjson'=>json_encode($business['business_img']['business_img_contentjson']),
 		];
-		$user = $this->WeDb->find('user',"id = {$data['ADMIN_ID']}");
+		$user = $this->WeDb->find('user',"id = {$this->adminInfo['id']}");
 		$my_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
 		$update1 = $this->WeDb->update('business',"id = {$my_business['id']}",$data_a);
 		$update2 = $this->WeDb->update('business_appraisal',"id = {$my_business['business_appraisal_id']}",$data_b);
