@@ -6,7 +6,11 @@ use Naixiaoxin\ThinkWechat\Facade;
 use think\facade\Config;
 use EasyWeChat\OfficialAccount\Application;
 use redis\Redis;
+<<<<<<< Updated upstream
 use think\Controller;
+=======
+
+>>>>>>> Stashed changes
 
 /**
  * 微信工具类
@@ -50,6 +54,7 @@ class WechatUtils
     public function getWxToken()
     {
         $instance = self::getInstance();
+
         if ($instance::$wxAccessToken == null) {
             // echo 'create!';
             $instance->get_access_token();
@@ -61,6 +66,7 @@ class WechatUtils
                 $instance->get_access_token();
             } 
         }
+
         return $instance::$wxAccessToken;
     }
     /**
@@ -69,14 +75,35 @@ class WechatUtils
     public function get_access_token()
     {
         $instance = self::getInstance();
+
+        // $redis = new Redis();
+        // $access_token_arr = $redis->hget('wxutils','access_token');
+
+        // if($access_token_arr){
+        //     $access_token_arr = json_decode($access_token_arr);
+        //     if (time() > $access_token_arr['valid']) {
+                
+        //     }
+        // }
+
         $accessToken = $this->app->access_token;
         $token = $accessToken->getToken();
 
         $instance::$wxAccessToken = $token['access_token']; //更新当前token
         $instance::$expires = $token['expires_in']; //更新token有效时间
         $instance::$valid = time() + $instance::$expires; //更新token到期时间
+<<<<<<< Updated upstream
         // $redis = new redis();
         
+=======
+
+        // $redis = new Redis();
+        // $redis->hset('wxutils','access_token',array(
+        //     'access_token'=>$instance::$wxAccessToken
+        //     'expires_in'=> $instance::$expires
+        //     'valid'=> $instance::$valid
+        // ));
+>>>>>>> Stashed changes
     }
     /* */
     /**
