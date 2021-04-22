@@ -6,11 +6,6 @@ use Naixiaoxin\ThinkWechat\Facade;
 use think\facade\Config;
 use EasyWeChat\OfficialAccount\Application;
 use redis\Redis;
-<<<<<<< Updated upstream
-use think\Controller;
-=======
-
->>>>>>> Stashed changes
 
 /**
  * 微信工具类
@@ -92,10 +87,8 @@ class WechatUtils
         $instance::$wxAccessToken = $token['access_token']; //更新当前token
         $instance::$expires = $token['expires_in']; //更新token有效时间
         $instance::$valid = time() + $instance::$expires; //更新token到期时间
-<<<<<<< Updated upstream
         // $redis = new redis();
         
-=======
 
         // $redis = new Redis();
         // $redis->hset('wxutils','access_token',array(
@@ -103,7 +96,6 @@ class WechatUtils
         //     'expires_in'=> $instance::$expires
         //     'valid'=> $instance::$valid
         // ));
->>>>>>> Stashed changes
     }
     /* */
     /**
