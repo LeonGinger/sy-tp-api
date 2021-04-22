@@ -88,9 +88,14 @@ class SourcecodeController extends BaseCheckUser
         $user = $this->WeDb->find('user', "id = {$userid}");
         
         $field = "*";
-        // var_dump($order);
+        // var_dump($data['thismy']);
         // exit;
         $where = '';
+        if(isset($data['thismy'])){
+            if($data['thismy'] == 'true'){
+                $data['set_userid'] = $user['id'];
+            }
+        }
         if(isset($data['username'])){
             $in_user = $this->WeDb->find('user','username like "%'.$data['username'].'%"');
             $data['set_userid'] = $in_user['id'];
@@ -136,7 +141,7 @@ class SourcecodeController extends BaseCheckUser
         }
         // var_dump($order);
         // exit;
-        $total = $this->WeDb->totalView('order', $where, 'id');
+        $total = $this->WeDb->totalView('order', $where);
         return ResultVo::success(['list' => $order, 'total' => $total]);
     }
     // 溯源列表查询
@@ -332,6 +337,7 @@ class SourcecodeController extends BaseCheckUser
             $menu_id = $json[$i]['menu_id'];
             $menu = $this->WeDb->find('menu',"id = {$menu_id}");
             $json[$i]['menu_id'] = $menu['menu_name'];
+            $json[$i]['menu_weight'] = $menu['menu_weight'];
         }
         return ResultVo::success($json);
     }

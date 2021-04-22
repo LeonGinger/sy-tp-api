@@ -298,8 +298,9 @@ class BusinessController extends Base
         $business_introduction = $this->request->param('business_introduction');
         $business_images_injson = $this->request->param('business_images_injson');
         $business_img_contentjson = $this->request->param('business_img_contentjson');
-        if($business_images == null || $business_introduction == null || 
-        $business_images_injson == null){
+        if($business_images == null || 
+           $business_introduction == null || 
+           $business_images_injson == null){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
         // $appraisal_image = $this->request->param('appraisal_image'); 
@@ -334,7 +335,7 @@ class BusinessController extends Base
     public function out_my_user()
     {
         $userid = $this->uid;
-        $out_id = $this->request->param('');
+        $out_id = $this->request->param('out_user_id');
         $user = $this->WeDb->find('user', "id={$userid}");
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
         if( $business['state'] != 1){
@@ -352,6 +353,7 @@ class BusinessController extends Base
         ];
         $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
         $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>4]);
+        
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
@@ -410,7 +412,7 @@ class BusinessController extends Base
         if($user['business_notice']){
             $us_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
             if($us_business['verify_if'] == 3){
-                return ResultVo::error(145,"你的商家申请再核审，不能进行其他操作哦！");
+                return ResultVo::error(145,"你的商家申请正在核审，不能进行其他操作哦！");
             }
         }
         if( $business['state'] != 1){

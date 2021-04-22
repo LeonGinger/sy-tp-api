@@ -63,10 +63,6 @@ class UserController extends BaseCheckUser
 
         $list = $this->WeDb->selectView('view_user',$where,$field,$data['page'],$data['size'],'create_time desc');
         $total = $this->WeDb->totalView('view_user',$where,'id');
-
-
-// var_dump($Admin_user);
-// exit();
         // $list = db('user')->alias('u')
         //         ->join('business b','u.business_notice = b.id','left')
         //         ->join('role r','u.business_notice = b.id','left')

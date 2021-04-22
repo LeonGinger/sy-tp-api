@@ -32,6 +32,7 @@ class BusinessController extends BaseCheckUser
         $search[0] = !empty($data['state'])?'state = '.$data['state']:'';
         $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
+		$search[3] = 'delete_time is null';
         foreach ($search as $key => $value) {
             # code...
             if($value){
@@ -74,6 +75,9 @@ class BusinessController extends BaseCheckUser
     	if(@$data['verify_if']){
     		$result_verif = $this->verify_if($data);
     		// $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if'],'state'=>$result_verif]);
+			if($result_verif == 12138){
+				return ResultVo::error(12138,"此商家已被用户解除绑定，系统将自动删除");
+			}
     	}
 		return ResultVo::success();
     }
@@ -84,8 +88,14 @@ class BusinessController extends BaseCheckUser
 		// exit;
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
     	$business_user = $this->WeDb->find('user','business_notice = '.$data['id']);
+		// var
+		if(isset($business_user)){}else{
+			$delete = $this->WeDb->update('business',"id = {$business_info['id']}",['delete_time'=>date('Y-m-d H:i:s')]);
+			return 12138;
+		}
 		
 		// var_dump($business_user);
+		// exit;
     	switch ($data['verify_if']) {
     		case '1':
     			//通过

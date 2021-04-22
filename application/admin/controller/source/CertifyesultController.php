@@ -149,11 +149,12 @@ class CertifyesultController extends BaseCheckUser
         }
         $where=substr($where,0,strlen($where)-5);
 
-        $list = db::table('view_source_log')->field('province,sum(track) as track')
-											->where($where)
-											->order('track desc')
-											->group('province')
-											->select();
+        $list = db::table('view_source_log')
+				->field('province,sum(track) as track')
+				->where($where)
+				->order('track desc')
+				->group('province')
+				->select();
 											
 		$total_search = $this->WeDb->selectView('view_source_log','','sum(track) as track');
 											

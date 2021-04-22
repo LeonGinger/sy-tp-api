@@ -5,6 +5,8 @@ namespace app\common\utils;
 use Naixiaoxin\ThinkWechat\Facade;
 use think\facade\Config;
 use EasyWeChat\OfficialAccount\Application;
+use redis\Redis;
+use think\Controller;
 
 /**
  * 微信工具类
@@ -57,7 +59,7 @@ class WechatUtils
                 // echo 'get new!';
                 //已过期-重新请求token
                 $instance->get_access_token();
-            }
+            } 
         }
         return $instance::$wxAccessToken;
     }
@@ -73,6 +75,8 @@ class WechatUtils
         $instance::$wxAccessToken = $token['access_token']; //更新当前token
         $instance::$expires = $token['expires_in']; //更新token有效时间
         $instance::$valid = time() + $instance::$expires; //更新token到期时间
+        // $redis = new redis();
+        
     }
     /* */
     /**

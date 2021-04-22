@@ -172,12 +172,14 @@ class MenuController extends BaseCheckUser
             'menu_url'=>isset($data['menu_url'])?$data['menu_url']:'',
         );
         $result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
-
         /*检测报告*/
-        $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,['monitor_image'=>$data['monitor_image']]);
+        if(isset($data['monitor_image'])){
+            $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,['monitor_image'=>$data['monitor_image']]);
+        }
         /*商品证书*/
-        $res_certificate = $this->WeDb->update('menu_certificate','menu_id = '.$id,['certificate_image'=>$data['certificate_image']]);
-
+        if(isset($data['certificate_image'])){
+            $res_certificate = $this->WeDb->update('menu_certificate','menu_id = '.$id,['certificate_image'=>$data['certificate_image']]);
+        }
         return ResultVo::success($data['id']);
     }
 

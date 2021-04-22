@@ -77,7 +77,7 @@ class JwtAuthWap{
             ]
         ];
         $access_token['scopes'] = 'role_access'; //token标识，请求接口的token
-        $access_token['exp'] = $time+7200; //access_token过期时间,这里设置2个小时
+        $access_token['exp'] = $time+(3600*24); //access_token过期时间,这里设置2个小时
 
         /*可只使用token 不刷新*/
         $refresh_token = $token;

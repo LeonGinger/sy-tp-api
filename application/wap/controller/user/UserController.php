@@ -200,6 +200,8 @@ class UserController extends Base
     if($user[0]['business_notice'] != '' && $user[0]['business_notice']!= null){
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
       $user[0]['business'] = $business; 
+      $business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
+      $user[0]['business_appraisal'] = $business_appraisal;
     }
     return ResultVo::success($user[0]);
   }
