@@ -101,6 +101,9 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $this_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        if($user['role'] != 4){
+            return ResultVo::error(407,"您的权限异常，请重试");
+        }
         if($this_business['verify_if'] != 2 && $this_business['state'] != 2){
             return ResultVo::error(144,"您的商家发生了错误，请联系管理员");
         }

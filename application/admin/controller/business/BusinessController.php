@@ -42,9 +42,9 @@ class BusinessController extends BaseCheckUser
         $where=substr($where,0,strlen($where)-5);
 
         $list = Business::with([
-            'BusinessAppraisal',
-            'BusinessImg',
-            'BossUser'=>function($query){
+            	'BusinessAppraisal',
+            	'BusinessImg',
+            	'BossUser'=>function($query){
                 $query->where("role_id = 2")->find();
         }])->where($where)->page($data['page'],$data['size'])->order('verify_if desc,create_time desc')->select()->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);

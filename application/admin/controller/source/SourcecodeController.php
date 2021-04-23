@@ -97,7 +97,7 @@ class SourcecodeController extends BaseCheckUser
             }
         }
         if(isset($data['username'])){
-            $in_user = $this->WeDb->find('user','username like "%'.$data['username'].'%"');
+            $in_user = $this->WeDb->find('user','username like "%'.$data['username'].'%" and business_notice = '.$user['business_notice'].'');
             $data['set_userid'] = $in_user['id'];
         }
         $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';

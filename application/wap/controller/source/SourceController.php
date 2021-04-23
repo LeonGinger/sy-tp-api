@@ -34,8 +34,12 @@ class SourceController extends Base
     $key = $this->request->param('key');
     $time = date('Y-m-d H:i:s');
     $source = $this->WeDb->find('source', 'source_code ="'. $code .'"');
+    $business = $this->WeDb->find('business',"id = {$source['business_id']}");
     if ($key == 1) { // 入库操作
       if ($user['business_notice'] == "" || $user['role_id'] == 4) {
+        return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
+      }
+      if($user['business_notice'] != $business['id']){
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       $sc_data = [
@@ -61,6 +65,9 @@ class SourceController extends Base
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
     } else if ($key == 2) { // 出库操作
+      if($user['business_notice'] != $business['id']){
+        return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
+      }
       if($source['enter_user_id'] == null){
         return ResultVo::error(110,"您的操作违规了，请重试!");
       }

@@ -289,7 +289,7 @@ class WechatUtils
         curl_close($curl);
         return $res;
     }
-
+    //  https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=wxde8d5214f18aa7e4&scene=1000&template_id=1uDxHNXwYQfBmXOfPJcjAS3FynHArD8aWMEFNRGSbCc&redirect_url=http%3a%2f%2fsupport.qq.com&reserved=test#wechat_redirect
     // 订阅通知推送
     public function subscribeMassage($data){
         $ii = Config::pull('wechat');
@@ -312,7 +312,7 @@ class WechatUtils
         // var_dump($json_template);
         
         $access_token = $this->get_token($appid, $secret);
-        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $access_token;
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/subscribe?access_token=" . $access_token;
         $result = $this->https_request($url, $json_template);
         // var_dump($result);
         // exit;
