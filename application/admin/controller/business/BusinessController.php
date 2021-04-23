@@ -33,6 +33,8 @@ class BusinessController extends BaseCheckUser
         $search[1] = !empty($data['name'])?'business_name like "%'.$data['name'].'%"':'';
         $search[2] = !empty($data['verify_if'])?'verify_if = '.$data['verify_if']:'';
 		$search[3] = 'delete_time is null';
+		
+
         foreach ($search as $key => $value) {
             # code...
             if($value){
@@ -42,10 +44,11 @@ class BusinessController extends BaseCheckUser
         $where=substr($where,0,strlen($where)-5);
 
         $list = Business::with([
-            	'BusinessAppraisal',
-            	'BusinessImg',
-            	'BossUser'=>function($query){
-                $query->where("role_id = 2")->find();
+            'BusinessAppraisal',
+            'BusinessImg',
+            'BossUser'=>function($query){
+            	$boss_where = @$data['type']=='apply'?"role_id = 4":"role_id = 2";
+                $query->where($boss_where)->find();
         }])->where($where)->page($data['page'],$data['size'])->order('verify_if desc,create_time desc')->select()->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);

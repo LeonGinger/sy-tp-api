@@ -89,7 +89,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => 'feLgG3FxLHR3F8WfH1vrrT1CcrnDWDjAJSm9Fv8FKU8',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -153,7 +153,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => 'feLgG3FxLHR3F8WfH1vrrT1CcrnDWDjAJSm9Fv8FKU8',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -187,7 +187,7 @@ class BusinessController extends Base
             $data = [
                 'Template_id'=>'kpULPN1XJZBpdCY1GBt3LQwsbRzLEwZUp9b0AHjBLj4',
                 'openid'=>$foruser[$i]['open_id'],
-                'url'=>'https://sy.zsicp.com/h5/#/my/my',
+                'url'=>Config::get('domain_h5').'/#/my/my',
                 'content'=>$da_content,
             ];
             $return = $this->Wechat_tool->sendMessage($data);
@@ -369,7 +369,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
             'openid' => $out_user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -384,7 +384,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -453,7 +453,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => '-hpsvO5xcmL1l2Af_6_VFOLO65vRMRPggsOKnpejQo30',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -467,7 +467,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => '-Ga5jQnQmi12lHPsSxfZk1S_PgMiu93xzmDZa9589WY',
             'openid' => $business_user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -541,7 +541,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => '-5aNPVXsZQ90c0gEK90-uT0gEb9nezIZeel3RLA8pGuo',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -554,7 +554,7 @@ class BusinessController extends Base
         $data = [
             'Template_id' => '1teYKoeSKUdNGtMOGUNg0cIcXDN5qXU43f3nVJx9bvc',
             'openid' => $business_user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);

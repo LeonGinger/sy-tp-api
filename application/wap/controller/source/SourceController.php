@@ -59,7 +59,7 @@ class SourceController extends Base
       $data = [
         'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
         'openid' => $user['open_id'],
-        'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+        'url' => Config::get('domain_h5').'#/pages/operation/operation',
         'content' => $da_content,
       ];
       $return = $this->Wechat_tool->sendMessage($data);
@@ -90,7 +90,7 @@ class SourceController extends Base
       $data = [
         'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
         'openid' => $user['open_id'],
-        'url' => 'https://sy.zsicp.com/h5/#/pages/operation/operation',
+        'url' => Config::get('domain_h5').'#/pages/operation/operation',
         'content' => $da_content,
       ];
       $return = $this->Wechat_tool->sendMessage($data);

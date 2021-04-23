@@ -267,7 +267,7 @@ class UserController extends Base
       $data = [
         'Template_id'=>'JV0X9Q-mZCaGzks5RK8bDrzkZjWKYS1nKVkN44JPE4U',
         'openid'=>'ozY535toP9r_khydwW5SBiV0g-CM',
-        'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+        'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
         'title'=>'123456',
         'content'=>$da_content,
       ];

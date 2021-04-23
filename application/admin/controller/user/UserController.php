@@ -8,6 +8,7 @@ use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use app\model\User;
 use redis\Redis;
+use think\facade\Config;
 /**
  * 员工相关
  * 员工用户相关(该模块仅用于员工相关的用户操作,不涉及员工操作的方法放置auth相关模块下)
@@ -123,6 +124,53 @@ class UserController extends BaseCheckUser
         return ResultVo::success(['list'=>$list,'total'=>$total,'business'=>$business]);
 
     }
+    /**
+     * [index_user 正常用户列表-通用]
+     * @Param
+     * @DateTime     2021-04-23T16:10:47+0800
+     * @LastTime     2021-04-23T16:10:47+0800
+     * @return       [type]                        [description]
+     */
+    public function index_user(){
+        $data = $this->request->param('');
+        $search[0] = !empty($data['phone'])?'phone like "%'.$data['phone'].'%"':'';
+        $search[1] = !empty($data['username'])?'username like "%'.$data['username'].'%"':'';
+        $search[2] = !empty($data['roleid'])?'role_id = '.$data['roleid']:'';
+        $where= '';
+        foreach ($search as $key => $value) {
+            # code...
+            if($value){
+                $where=$where.$value.' and ';
+            }
+        }
+        $where=substr($where,0,strlen($where)-5);
+        $field ="id,username,gender,phone,user_image,open_id,role_id,delete_time,real_name_state,business_notice,subscribe,create_time,last_login_ip,last_login_time,status,role_name,business_name";
+        //分页问题-可能不正确-用下面的list
+        if($data['page']==1){$data['page']=0;}
+        if($data['page']>1){$data['page'] = $data['page']-1;}
+
+        $list = $this->WeDb->selectView('view_user',$where,$field,$data['page'],$data['size'],'create_time desc');
+        $total = $this->WeDb->totalView('view_user',$where,'id');
+
+        return ResultVo::success(['list'=>$list,'total'=>$total]);
+    }
+    /**
+     * [details_user 通用获取单个用户信息]
+     * @Param
+     * @DateTime     2021-04-23T16:42:40+0800
+     * @LastTime     2021-04-23T16:42:40+0800
+     * @return       [type]                        [description]
+     */
+    public function details_user(){
+        $data = $this->request->param();
+        $id = $data['id'];
+        if(!$id){return ResultVo::error();}
+
+        $user = $this->WeDb->find('view_user','id = '.$id);
+        if($user){unset($user['password']);}
+        return ResultVo::success($user);
+
+    }
 
     /**
      * [del 删除员工]
@@ -168,7 +216,7 @@ class UserController extends BaseCheckUser
         $data = [
             'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
             'openid' => $out_user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/my/my',
+            'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -183,7 +231,7 @@ class UserController extends BaseCheckUser
         $data = [
             'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
             'openid' => $user['open_id'],
-            'url' => 'https://sy.zsicp.com/h5/#/pages/employee/employee-list',
+            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);

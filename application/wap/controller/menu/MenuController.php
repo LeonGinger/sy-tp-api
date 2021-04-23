@@ -86,7 +86,7 @@ class MenuController extends Base
         $data = [
             'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
             'openid'=>$foruser[$i]['open_id'],
-            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
             'content'=>$da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -120,7 +120,7 @@ class MenuController extends Base
         $data = [
             'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
             'openid'=>$foruser[$i]['open_id'],
-            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
             'content'=>$da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);
@@ -207,7 +207,7 @@ class MenuController extends Base
         $data = [
             'Template_id'=>'yjBbDx1gMpOoBXbs8nMrz5tRbVL28lJ9sRWvvrW6HJo',
             'openid'=>$foruser[$i]['open_id'],
-            'url'=>'https://sy.zsicp.com/h5/#/pages/Product/Product-list',
+            'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
             'content'=>$da_content,
         ];
         $return = $this->Wechat_tool->sendMessage($data);

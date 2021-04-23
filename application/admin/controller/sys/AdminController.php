@@ -55,7 +55,7 @@ class AdminController extends BaseCheckUser
 	 * @Author       GNLEON
 	 * @Param
 	 * @DateTime     2021-03-29T15:27:31+0800
-	 * @LastTime     2021-03-29T15:27:31+0800
+	 * @LastTime     2021年4月23日13:19:41
 	 * @return       [type]                        [description]
 	 */
 	public function echarts_list(){
