@@ -224,6 +224,15 @@ class SourcecodeController extends BaseCheckUser
         //     $business_id = $user['business_notice'];
         // }
         $business_id = !empty($data['business_id'])?$data['business_id']:$user['business_notice'];
+        $business = $this->WeDb->find('business','id = '.$business_id);
+        if($business['verify_if'] == 3){
+            return ResultVo::error(1213,'此商家正在核审中，请联系管理员核审并稍后再试....');
+        }
+        if(empty($business['business_images'])){
+            return ResultVo::error(1213,'商家信息不完善，请填写更为详细的商家信息');
+        }else if(empty($business['business_introduction'])){
+            return ResultVo::error(1213,'商家信息不完善，请填写更为详细的商家信息');
+        }
         
         // $sourceANDnumber = $this->request->param("sourceANDnumber");
         $order_number = round_Code();

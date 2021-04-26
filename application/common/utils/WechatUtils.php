@@ -66,6 +66,7 @@ class WechatUtils
     }
     /**
      * 请求access_token.
+     * https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
      * */
     public function get_access_token()
     {
@@ -132,7 +133,7 @@ class WechatUtils
 
     /**
      * 获取用户信息-公众号
-     * 测试url
+     * 测试url           44_MWjdoowO__vXyKf9iRuWkPMsxY83EjCkIjorIZn7hVNeQdfRNRv9i9Vph0WXKVlCzoaobOUgbNcQ13iFIZQdW8vM1xwcIUTiIGW2Qgmslb33vDehmspiQQ_bFZGWZoRdzCQk-sTRyO_YuHbITYZcADAJOP
      * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd49aee67b33932b2&redirect_uri=http://sy.zsicp.com/wap/user/user/Login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
      *
      */
@@ -143,8 +144,8 @@ class WechatUtils
         $user = $this->app->oauth->user();
         $new_user = $user->getOriginal();
         try {
-            //是否关注公众号
-            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id);
+            //是否关注公众号                https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id.'&lang=zh_CN');
             $user_info = json_decode($user_info);
             $new_user['subscribe'] = $user_info->subscribe;
         } catch (\Throwable $th) {

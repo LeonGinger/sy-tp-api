@@ -20,7 +20,7 @@ return [
     // // 用户名
     'username'        => 'root',
     // 密码
-    'password'        => 'root',
+    'password'        => '123456',
     //在线数据库
     // 'username'        => 'sy_zsicp_com',
     // 'password'        => 'xHhyYNDbGAHciztS',

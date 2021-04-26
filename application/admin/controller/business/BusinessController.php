@@ -6,6 +6,7 @@ use app\admin\controller\BaseCheckUser;
 use app\admin\controller\Base;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
+use think\facade\Config;
 use app\model\Business;
 
 use function GuzzleHttp\json_encode;
@@ -118,7 +119,23 @@ class BusinessController extends BaseCheckUser
 				// exit;
 				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
                 $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
-				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
+				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>2]);
+				// 推送给申请人↓
+				$da_content = [
+					'first' => ['value' => '您的企业入驻申请已通过', 'color' => "#000000"],
+					'keyword1' => ['value' => $business_user['username'], 'color' => "#000000"],
+					'keyword2' => ['value' => $business_info['business_name'], 'color' => "#000000"],
+					'keyword3' => ['value' => "您的申请已通过管理员的审核，快进入系统使用把！", 'color' => "#000000"],
+					'remark' => ['value' => '溯源系统', 'color' => "#000000"],
+				  ];
+				  $data = [
+					'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
+					'openid' => $business_user['open_id'],
+					'url' => Config::get('domain_h5').'#/pages/operation/operation',
+					'content' => $da_content,
+				  ];
+				  $return = $this->Wechat_tool->sendMessage($data);
+				  // * //
                 $state = 1;
 				
     			break;
@@ -152,6 +169,22 @@ class BusinessController extends BaseCheckUser
 					$business_log_update = $this->WeDb->update('business',"id = {$business_user['business_notice']}",$lg_data1);
 					$business_appraisal_update = $this->WeDb->update('business_appraisal',"id = {$business_info['business_appraisal_id']}",$lg_data2);
 					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
+					// 推送给申请人↓
+					$da_content = [
+						'first' => ['value' => '您的修改信息已被管理员驳回', 'color' => "#000000"],
+						'keyword1' => ['value' => $business_user['username'], 'color' => "#000000"],
+						'keyword2' => ['value' => $business_info['business_name'], 'color' => "#000000"],
+						'keyword3' => ['value' => "您的申请已通过管理员的审核，快进入系统使用把！", 'color' => "#000000"],
+						'remark' => ['value' => '溯源系统', 'color' => "#000000"],
+					];
+					$data = [
+						'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
+						'openid' => $business_user['open_id'],
+						'url' => Config::get('domain_h5').'#/pages/operation/operation',
+						'content' => $da_content,
+					];
+					$return = $this->Wechat_tool->sendMessage($data);
+					// * //
 				}else{
 					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2,'state'=>2]);
 				}

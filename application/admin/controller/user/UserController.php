@@ -207,14 +207,14 @@ class UserController extends BaseCheckUser
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
-            'content1' => ['value' => '您已被移出公司', 'color' => "#000000"],
-            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
-            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
-            'content4' => ['value' => '你的账号已更改为消费者', 'color' => "#000000"],
-            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
+            'first' => ['value' => '商户 '.$business['business_name'].' 已将您移出操作员', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
+            'keyword3' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '你的账号已更改为普通用户，感谢您对本商户的贡献', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
             'openid' => $out_user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
@@ -222,14 +222,14 @@ class UserController extends BaseCheckUser
         $return = $this->Wechat_tool->sendMessage($data);
         // 推送给商家↓
         $bs_content = [
-            'content1' => ['value' => "{$out_user['username']} 已被你移出公司", 'color' => "#000000"],
-            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
-            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
-            'content4' => ['value' => "{$out_user['username']}的账号已进行变更", 'color' => "#000000"],
-            'remark' => ['value' => '操作成功', 'color' => "#000000"],
+            'first' => ['value' => '您已将 '.$out_user['user_name'].' 移出操作员', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
+            'keyword3' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '移出成功', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
             'openid' => $user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,

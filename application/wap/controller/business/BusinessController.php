@@ -101,7 +101,7 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $this_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if($user['role'] != 4){
+        if($user['role_id'] != 4){
             return ResultVo::error(407,"您的权限异常，请重试");
         }
         if($this_business['verify_if'] != 2 && $this_business['state'] != 2){
@@ -122,7 +122,7 @@ class BusinessController extends Base
         if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
-        $business = $this->WeDb->selectView('business','','business_name');
+        $business = $this->WeDb->selectView('business','','business_name,delete_time');
         for($i = 0;$i<count($business);$i++){
             if($business_name == $business[$i]['business_name'] && $business[$i]['delete_time'] != null){
                 return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
@@ -360,14 +360,14 @@ class BusinessController extends Base
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
-            'content1' => ['value' => '您已被移出公司', 'color' => "#000000"],
-            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
-            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
-            'content4' => ['value' => '你的账号已更改为消费者', 'color' => "#000000"],
-            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
+            'first' => ['value' => '商户 '.$business['business_name'].' 已将您移出操作员', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
+            'keyword3' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '你的账号已更改为普通用户，感谢您对本商户的贡献', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
             'openid' => $out_user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
@@ -375,14 +375,14 @@ class BusinessController extends Base
         $return = $this->Wechat_tool->sendMessage($data);
         // 推送给商家↓
         $bs_content = [
-            'content1' => ['value' => "{$out_user['username']} 已被你移出公司", 'color' => "#000000"],
-            'content2' => ['value' => "公司名称：{$business['business_name']}", 'color' => "#000000"],
-            'content3' => ['value' => "移出时间：{$time}", 'color' => "#000000"],
-            'content4' => ['value' => "{$out_user['username']}的账号已进行变更", 'color' => "#000000"],
-            'remark' => ['value' => '操作成功', 'color' => "#000000"],
+            'first' => ['value' => '您已将 '.$out_user['user_name'].' 移出操作员', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
+            'keyword3' => ['value' => $time, 'color' => "#000000"],
+            'remark' => ['value' => '移出成功', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => 'ctssIEGGg1132D-Xt8t0CJ1d4RWCLtKj5iO8lcAzeP4',
+            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
             'openid' => $user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
@@ -532,14 +532,13 @@ class BusinessController extends Base
         // 推送模板消息
         // 推送给操作员↓
         $da_content = [
-            'first' => ['value' => '注销成功', 'color' => "#000000"],
-            'keyword1' => ['value' => $user['username'], 'color' => "#000000"],
+            'first' => ['value' => '您的账户已从'.$business['business_name'].'商户中注销', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
             'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
-            'keyword3' => ['value' => '消费者', 'color' => "#000000"],
-            'remark' => ['value' => '感谢您对公司作出的贡献', 'color' => "#000000"],
+            'remark' => ['value' => '您的账户已更改为普通用户，感谢您对本系统的大力支持', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => '-5aNPVXsZQ90c0gEK90-uT0gEb9nezIZeel3RLA8pGuo',
+            'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
             'openid' => $user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/my/my',
             'content' => $da_content,
@@ -547,12 +546,13 @@ class BusinessController extends Base
         $return = $this->Wechat_tool->sendMessage($data);
         // 推送给商家↓
         $bs_content = [
-            'out_name' => ['value' => $user['username'], 'color' => "#000000"],
-            'business_name' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'out_data' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+            'first' => ['value' => '您的操作员'.$user['username'].'已退出本商户', 'color' => "#000000"],
+            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+            'remark' => ['value' => '您的操作员已离开本商户，更改为普通用户', 'color' => "#000000"],
         ];
         $data = [
-            'Template_id' => '1teYKoeSKUdNGtMOGUNg0cIcXDN5qXU43f3nVJx9bvc',
+            'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
             'openid' => $business_user['open_id'],
             'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
             'content' => $bs_content,
