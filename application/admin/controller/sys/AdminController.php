@@ -5,6 +5,7 @@ use app\admin\controller\BaseCheckUser;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use redis\Redis;
+use think\db;
 /**
  * 其他相关接口
  */
@@ -50,7 +51,7 @@ class AdminController extends BaseCheckUser
 	}
 
 	/**
-	 * [echarts_list 面板统计图]
+	 * [echarts_list 历史面板统计图]
 	 * @HtttpRequest                               get
 	 * @Author       GNLEON
 	 * @Param
@@ -59,6 +60,45 @@ class AdminController extends BaseCheckUser
 	 * @return       [type]                        [description]
 	 */
 	public function echarts_list(){
+		$data = $this->request->param('');
+		$month = $data['month'];
+		if(!$month){
+			// return ResultVo::error();
+			$month = date('Y-m-01',time());
+		}
+		$first_day = date('Y-m-d',strtotime($month));
+		$end_day = date("Y-m-d",strtotime("$first_day +1 month -1 day"));
 
+		$sql = $this->get_chartssql($first_day,$end_day);
+		$res_user= db::query($sql[0]);
+		$res_source = db::query($sql[1]);
+		foreach ($res_user as $key => $value) {
+			# code...
+			$res_user[$key]['count_source'] = $res_source[$key]['count_source'];
+		}
+		return ResultVo::success($res_user);
+
+
+	}
+	private function get_chartssql($start,$end){
+
+		$sql_user = "SELECT ".
+			"calendar_copy.datelist, ".
+			"count(user.id) as count_user ".
+			"FROM ".
+			"calendar_copy ".
+			"LEFT JOIN `user` ON calendar_copy.datelist = date_format(`user`.create_time,'%Y-%m-%d') ".
+			"where datelist between \"$start\" and \"$end\" ".
+			"GROUP BY calendar_copy.datelist ";
+
+		$sql_source = "SELECT ".
+				"calendar_copy.datelist, ".
+				"count(source_log.id) as count_source ".
+				"FROM ".
+				"calendar_copy ".
+				"LEFT JOIN `source_log` ON calendar_copy.datelist = date_format(`source_log`.create_time,'%Y-%m-%d') ".
+				"where datelist between \"$start\" and \"$end\" ".
+				"GROUP BY calendar_copy.datelist ";
+		return [$sql_user,$sql_source];
 	}
 }

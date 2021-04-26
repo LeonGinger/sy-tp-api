@@ -56,6 +56,7 @@ class EntranceController
 
         /*面板数据 */
         'index_data'=>'/sys/AdminController/get_index_data',
+        'index_echartsdata'=>'/sys/AdminController/echarts_list',
         /*登出登录、用户信息 */
         'login'=>'/auth/LoginController/index',
         'logins'=>'/auth/LoginController/index_scan',

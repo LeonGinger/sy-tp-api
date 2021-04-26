@@ -42,7 +42,10 @@ class MenuController extends BaseCheckUser
         }
         $where=substr($where,0,strlen($where)-5);
        	//hasBusiness
-        $list = Menu::with(['RecommendMenu','MonitorMenu','CertificateMenu'])
+        $list = Menu::with(['RecommendMenu','MonitorMenu','CertificateMenu','CoutSourcecode'=>function($query){
+            //此处加上了箱本身的一个二维码
+            $query->field('menu_id,sum(source_code_number)+count(menu_id) as cout_code')->group('menu_id')->find();
+        }])
         				->where($where)
         				->page($data['page'],$data['size'])
                         ->order($order)
@@ -181,6 +184,25 @@ class MenuController extends BaseCheckUser
             $res_certificate = $this->WeDb->update('menu_certificate','menu_id = '.$id,['certificate_image'=>$data['certificate_image']]);
         }
         return ResultVo::success($data['id']);
+    }
+    /**
+     * [state 修改商品状态]
+     * @Param
+     * @DateTime     2021-04-26T16:41:50+0800
+     * @LastTime     2021-04-26T16:41:50+0800
+     * @return       [type]                        [description]
+     * @remark recommend_menu 0关闭 1开启热销
+     */
+    public function state(){
+        $data = $this->request->param();
+        $ids = $data['id'];
+        if(!$ids){return ResultVo::error();}
+
+        if($data['recommend_menu']==''){
+            $this->WeDb->find($this->tables,'id = '.$ids);
+        }
+
+
     }
 
     /**

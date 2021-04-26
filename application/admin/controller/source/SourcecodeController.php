@@ -166,10 +166,8 @@ class SourcecodeController extends BaseCheckUser
             }
         }
         $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';
-        // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
-        // $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
-        // $search[2] = !empty($data['value'])?'username like "%'.trim($data['username']).'%"':'';
         $search[1] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
+        $search[2] = !empty($data['menu_id'])?'menu_id = '.$data['menu_id']:'';
         if($user['role_id'] == 1){
             $search[0] = '';
         }
