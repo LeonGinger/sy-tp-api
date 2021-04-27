@@ -334,7 +334,11 @@ use app\common\vo\ResultVo;
             return $result;
         else {
             //To Do:错误异常捕捉
+<<<<<<< HEAD
             return false;
+=======
+            return ResultVo::error('数据保存失败');
+>>>>>>> b0e6030fc0953ef44c8d53ccb78154a332420e77
         }
     }
     /**
@@ -357,7 +361,11 @@ use app\common\vo\ResultVo;
             return $result;
         else {
             //To Do:错误异常捕捉
+<<<<<<< HEAD
             return false;
+=======
+            return ResultVo::error('数据保存失败');
+>>>>>>> b0e6030fc0953ef44c8d53ccb78154a332420e77
         }
     }
     /**
@@ -374,7 +382,11 @@ use app\common\vo\ResultVo;
             return true;
         else {
             //To Do:错误异常捕捉
+<<<<<<< HEAD
             return false;
+=======
+            return ResultVo::error('数据保存失败');
+>>>>>>> b0e6030fc0953ef44c8d53ccb78154a332420e77
         }
     }
     /**

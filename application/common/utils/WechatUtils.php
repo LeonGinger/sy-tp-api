@@ -146,6 +146,7 @@ class WechatUtils
         $new_user = $user->getOriginal();
         // try {
             //是否关注公众号                https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+<<<<<<< HEAD
             // $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id.'&lang=zh_CN');
             // $user_info = json_decode($user_info);
             // $new_user['subscribe'] = $user_info->subscribe;
@@ -156,6 +157,14 @@ class WechatUtils
         // } catch (\Throwable $th) {
         //     $new_user['subscribe'] = 0;
         // }
+=======
+            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id.'&lang=zh_CN');
+            $user_info = json_decode($user_info);
+            $new_user['subscribe'] = $user_info->subscribe;
+        } catch (\Throwable $th) {
+            $new_user['subscribe'] = 0;
+        }
+>>>>>>> b0e6030fc0953ef44c8d53ccb78154a332420e77
         return $new_user;
     }
     /*通过openid获取最新微信用户信息*/
