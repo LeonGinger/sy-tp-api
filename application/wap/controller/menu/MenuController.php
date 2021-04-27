@@ -70,7 +70,7 @@ class MenuController extends Base
       $certificate_image = $this->request->param('certificate_image');
       $insert3 = [
         'menu_id'=>$menuid,
-        'certificate_image'=>json_encode($certificate_image),
+        'certificate_image'=>!empty($certificate_image)?json_encode($certificate_image):'',
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->insert('menu_certificate',$insert3);
@@ -191,7 +191,7 @@ class MenuController extends Base
       // exit;
       $certificate_image = $this->request->param('certificate_image');
       $update3 = [
-        'certificate_image'=>json_encode($certificate_image),
+        'certificate_image'=>!empty($certificate_image)?json_encode($certificate_image):'',
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->update('menu_certificate',"menu_id = {$menu_id}",$update3);

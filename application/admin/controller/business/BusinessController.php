@@ -119,7 +119,7 @@ class BusinessController extends BaseCheckUser
 				// exit;
 				$user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);
                 $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
-				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>2]);
+				$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
 				// 推送给申请人↓
 				$da_content = [
 					'first' => ['value' => '您的企业入驻申请已通过', 'color' => "#000000"],
@@ -131,13 +131,12 @@ class BusinessController extends BaseCheckUser
 				  $data = [
 					'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
 					'openid' => $business_user['open_id'],
-					'url' => Config::get('domain_h5').'#/pages/operation/operation',
+					'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
 					'content' => $da_content,
 				  ];
 				  $return = $this->Wechat_tool->sendMessage($data);
 				  // * //
                 $state = 1;
-				
     			break;
     		case '2':
     			//不通过
@@ -150,7 +149,6 @@ class BusinessController extends BaseCheckUser
     					//keyword...
     					'remark'=>'',
     				),
-
     			);
     			//$send_result = $this->Wechat_tool->send_msg($business_user['open_id'],$tpl_id,$send_data);
 				// $user = $this->WeDb->update('user',"id = {$business_user['id']}",['role_id'=>2]);

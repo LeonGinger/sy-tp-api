@@ -50,21 +50,24 @@ class SourceController extends Base
       $update = $this->WeDb->update($this->table, 'source_code = "'. $code .'" ',$sc_data);
       // 推送给操作员↓
       $da_content = [
-        'content1' => ['value' => '批次已入库成功', 'color' => "#000000"],
-        'time' => ['value' => $time, 'color' => "#000000"],
-        'user_name' => ['value' => $user['username'], 'color' => "#000000"],
-        'order_number' => ['value' => $source['order_number'], 'color' => "#000000"],
+        'first' => ['value' => '批次已入库成功', 'color' => "#000000"],
+        'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+        'keyword2' => ['value' => $source['source_code_number'], 'color' => "#000000"],
+        'keyword3' => ['value' => $time, 'color' => "#000000"],
         'remark' => ['value' => '操作成功', 'color' => "#000000"],
       ];
       $data = [
-        'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
+        'Template_id' => '7HKGROEJxTpvX5Wc4ya-dDC5Kfpp8dI7mdmUpMmkHUY',
         'openid' => $user['open_id'],
-        'url' => Config::get('domain_h5').'#/pages/operation/operation',
+        'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
         'content' => $da_content,
       ];
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
     } else if ($key == 2) { // 出库操作
+      $order  = $this->request->param('order');
+      $username = $this->request->param('username');
+      $mobile = $this->request->param('mobile');
       if($user['business_notice'] != $business['id']){
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
@@ -81,16 +84,15 @@ class SourceController extends Base
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
       // 推送给操作员↓
       $da_content = [
-        'content1' => ['value' => '批次已出库成功', 'color' => "#000000"],
-        'time' => ['value' => $time, 'color' => "#000000"],
-        'user_name' => ['value' => $user['username'], 'color' => "#000000"],
-        'order_number' => ['value' => $source['order_number'], 'color' => "#000000"],
+        'first' => ['value' => '批次已出库成功', 'color' => "#000000"],
+        'keyword1' => ['value' => '您已对本批次进行出库', 'color' => "#000000"],
+        'keyword2' => ['value' => $time, 'color' => "#000000"],
         'remark' => ['value' => '操作成功', 'color' => "#000000"],
       ];
       $data = [
-        'Template_id' => 'ZtO1j6z81O_xqjog9OgI9Jnon6gkYn-t3M22fnwNn8A',
+        'Template_id' => 'HWi-Lo56tATULEi11ztIIkZu9sw21ql_0ojfUGp1JfY',
         'openid' => $user['open_id'],
-        'url' => Config::get('domain_h5').'#/pages/operation/operation',
+        'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
         'content' => $da_content,
       ];
       $return = $this->Wechat_tool->sendMessage($data);

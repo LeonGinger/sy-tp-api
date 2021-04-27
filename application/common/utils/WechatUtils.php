@@ -109,7 +109,7 @@ class WechatUtils
         $users = $this->app->user->list();
         var_dump($users);
         exit;
-        $listtpl = $app->template_message->getPrivateTemplates();
+        $listtpl = $this->app->template_message->getPrivateTemplates();
         var_dump($listtpl);
     }
     /**
@@ -137,20 +137,25 @@ class WechatUtils
      * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd49aee67b33932b2&redirect_uri=http://sy.zsicp.com/wap/user/user/Login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
      *
      */
+    //   https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxde8d5214f18aa7e4&redirect_uri=http://sy.zsicp.com/wap/user/user/Login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
     public function userinfo_oa()
     {
         $instance = self::getInstance();
         $new_user = [];
         $user = $this->app->oauth->user();
         $new_user = $user->getOriginal();
-        try {
+        // try {
             //是否关注公众号                https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
-            $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id.'&lang=zh_CN');
-            $user_info = json_decode($user_info);
-            $new_user['subscribe'] = $user_info->subscribe;
-        } catch (\Throwable $th) {
-            $new_user['subscribe'] = 1;
-        }
+            // $user_info = get_by_curl('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $instance::$wxAccessToken . '&openid=' . $user->id.'&lang=zh_CN');
+            // $user_info = json_decode($user_info);
+            // $new_user['subscribe'] = $user_info->subscribe;
+            $user_info = self::userinfo_openid($user->id);
+            $new_user['subscribe'] = $user_info['subscribe'];
+            var_dump($user_info);
+            exit;
+        // } catch (\Throwable $th) {
+        //     $new_user['subscribe'] = 0;
+        // }
         return $new_user;
     }
     /*通过openid获取最新微信用户信息*/

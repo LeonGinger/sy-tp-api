@@ -334,7 +334,7 @@ use app\common\vo\ResultVo;
             return $result;
         else {
             //To Do:错误异常捕捉
-            return $this->jsonData(ApiErrDesc::ErrMsg_UPDATE[0], ApiErrDesc::ErrMsg_UPDATE[1]);
+            return false;
         }
     }
     /**
@@ -357,7 +357,7 @@ use app\common\vo\ResultVo;
             return $result;
         else {
             //To Do:错误异常捕捉
-            return $this->jsonData(ApiErrDesc::ErrMsg_UPDATE[0], ApiErrDesc::ErrMsg_UPDATE[1]);
+            return false;
         }
     }
     /**
@@ -374,7 +374,7 @@ use app\common\vo\ResultVo;
             return true;
         else {
             //To Do:错误异常捕捉
-            return $this->jsonData(ApiErrDesc::ErrMsg_INSERT[0], ApiErrDesc::ErrMsg_INSERT[1]);
+            return false;
         }
     }
     /**

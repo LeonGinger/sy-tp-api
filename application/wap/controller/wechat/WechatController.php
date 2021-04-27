@@ -28,8 +28,8 @@ class WechatController extends Base
     //   string(28) "obQVU0eB798KUQWoaBdjiSZ-swrU"
       $configoffice = [
         'debug'  => true,
-        'app_id' => 'wxd49aee67b33932b2',  // *app_id
-        'secret' => '7af33c205b5bfe0d4f55ae00995fff0e',
+        'app_id' => 'wxde8d5214f18aa7e4',  // *app_id
+        'secret' => 'ca85c9b9f0894719e2cc2e359eea113a',
         'token'  => '',
         ];
          $app = new Application($configoffice);
@@ -77,7 +77,7 @@ class WechatController extends Base
     // 获取token
     $token = $this->get_token($appid, $secret);
     // 获取ticket
-    $ticket = $this->get_ticket($token);
+    $ticket = $this->get_ticket($token); 
     // 进行sha1签名
 
     $timestamp = time();
