@@ -80,8 +80,34 @@ class SourceController extends Base
       $sc_data = [
         'deliver_time' => $time,
         'out_user_id' => $userid,
+        'goto_order' => $order,
+        'goto_user' => $username,
+        'goto_mobile' => $mobile,
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
+      $goto_user = $this->WeDb->find('user','phone ='.$mobile);
+      // 推送给用户↓
+      $da_content = [
+        'first' => ['value' => '您查询了一次溯源系统', 'color' => "#000000"],
+        'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+        'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
+        'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
+        'keyword4' => ['value' => 1, 'color' => "#000000"],
+        'remark' => ['value' => '操作成功', 'color' => "#000000"], 
+      ];
+      $url_data = [
+        'order'=>$order,
+        'username'=>$username,
+        'mobile'=>$mobile
+      ];
+      $data = [
+        'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
+        'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
+        'url' => Config::get('domain_h5').'#/pages/express/express',
+        'content' => $da_content,
+      ];
+      $return = $this->Wechat_tool->sendMessage($data);
+      // * //
       // 推送给操作员↓
       $da_content = [
         'first' => ['value' => '批次已出库成功', 'color' => "#000000"],
@@ -96,7 +122,7 @@ class SourceController extends Base
         'content' => $da_content,
       ];
       $return = $this->Wechat_tool->sendMessage($data);
-      // * //
+      // * // 
     } else if ($key == 3) { // 用户查询溯源信息操作
       if($source['out_user_id'] == null){
         return ResultVo::error(110,"您的操作违规了，请重试!");
@@ -118,8 +144,8 @@ class SourceController extends Base
       }
       $source_log = db::table('source_log')->where('user_id = '.$userid.' and source_code = "'.$code.'"')->find();
       $remote_info = $this->getIPaddress();
-      // var_dump($remote_info["Result"]['ip']);
-      // exit();
+      var_dump($source_log);
+      exit;
       if ($source_log == null) {
         $data = [
           'user_id' => $userid,
@@ -136,6 +162,27 @@ class SourceController extends Base
           'province'=>$remote_info["Result"]['address']['p'],
           'county'=>$remote_info["Result"]['address']['d'],
         ];
+        // 推送给用户↓
+        $da_content = [
+          'first' => ['value' => '您查阅了一次溯源信息', 'color' => "#000000"],
+          'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+          'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
+          'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
+          'keyword4' => ['value' => 1, 'color' => "#000000"],
+          'remark' => ['value' => '感谢您的使用，点击可再次查看', 'color' => "#000000"],
+        ];
+        $go_data = [
+          'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
+          'openid' => $user['open_id'],
+          'url' => Config::get('domain_h5').'#/pages/traceability/traceability?source_code='.$source['source_code'],
+          'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($go_data);
+        // * //
+        $sc_data = [
+          'scan_time' => $time,
+        ];
+        $update = $this->WeDb->update($this->table,'source_code = "'. $code .'"', $sc_data);
         $log_insert = $this->WeDb->insert('source_log', $data);
       }else{
         $remote_info = $this->getIPaddress();
@@ -160,10 +207,6 @@ class SourceController extends Base
       // var_dump($update1);
       // exit;
       $update = $this->WeDb->update($this->table, 'id = "'.$id.'"', ['source_number' => $numberi]);
-      $sc_data = [
-        'scan_time' => $time,
-      ];
-      $update = $this->WeDb->update($this->table,'source_code = "'. $code .'"', $sc_data);
       $business = Business::with(['BusinessAppraisal','BusinessImg'])
                 ->where("id = {$source['business_id']}")
                 ->select();
@@ -172,6 +215,23 @@ class SourceController extends Base
               ->select();
       // var_dump($source['enter_user_id']);
       // exit;
+      // 推送给用户↓
+      // $da_content = [
+      //   'first' => ['value' => '您查阅了一次溯源信息', 'color' => "#000000"],
+      //   'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+      //   'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
+      //   'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
+      //   'keyword4' => ['value' => $track, 'color' => "#000000"],
+      //   'remark' => ['value' => '感谢您的使用，点击可再次查看', 'color' => "#000000"],
+      // ];
+      // $data = [
+      //   'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
+      //   'openid' => $user['open_id'],
+      //   'url' => Config::get('domain_h5').'#/pages/traceability/traceability?source_code='.$source['source_code'],
+      //   'content' => $da_content,
+      // ];
+      // $return = $this->Wechat_tool->sendMessage($data);
+      // * //
       $source['business']=$business;
       $source['menu']=$menu;
       return ResultVo::success($source);
@@ -290,6 +350,25 @@ class SourceController extends Base
       }
     }
     return ResultVo::success($source_code_array);
+  }
+  // 修改发出收货信息
+  public function goto_update(){
+    $userid = $this->uid;
+    $user = $this->WeDb->find('user','id = '.$userid);
+    if($user['role_id'] == 4){
+      return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'],ErrorCode::OUT_LIMIT_NOT['message']);
+    }
+    $source_code = $this->request->param('source_code');
+    $goto_user = $this->request->param('goto_user');
+    $goto_order = $this->request->param('goto_order');
+    $goto_mobile = $this->request->param('goto_mobile');
+    $data = [
+      'goto_order'=>$goto_order,
+      'goto_user'=>$goto_user,
+      'goto_mobile'=>$goto_mobile,
+    ];
+    $update = $this->WeDb->update('source','source_code = "'.$source_code.'"',$data);
+    return ResultVo::success($update);
   }
 
   /**

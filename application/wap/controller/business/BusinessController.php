@@ -213,7 +213,7 @@ class BusinessController extends Base
         $select = business::with(['BusinessAppraisal','BusinessImg'])
             // ->with('BusinessImg')
             // ->join('business_img', 'business_img.business_id = business.id')
-            ->where("id={$businessid} and delete_time is null")
+            ->where("id={$businessid}")
             ->select();
         return ResultVo::success($select);
     }

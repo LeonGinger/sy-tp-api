@@ -114,6 +114,7 @@ class EntranceController
         'open_source'=>'/source/SourceController/open_source', //出入库
         'opend_list'=>'/source/SourceController/opend_list', //出入库记录
         'SelectAll'=>'/source/SourceController/SelectAll',
+        'goto_update'=>'/source/SourceController/goto_update',
         
     ];
     private $methodApi_GET = [

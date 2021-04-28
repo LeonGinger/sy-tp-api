@@ -70,7 +70,7 @@ class MenuController extends Base
       $certificate_image = $this->request->param('certificate_image');
       $insert3 = [
         'menu_id'=>$menuid,
-        'certificate_image'=>!empty($certificate_image)?json_encode($certificate_image):'',
+        'certificate_image'=>!empty($certificate_image)?json_encode($certificate_image):[''],
         'certificate_menu_name'=>$menu_name,
       ];
       $certificate = $this->WeDb->insert('menu_certificate',$insert3);
@@ -136,9 +136,9 @@ class MenuController extends Base
       if( $business['state'] != 1){
           return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
       }
-      $menu_id = $this->request->param('');
+      $menu_id = $this->request->param('menu_id');
       // $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
-      $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id['menu_id']}")->find();
+      $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id}")->find();
       $menu['business'] = $this->WeDb->find('business',"id = {$menu['business_id']}");
       $menuAll = Menu::with(['MenuMonitor','MenuCertificate'])->where("business_id = {$menu['business_id']} and if_delete != 1")->select();
       $menu['menuAll'] = $menuAll;

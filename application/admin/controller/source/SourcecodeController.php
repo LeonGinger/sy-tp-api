@@ -158,11 +158,11 @@ class SourcecodeController extends BaseCheckUser
         $where = '';
         if(isset($data['value'])){
             if($data['value']==1){
-                $search[2] = 'enter_user_id is null and out_user_id is null';
+                $search[3] = 'enter_user_id is null and out_user_id is null';
             }else if($data['value']==2){
-                $search[2] = 'enter_user_id is not null and out_user_id is null';
+                $search[3] = 'enter_user_id is not null and out_user_id is null';
             }else if($data['value']==3){
-                $search[2] = 'enter_user_id is not null and out_user_id is not null';
+                $search[3] = 'enter_user_id is not null and out_user_id is not null';
             }
         }
         $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';
