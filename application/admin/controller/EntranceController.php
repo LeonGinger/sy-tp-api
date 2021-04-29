@@ -105,6 +105,7 @@ class EntranceController
         'menu_add'=>'/business/MenuController/add',
         'menu_update'=>'/business/MenuController/edit',
         'menu_del'=>'/business/MenuController/del',
+        'menu_state'=>'/business/MenuController//state',
 
         //批次管理
         'orderAdd'=>'/source/SourcecodeController/orderAdd',

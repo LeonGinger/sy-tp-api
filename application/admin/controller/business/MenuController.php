@@ -7,6 +7,7 @@ use app\admin\controller\Base;
 use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use app\model\Menu;
+use redis\Redis;
 /**
  * 商品管理
  */
@@ -192,17 +193,26 @@ class MenuController extends BaseCheckUser
      * @LastTime     2021-04-26T16:41:50+0800
      * @return       [type]                        [description]
      * @remark recommend_menu 0关闭 1开启热销
+     * @remark !!!!!当前只改变单个状态,多个状态修改以下业务逻辑
+     *         
      */
     public function state(){
+        $redis = new Redis;
         $data = $this->request->param();
         $ids = $data['id'];
         if(!$ids){return ResultVo::error();}
-
-        if($data['recommend_menu']==''){
-            $this->WeDb->find($this->tables,'id = '.$ids);
-        }
-
-
+        $result = $this->WeDb->update($this->tables,'id = '.$ids,['recommend'=>$data['recommend']]);
+        // if($data['recommend_state']=='')){
+        //     $this->WeDb->find($this->tables,'id = '.$ids);
+        // }
+        // $redis_state = $redis->get('sy_admin_menu__recommend_id_'.$ids);
+        // if($redis_state!=null){
+        //   //更新redis
+        //   if($redis_state!=$data['recommend_state'])
+        //   $redis->set('sy_admin_menu__recommend_id_'.$ids,$data['recommend_state'],3);
+          
+        // }
+        return ResultVo::success();
     }
 
     /**
