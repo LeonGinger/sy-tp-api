@@ -105,7 +105,7 @@ class EntranceController
         'menu_add'=>'/business/MenuController/add',
         'menu_update'=>'/business/MenuController/edit',
         'menu_del'=>'/business/MenuController/del',
-        'menu_state'=>'/business/MenuController//state',
+        'menu_state'=>'/business/MenuController/state',
 
         //批次管理
         'orderAdd'=>'/source/SourcecodeController/orderAdd',
@@ -140,8 +140,8 @@ class EntranceController
         'database_dump'=>'/sys/SettingController/dump_base',
         'database_down'=>'/sys/SettingController/down_base',
         'database_del'=>'/sys/SettingController/del_base',
-
-
+        // 每日统计
+        'business_push'=>'/business/BusinessController/business_push',
     ];
 
 }

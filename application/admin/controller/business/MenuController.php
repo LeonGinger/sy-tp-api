@@ -103,7 +103,7 @@ class MenuController extends BaseCheckUser
      */
     public function add(){
         $data = $this->request->param('');
-        // var_dump($data['business_id']);
+        // var_dump($data);
         // exit;
         $user = $this->WeDb->find('user',"id = {$this->adminInfo['id']}");
         if($user['role_id'] != 1){
@@ -142,8 +142,9 @@ class MenuController extends BaseCheckUser
             $re_monitorid = $this->WeDb->insertGetId('menu_monitor',[
                 'menu_id' => $re_mid,
                 'monitor_image' => $data['monitor_image'],
-                'sample_name' =>  "",
-                'test_location' => "",
+                'sample_name' =>  $data['monitor_menu']['sample_name'],
+                'test_location' => $data['monitor_menu']['test_location'],
+                'monitoring_time' => $data['monitor_menu']['monitoring_time'],
             ]);
         }
         return ResultVo::success($re_mid);
@@ -178,7 +179,12 @@ class MenuController extends BaseCheckUser
         $result = $this->WeDb->update($this->tables,'id = '.$data['id'],$up_data);
         /*检测报告*/
         if(isset($data['monitor_image'])){
-            $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,['monitor_image'=>$data['monitor_image']]);
+            $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,[
+                'monitor_image' => $data['monitor_image'],
+                'sample_name' =>  $data['monitor_menu']['sample_name'],
+                'test_location' => $data['monitor_menu']['test_location'],
+                'monitoring_time' => $data['monitor_menu']['monitoring_time'],
+            ]);
         }
         /*商品证书*/
         if(isset($data['certificate_image'])){
@@ -200,6 +206,8 @@ class MenuController extends BaseCheckUser
         $redis = new Redis;
         $data = $this->request->param();
         $ids = $data['id'];
+        // var_dump($data);
+        // exit;
         if(!$ids){return ResultVo::error();}
         $result = $this->WeDb->update($this->tables,'id = '.$ids,['recommend'=>$data['recommend']]);
         // if($data['recommend_state']=='')){

@@ -115,6 +115,8 @@ class EntranceController
         'opend_list'=>'/source/SourceController/opend_list', //出入库记录
         'SelectAll'=>'/source/SourceController/SelectAll',
         'goto_update'=>'/source/SourceController/goto_update',
+        // 每日统计
+        'business_push'=>'/business/BusinessController/business_push',
         
     ];
     private $methodApi_GET = [

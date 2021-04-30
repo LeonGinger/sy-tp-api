@@ -23,10 +23,12 @@ class RouteNo
     const NOT_WAPAPI = [ 
         'wap/user/user/set_token'=>'/user/UserController/set_token',
         'wap/user/user/Login'=>'/user/UserController/Login',
+        'wap/user/user/testsend'=>'/user/UserController/testsend',
         // 'wap/Add_order'=>'/source/SourceController/Add_order'
         // 'wap/iphone_code'=>'/user/UserController/iphone_code',
         'wap/send_message'=>'/wechat/WechatController/getConfig',
         // 'wap/testLogin'=>'/wechat/WechatController/testLogin',
+        'wap/business_push'=>'/business/BusinessController/business_push',
     ];
     /**
      * 后台不需要token的接口

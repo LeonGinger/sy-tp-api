@@ -86,28 +86,29 @@ class SourceController extends Base
       ];
       $update = $this->WeDb->update($this->table, 'source_code = "' . $code . '" ', $sc_data);
       $goto_user = $this->WeDb->find('user','phone ='.$mobile);
-      // 推送给用户↓
-      $da_content = [
-        'first' => ['value' => '您查询了一次溯源系统', 'color' => "#000000"],
-        'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
-        'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
-        'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
-        'keyword4' => ['value' => 1, 'color' => "#000000"],
-        'remark' => ['value' => '操作成功', 'color' => "#000000"], 
-      ];
-      $url_data = [
-        'order'=>$order,
-        'username'=>$username,
-        'mobile'=>$mobile
-      ];
-      $data = [
-        'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
-        'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
-        'url' => Config::get('domain_h5').'#/pages/express/express',
-        'content' => $da_content,
-      ];
-      $return = $this->Wechat_tool->sendMessage($data);
-      // * //
+      if(isset($goto_user)){
+        // 推送给用户↓
+        $da_content = [
+          'first' => ['value' => '您的快递已经起航了', 'color' => "#000000"],
+          'keyword1' => ['value' => $order, 'color' => "#000000"],
+          'keyword2' => ['value' => $time, 'color' => "#000000"],
+          'remark' => ['value' => '点击查看', 'color' => "#000000"], 
+        ];
+        $url_data = [
+          'order'=>$order,
+          'username'=>$username,
+          'mobile'=>$mobile
+        ];
+        $data = [
+          'Template_id' => 'LbP3wXj0FEZd30BGZqLZZNn0yrPI5APIjQGM9tk_KaI',
+          'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
+          'url' => Config::get('domain_h5').'#/pages/express/express?source_code='.$code,
+          'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($data);
+        // * //
+      }
+      
       // 推送给操作员↓
       $da_content = [
         'first' => ['value' => '批次已出库成功', 'color' => "#000000"],
@@ -118,6 +119,22 @@ class SourceController extends Base
       $data = [
         'Template_id' => 'HWi-Lo56tATULEi11ztIIkZu9sw21ql_0ojfUGp1JfY',
         'openid' => $user['open_id'],
+        'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
+        'content' => $da_content,
+      ];
+      $return = $this->Wechat_tool->sendMessage($data);
+      // * // 
+      // 推送给负责人↓↓↓!
+      $bs_user = $this->WeDb->find('user','business_notice='.$source['business_id'].' and role_id = 2'); 
+      $da_content = [
+        'first' => ['value' => '您公司的批次 '.$source['source_code'].'已离开仓库', 'color' => "#000000"],
+        'keyword1' => ['value' => '本批次已进行出库', 'color' => "#000000"],
+        'keyword2' => ['value' => $time, 'color' => "#000000"],
+        'remark' => ['value' => '出库成功', 'color' => "#000000"],
+      ];
+      $data = [
+        'Template_id' => 'HWi-Lo56tATULEi11ztIIkZu9sw21ql_0ojfUGp1JfY',
+        'openid' => $bs_user['open_id'],
         'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
         'content' => $da_content,
       ];
@@ -144,8 +161,8 @@ class SourceController extends Base
       }
       $source_log = db::table('source_log')->where('user_id = '.$userid.' and source_code = "'.$code.'"')->find();
       $remote_info = $this->getIPaddress();
-      var_dump($source_log);
-      exit;
+      // var_dump($source_log);
+      // exit;
       if ($source_log == null) {
         $data = [
           'user_id' => $userid,
@@ -170,6 +187,23 @@ class SourceController extends Base
           'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
           'keyword4' => ['value' => 1, 'color' => "#000000"],
           'remark' => ['value' => '感谢您的使用，点击可再次查看', 'color' => "#000000"],
+        ];
+        $go_data = [
+          'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
+          'openid' => $user['open_id'],
+          'url' => Config::get('domain_h5').'#/pages/traceability/traceability?source_code='.$source['source_code'],
+          'content' => $da_content,
+        ];
+        $return = $this->Wechat_tool->sendMessage($go_data);
+        // * //
+        // 推送给负责人↓↓↓!
+        $da_content = [
+          'first' => ['value' => '用户查阅了一条新的溯源信息', 'color' => "#000000"],
+          'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+          'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
+          'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
+          'keyword4' => ['value' => 1, 'color' => "#000000"],
+          'remark' => ['value' => '感谢您的使用', 'color' => "#000000"],
         ];
         $go_data = [
           'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
@@ -270,16 +304,16 @@ class SourceController extends Base
     $user = $this->WeDb->find('user', "id = {$userid}");
     $business_id = $user['business_notice'];
     if($user['role_id'] == 3){
-      $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}");
-      $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}");
+      $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}",'*','create_time asc');
+      $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}",'*','create_time asc');
       $data = [
         'message' => "请求成功",
         'enter' => $select,
         'out' => $select2,
       ];
     }else if($user['role_id'] == 2){
-      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null");
-      $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null");
+      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null",'*','create_time asc');
+      $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null",'*','create_time asc');
       $data = [
         'message' => "请求成功",
         'enter' => $select,
@@ -355,6 +389,7 @@ class SourceController extends Base
   public function goto_update(){
     $userid = $this->uid;
     $user = $this->WeDb->find('user','id = '.$userid);
+    $time = date('Y-m-d H:i:s');
     if($user['role_id'] == 4){
       return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'],ErrorCode::OUT_LIMIT_NOT['message']);
     }
@@ -367,6 +402,26 @@ class SourceController extends Base
       'goto_user'=>$goto_user,
       'goto_mobile'=>$goto_mobile,
     ];
+    // 推送给用户↓
+    $da_content = [
+      'first' => ['value' => '您的快递信息被修改了', 'color' => "#000000"],
+      'keyword1' => ['value' => $goto_order, 'color' => "#000000"],
+      'keyword2' => ['value' => $time, 'color' => "#000000"],
+      'remark' => ['value' => '点击查看', 'color' => "#000000"], 
+    ];
+    $url_data = [
+      'order'=>$goto_order,
+      'username'=>$goto_user,
+      'mobile'=>$goto_mobile
+    ];
+    $data = [
+      'Template_id' => 'LbP3wXj0FEZd30BGZqLZZNn0yrPI5APIjQGM9tk_KaI',
+      'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
+      'url' => Config::get('domain_h5').'#/pages/express/express?source_code='.$code,
+      'content' => $da_content,
+    ];
+    $return = $this->Wechat_tool->sendMessage($data);
+    // * //
     $update = $this->WeDb->update('source','source_code = "'.$source_code.'"',$data);
     return ResultVo::success($update);
   }

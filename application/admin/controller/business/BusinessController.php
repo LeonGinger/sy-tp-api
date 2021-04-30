@@ -8,6 +8,8 @@ use app\common\enums\ErrorCode;
 use app\common\vo\ResultVo;
 use think\facade\Config;
 use app\model\Business;
+use think\Queue;
+use redis\Redis;
 
 use function GuzzleHttp\json_encode;
 
@@ -73,17 +75,19 @@ class BusinessController extends BaseCheckUser
     /*改变状态*/
     public function state(){
     	$data = $this->request->post();
+		// var_dump($data);
+		// exit;
     	if(@$data['state']){
     		$result = $this->WeDb->update($this->tables,'id = '.$data['id'],['state'=>$data['state']]);
     	}
     	if(@$data['verify_if']){
-    		$result_verif = $this->verify_if($data);
+    		$result_verif = self::verify_if($data);
     		// $result = $this->WeDb->update($this->tables,'id = '.$data['id'],['verify_if'=>$data['verify_if'],'state'=>$result_verif]);
 			if($result_verif == 12138){
 				return ResultVo::error(12138,"此商家已被用户解除绑定，系统将自动删除");
 			}
     	}
-		return ResultVo::success();
+		return ResultVo::success($result_verif);
     }
 
     /*审核*/
@@ -92,7 +96,8 @@ class BusinessController extends BaseCheckUser
 		// exit;
     	$business_info = $this->WeDb->find($this->tables,'id = '.$data['id']);
     	$business_user = $this->WeDb->find('user','business_notice = '.$data['id']);
-		// var
+		// var_dump($business_user);
+		// exit;
 		if(isset($business_user)){}else{
 			$delete = $this->WeDb->update('business',"id = {$business_info['id']}",['delete_time'=>date('Y-m-d H:i:s')]);
 			return 12138;
@@ -131,7 +136,7 @@ class BusinessController extends BaseCheckUser
 				  $data = [
 					'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
 					'openid' => $business_user['open_id'],
-					'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
+					'url' => Config::get('domain_h5').'#/pages/my/my',
 					'content' => $da_content,
 				  ];
 				  $return = $this->Wechat_tool->sendMessage($data);
@@ -155,7 +160,7 @@ class BusinessController extends BaseCheckUser
                 // $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$business_user['id']}", ['role_id'=>2]);
 				if($business_user['role_id']==2){//判别是否是修改，角色为2是修改，角色为4是加入
 					// 恢复历史信息
-					$log_business = $this->WeDb->selectView('business_update_log',"business_id = {$business_user['business_notice']}",'*','update_time desc');
+					$log_business = $this->WeDb->selectView('business_update_log',"business_id = {$business_user['business_notice']}",'*','update_time asc');
 					$log_business = $log_business[0];
 					$lg_data1=[
 						'business_name'=>$log_business['business_name'],
@@ -169,22 +174,38 @@ class BusinessController extends BaseCheckUser
 					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>1,'state'=>1]);
 					// 推送给申请人↓
 					$da_content = [
-						'first' => ['value' => '您的修改信息已被管理员驳回', 'color' => "#000000"],
+						'first' => ['value' => '您修改的信息已被管理员驳回', 'color' => "#000000"],
 						'keyword1' => ['value' => $business_user['username'], 'color' => "#000000"],
-						'keyword2' => ['value' => $business_info['business_name'], 'color' => "#000000"],
-						'keyword3' => ['value' => "您的申请已通过管理员的审核，快进入系统使用把！", 'color' => "#000000"],
-						'remark' => ['value' => '溯源系统', 'color' => "#000000"],
+						'keyword2' => ['value' => $log_business['business_name'], 'color' => "#000000"],
+						'keyword3' => ['value' => "您的申请未通过管理员审核,已恢复成修改前的信息", 'color' => "#000000"],
+						'remark' => ['value' => "原由为:{$data['content']}", 'color' => "#000000"],
 					];
 					$data = [
 						'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
 						'openid' => $business_user['open_id'],
-						'url' => Config::get('domain_h5').'#/pages/operation/operation',
+						'url' => Config::get('domain_h5').'#/pages/my/my',
 						'content' => $da_content,
 					];
 					$return = $this->Wechat_tool->sendMessage($data);
 					// * //
 				}else{
 					$business = $this->WeDb->update('business',"id = {$business_user['business_notice']}",['verify_if'=>2,'state'=>2]);
+					// 推送给申请人↓
+					$da_content = [
+						'first' => ['value' => '您的入驻信息信息已被管理员驳回', 'color' => "#000000"],
+						'keyword1' => ['value' => $business_user['username'], 'color' => "#000000"],
+						'keyword2' => ['value' => $business_info['business_name'], 'color' => "#000000"],
+						'keyword3' => ['value' => "您的申请未通过管理员审核", 'color' => "#000000"],
+						'remark' => ['value' => "原由为:{$data['content']}", 'color' => "#000000"],
+					];
+					$data = [
+						'Template_id' => 'MbHfsg51fQ1Zzty6F8-9lExm_Cb4ClinviJRR9TgOms',
+						'openid' => $business_user['open_id'],
+						'url' => Config::get('domain_h5').'#/pages/my/my',
+						'content' => $da_content,
+					];
+					$return = $this->Wechat_tool->sendMessage($data);
+					// * //
 				}
                 $state = 2;
     			break;
@@ -199,8 +220,7 @@ class BusinessController extends BaseCheckUser
 		$data = $this->request->param('');
         $id = $data['business_id']?:$this->adminInfo['id'];
 
-		$business = Business::where("id = {$id}")
-		->find();
+		$business = Business::where("id = {$id}")->find();
 		$business['business_images'] = json_decode($business['business_images']);
 		$business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
 		$business_img = $this->WeDb->find('business_img',"business_id = {$business['id']}");

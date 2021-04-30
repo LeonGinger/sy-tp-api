@@ -15,6 +15,8 @@ use app\model\Business;
 use app\model\Business_notice;
 use app\wap\controller\wechat\WechatController;
 use app\model\Menu;
+use think\Queue;
+use redis\Redis;
 
 /**
  * 商家相关
@@ -302,8 +304,7 @@ class BusinessController extends Base
         $business_images_injson = $this->request->param('business_images_injson');
         $business_img_contentjson = $this->request->param('business_img_contentjson');
         if($business_images == null || 
-           $business_introduction == null || 
-           $business_images_injson == null){
+           $business_introduction == null){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
         // $appraisal_image = $this->request->param('appraisal_image'); 
@@ -409,7 +410,7 @@ class BusinessController extends Base
     public function join_my()
     {
         $userid = $this->uid;
-        $user = $this->WeDb->find('user', "id={$userid}");   
+        $user = $this->WeDb->find('user', "id={$userid}");  
         $grant_code = $this->request->param('grant_code');
         $business = $this->WeDb->find($this->table, 'grant_code="' . $grant_code . '"');
         if($user['business_notice']){
@@ -571,5 +572,21 @@ class BusinessController extends Base
                     ->select();
         $business['menuAll'] = $menu;
         return ResultVo::success($business);
+	}
+    // 发送每日的统计推送
+	public function business_push(){
+		$business_userAll = $this->WeDb->selectView('user','role_id = 2');
+		for($i = 0;$i<count($business_userAll);$i++){
+			$jobHandlerClassName  = 'app\admin\controller\job\businessAll';
+			$jobQueueName = "business_push";
+			$num = 50000;
+			$this->redis = new Redis();
+			$this->redis->set('has_create', $num);
+			$this->redis->set('gotostatus', 1);
+			$isPushed = Queue::push($jobHandlerClassName, $business_userAll[$i], $jobQueueName);
+            // var_dump($isPushed);
+            // exit;
+		}
+        return ResultVo::success($isPushed);
 	}
 }

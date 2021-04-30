@@ -209,7 +209,7 @@ class UserController extends Base
   public function this_source_log()
   {
     $userid = $this->uid;
-    $log = SourceLog::with('Source')->where("user_id = {$userid}")->order("track_time desc")->select();
+    $log = SourceLog::with('Source')->where("user_id = {$userid}")->order("track_time asc")->select();
     return ResultVo::success($log);
   }
   // 短信验证码

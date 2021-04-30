@@ -133,9 +133,6 @@ class MenuController extends Base
       $userid = $this->uid;
       $user = $this->WeDb->find('user', "id={$userid}");
       $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-      if( $business['state'] != 1){
-          return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-      }
       $menu_id = $this->request->param('menu_id');
       // $menu = $this->WeDb->find('menu',"id = {$menu_id['menu_id']}");
       $menu = Menu::with(['MenuMonitor','MenuCertificate'])->where("id = {$menu_id}")->find();
