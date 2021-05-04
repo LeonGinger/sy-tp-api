@@ -573,20 +573,24 @@ class BusinessController extends Base
         $business['menuAll'] = $menu;
         return ResultVo::success($business);
 	}
-    // 发送每日的统计推送
-	public function business_push(){
-		$business_userAll = $this->WeDb->selectView('user','role_id = 2');
-		for($i = 0;$i<count($business_userAll);$i++){
-			$jobHandlerClassName  = 'app\admin\controller\job\businessAll';
-			$jobQueueName = "business_push";
-			$num = 50000;
-			$this->redis = new Redis();
-			$this->redis->set('has_create', $num);
-			$this->redis->set('gotostatus', 1);
-			$isPushed = Queue::push($jobHandlerClassName, $business_userAll[$i], $jobQueueName);
-            // var_dump($isPushed);
-            // exit;
-		}
-        return ResultVo::success($isPushed);
-	}
+    /**
+     * 发送每日的统计推送
+     * LastTime:2021年5月4日17:25:02
+     * @remark:command/Business模块下
+     */
+	// public function business_push(){
+	// 	$business_userAll = $this->WeDb->selectView('user','role_id = 2');
+	// 	for($i = 0;$i<count($business_userAll);$i++){
+	// 		$jobHandlerClassName  = 'app\admin\controller\job\businessAll';
+	// 		$jobQueueName = "business_push";
+	// 		$num = 50000;
+	// 		$this->redis = new Redis();
+	// 		$this->redis->set('has_create', $num);
+	// 		$this->redis->set('gotostatus', 1);
+	// 		$isPushed = Queue::push($jobHandlerClassName, $business_userAll[$i], $jobQueueName);
+    //         // var_dump($isPushed);
+    //         // exit;
+	// 	}
+    //     return ResultVo::success($isPushed);
+	// }
 }

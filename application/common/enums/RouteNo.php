@@ -28,7 +28,7 @@ class RouteNo
         // 'wap/iphone_code'=>'/user/UserController/iphone_code',
         'wap/send_message'=>'/wechat/WechatController/getConfig',
         // 'wap/testLogin'=>'/wechat/WechatController/testLogin',
-        'wap/business_push'=>'/business/BusinessController/business_push',
+        // 'wap/business_push'=>'/business/BusinessController/business_push',
     ];
     /**
      * 后台不需要token的接口
