@@ -218,7 +218,7 @@ class BusinessController extends BaseCheckUser
 	// 商家信息页
 	public function businessAll(){
 		$data = $this->request->param('');
-        $id = $data['business_id']?:$this->adminInfo['id'];
+        $id = $data['business_id']?:$this->adminInfo['business_notice'];
 
 		$business = Business::where("id = {$id}")->find();
 		$business['business_images'] = json_decode($business['business_images']);
