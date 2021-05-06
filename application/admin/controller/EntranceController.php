@@ -70,6 +70,7 @@ class EntranceController
         'admin_del'=>'/auth/AdminController/delete',
         'admin_add'=>'/auth/AdminController/save',
         'admin_update'=>'/auth/AdminController/edit',
+        'admin_chphone'=>'/auth/AdminController/change_phone',
         /*通用-用户列表*/
         'user_list'=>'/user/UserController/index_user',
         'user_ids'=>'/user/UserController/details_user',

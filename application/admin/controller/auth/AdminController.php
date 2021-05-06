@@ -11,6 +11,7 @@ use app\common\utils\PassWordUtils;
 use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
 use app\model\User;
+use redis\Redis;
 
 /**
  * 管理员相关
@@ -104,7 +105,7 @@ class AdminController extends BaseCheckUser
      */
     public function save(){
         $data = request()->post();
-        if (empty($data['username']) || empty($data['password'])){
+        if (empty($data['username']) || empty($data['phone'])){
             return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);
         }
         $username = $data['username'];
@@ -247,7 +248,46 @@ class AdminController extends BaseCheckUser
         AuthRoleAdmin::where('admin_id',$id)->delete();
 
         return ResultVo::success();
+    }
+    /**
+     * 修改\绑定手机号验证-仅用于登录的情况
+     * @remark-需要根据不同类型,获取不同redis,现统一获取
+     */
+    public function change_phone(){
+        $data = $this->request->param('');
+        $type = "CHPHONE";
 
+        $admin = User::where('phone',$data['old_phone'])
+            ->field('id,role_id,business_notice,username,user_image as avatar,status')
+            ->find();
+        if (empty($admin)){
+            //尝试找出admin
+            $admin = User::where('id',$this->adminInfo['id'])->find();
+            if(empty($admin)){
+                return ResultVo::error(ErrorCode::USER_AUTH_FAIL);
+            }
+            if($admin['phone']==NULL){
+                $type = "BENDIN";
+            }
+        }
+        $redis = new Redis;
+        $verif_code = $redis->get('admin_phonecode_mobile_'.$data['new_phone']."_adminId_".$this->adminInfo['id']);
+ 
+        if(!$verif_code){
+            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION['code'],'验证超时,请重新获取验证码');
+        }
+        
+        if($verif_code!=$data['code']){
+            return ResultVo::error(ErrorCode::USER_NOT_PERMISSION['code'],'验证码错误');
+        }
+
+        /*验证结束 */
+        $up_data = array(
+            'phone'=>$data['new_phone'],
+
+        );
+        $up_result = User::where('id = '.$admin['id'])->data($up_data)->update();
+        return ResultVo::success();
     }
 
 }

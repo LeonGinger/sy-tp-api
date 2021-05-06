@@ -15,6 +15,7 @@ use think\facade\Hook;
 use redis\Redis;
 use app\model\User;
 use app\common\utils\WechatUtils;
+use think\db;
 /**
  * 登录
  */
@@ -242,17 +243,44 @@ class LoginController extends Base
     }
 
     /**
-     * 发送验证码登录
+     * LastTime:2021年5月6日09:17:41
+     * 发送验证码登录、修改手机号验证码
+     * @remark:默认登录、CHPHONE-更换手机号、BENDIN-绑定手机号
      */
     public function send_code(){
         $sms = new \Sms_YunPian();
         $tel = $this->request->param('mobile');
-        // var_dump($tel);
-        // exit;
+        $type = $this->request->param('type');
+        $code = mt_rand(100000,999999);
+
+        /*修改手机号-登录的情况*/
+        if($type=="CHPHONE"){
+            $login_info = Hook::exec('app\\admin\\behavior\\CheckAuth', []);
+            if(!$login_info){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户信息错误');}
+            $check_repeat = User::where('phone = "'.$tel.'" and delete_time is null and id != '.$login_info['id'])->find();
+            if($check_repeat){return ResultVo::error(ErrorCode::DATA_NOT['code'],'该手机号已被使用');}
+
+            $code = '123456';
+
+            $this->redis::set('admin_phonecode_mobile_'.$tel."_adminId_".$login_info['id'],$code,180);
+            return ResultVo::success();
+        }
+        if($type=="BENDIN"){
+            $login_info = Hook::exec('app\\admin\\behavior\\CheckAuth', []);
+            if(!$login_info){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户信息错误');}
+            $check_repeat = User::where('phone = "'.$tel.'" and delete_time is null and id != '.$login_info['id'])->find();
+            if($check_repeat){return ResultVo::error(ErrorCode::DATA_NOT['code'],'该手机号已被使用');}
+
+            $code = '123456';
+
+            $this->redis::set('admin_phonecode_mobile_'.$tel."_adminId_".$login_info['id'],$code,180);
+            return ResultVo::success();
+        }
+
         $check_tel = User::where('delete_time is null and phone = "'.$tel.'"')->find();
         if(!$check_tel){return ResultVo::error(ErrorCode::DATA_NOT['code'],'用户不存在');}
 
-        $code = mt_rand(100000,999999);
+        
 
         /* 测试 */
         $code = '123456';

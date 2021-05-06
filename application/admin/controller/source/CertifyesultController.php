@@ -92,7 +92,7 @@ class CertifyesultController extends BaseCheckUser
             }
         }
         $where=substr($where,0,strlen($where)-5);
-
+		//开始获取数据
 		$Topten_search = db::table('view_source_log')->field('id,menu_id,menu_name,sum(track) as track')
 												->where($where)
 												->order('track desc')
@@ -105,7 +105,7 @@ class CertifyesultController extends BaseCheckUser
 			// $menu_id = array_column($Topten_search, "menu_id");
 			foreach ($Topten_search as $key => $value) {
 				# code...
-				$Topten_search[$key]['first_count'] = db::table('source_log')->where('menu_id = '.$value['menu_id'].' and track = 1')->count();
+				$Topten_search[$key]['first_count'] = db::table('source_log')->where('menu_id = '.$value['menu_id'].' and track != 0')->count();
 			}
 
 		}
