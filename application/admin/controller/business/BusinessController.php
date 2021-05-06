@@ -221,6 +221,8 @@ class BusinessController extends BaseCheckUser
         $id = $data['business_id']?:$this->adminInfo['business_notice'];
 
 		$business = Business::where("id = {$id}")->find();
+		// var_dump($business);
+		// exit;
 		$business['business_images'] = json_decode($business['business_images']);
 		$business_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
 		$business_img = $this->WeDb->find('business_img',"business_id = {$business['id']}");

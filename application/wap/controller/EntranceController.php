@@ -109,6 +109,7 @@ class EntranceController
         'delete_menu'=>'/menu/MenuController/delete_menu',
         'update_menu'=>'/menu/MenuController/update_menu',
         'find_menu'=>'/menu/MenuController/find_menu',
+        'menu_hot'=>'/menu/MenuController/menu_hot',
         // sourceController操作
         'Add_order'=>'/source/SourceController/Add_order',
         'open_source'=>'/source/SourceController/open_source', //出入库

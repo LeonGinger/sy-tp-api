@@ -47,11 +47,11 @@ class MenuController extends BaseCheckUser
             //此处加上了箱本身的一个二维码
             $query->field('menu_id,sum(source_code_number)+count(menu_id) as cout_code')->group('menu_id')->find();
         }])
-        				->where($where)
-        				->page($data['page'],$data['size'])
-                        ->order($order)
-        				->select()
-        				->toarray();
+            ->where($where)
+            ->page($data['page'],$data['size'])
+            ->order($order)
+            ->select()
+            ->toarray();
         //$list = $this->WeDb->selectView($this->tables,$where);
         $total =  $this->WeDb->totalView($this->tables,$where);
         for($i=0 ; $i<count($list);$i++){
@@ -141,10 +141,10 @@ class MenuController extends BaseCheckUser
         if(isset($data['monitor_image'])){
             $re_monitorid = $this->WeDb->insertGetId('menu_monitor',[
                 'menu_id' => $re_mid,
-                'monitor_image' => $data['monitor_image'],
-                'sample_name' =>  $data['monitor_menu']['sample_name'],
-                'test_location' => $data['monitor_menu']['test_location'],
-                'monitoring_time' => $data['monitor_menu']['monitoring_time'],
+                'monitor_image' => !empty($data['monitor_image'])?$data['monitor_image']:'',
+                'sample_name' => !empty($data['monitor_menu']['sample_name'])?$data['monitor_menu']['sample_name']:'',
+                'test_location' => !empty($data['monitor_menu']['test_location'])?$data['monitor_menu']['test_location']:'',
+                'monitoring_time' => !empty($data['monitor_menu']['monitoring_time'])?$data['monitor_menu']['monitoring_time']:'0000-00-00 00:00:00',
             ]);
         }
         return ResultVo::success($re_mid);

@@ -184,7 +184,7 @@ class SourcecodeController extends BaseCheckUser
             if ($source[$i]['enter_user_id'] == null) {
                 $source[$i]['state'] = '未入库';
             } else if ($source[$i]['out_user_id'] == null) {
-                $source[$i]['state'] = '未出库';
+                $source[$i]['state'] = '已入库';
             } else if ($source[$i]['out_user_id'] != null) {
                 $source[$i]['state'] = '已出库';
             }

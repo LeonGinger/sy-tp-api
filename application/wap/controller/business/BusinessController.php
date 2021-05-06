@@ -31,7 +31,7 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $time = date('Y-m-d H:i:s');
-        if ($user['role_id'] == 2 || $user['role_id'] == 3) {
+        if ($user['role_id'] == 2 || $user['role_id'] == 3) { // 判别是否已拥有商家
             return ResultVo::error(ErrorCode::USER_BUSINESS_TRUE['code'], ErrorCode::USER_BUSINESS_TRUE['message']);
         }
         $code = round_code(16);
@@ -42,11 +42,13 @@ class BusinessController extends Base
         $appraisal_img = $this->request->param('appraisal_img');
         // var_dump($appraisal_img);
         // exit;
+        // 四个重要信息不能为空
         if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
         $business = $this->WeDb->selectView('business','','business_name');
         for($i = 0;$i<count($business);$i++){
+            // 循环弹断是否有未删除且商家名称一样的商家
             if($business_name == $business[$i]['business_name'] && $business[$i]['delete_time'] != null){
                 return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
             }
@@ -103,9 +105,11 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $this_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
+        // 若角色不为消费者，则不为核审不通过状态
         if($user['role_id'] != 4){
             return ResultVo::error(407,"您的权限异常，请重试");
         }
+        // 判断商家的核审状态与冻结状态
         if($this_business['verify_if'] != 2 && $this_business['state'] != 2){
             return ResultVo::error(144,"您的商家发生了错误，请联系管理员");
         }
@@ -125,7 +129,7 @@ class BusinessController extends Base
             return ResultVo::error(ErrorCode::DATA_NOT_CONTRNT['code'], ErrorCode::DATA_NOT_CONTRNT['message']);
         }
         $business = $this->WeDb->selectView('business','','business_name,delete_time');
-        for($i = 0;$i<count($business);$i++){
+        for($i = 0;$i<count($business);$i++){ // 循环弹断是否有未删除且商家名称一样的商家
             if($business_name == $business[$i]['business_name'] && $business[$i]['delete_time'] != null){
                 return ResultVo::error(ErrorCode::BUSINESS_REPEAT['code'], ErrorCode::BUSINESS_REPEAT['message']);
             }
@@ -176,7 +180,7 @@ class BusinessController extends Base
         if ($businessid != $user['business_notice']) {
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
-        if ($user['role_id'] != 2 && $user['role_id'] != 1) {
+        if ($user['role_id'] != 2 && $user['role_id'] != 1) { // 软删除权限判断
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
         $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d H:i:s')]);
@@ -220,6 +224,7 @@ class BusinessController extends Base
         return ResultVo::success($select);
     }
     // 修改所有信息接口(会修改状态为未审核)
+    // 规则定义：修改商家名称、商家地址、联系人员、联系电话、商家证书其中一项或多项，都将需要管理员再次审核
     public function Apply_updateall()
     {
         $userid = $this->uid;
@@ -342,13 +347,13 @@ class BusinessController extends Base
         $out_id = $this->request->param('out_user_id');
         $user = $this->WeDb->find('user', "id={$userid}");
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
+        if( $business['state'] != 1){// 判断公司冻结状态
             return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
         }
         $out_user = $this->WeDb->find('user', "id = {$out_id}");
         $business = $this->WeDb->find('business', "id = {$user['business_notice']}");
         $time = date('Y-m-d H:i:s');
-        if ($user['role_id'] != 2 && $user['role_id'] != 1) {
+        if ($user['role_id'] != 2 && $user['role_id'] != 1) {// 验证权限
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
         $out_data = [
@@ -475,7 +480,7 @@ class BusinessController extends Base
         //*//
         return ResultVo::success($userupdate);
     }
-    // 员工列表接口
+    // 我的员工列表接口
     public function my_user()
     {
         $userid = $this->uid;
@@ -516,9 +521,9 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
-            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-        }
+        // if( $business['state'] != 1){
+        //     return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
+        // }
         $business_user = $this->WeDb->find('user', "business_notice = {$user['business_notice']} and role_id = 2");
         $business = $this->WeDb->find('business', "id = {$business_user['business_notice']}");
         if ($user['role_id'] != 3) {

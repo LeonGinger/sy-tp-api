@@ -27,7 +27,7 @@ class Base extends Controller
     {
     	parent::initialize();   
         $this->request =  Request::instance();
-        $this->Wechat_tool = WechatUtils::getInstance();
+        // $this->Wechat_tool = WechatUtils::getInstance();
         $this->WeDb = WeDbUtils::getInstance();
 
     }

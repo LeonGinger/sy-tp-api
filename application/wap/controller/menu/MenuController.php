@@ -217,4 +217,18 @@ class MenuController extends Base
       ];
       return ResultVo::success($certificate);
     }
+    // 商品热卖状态转换
+    public function menu_hot(){
+      $userid = $this->uid;
+      // var_dump($userid);
+      // exit;
+      $user = $this->WeDb->find('user','id = '.$userid);
+      if($user['role_id'] == 4){
+        return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
+      }
+      $hot_key = $this->request->param('hot_key');
+      $menu_id = $this->request->param('menu_id');
+      $update = $this->WeDb->update('menu','id = '.$menu_id,['recommend'=>$hot_key]);
+      return ResultVo::success($update);
+    }
 }

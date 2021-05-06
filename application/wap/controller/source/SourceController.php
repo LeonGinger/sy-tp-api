@@ -28,7 +28,7 @@ class SourceController extends Base
     $userid = $this->uid;
     $user = $this->WeDb->find('user',"id={$userid}");
     $code = $this->request->param('source_code');
-    if($code == '' || $code == null){
+    if($code == '' || $code == null){ // 是否有溯源码信息
       return ResultVo::error(ErrorCode::DATA_NOT['code'], ErrorCode::DATA_NOT['message']);
     }
     $key = $this->request->param('key');
@@ -40,6 +40,7 @@ class SourceController extends Base
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       if($user['business_notice'] != $business['id']){
+        // 验证商家身份是否正确
         return ResultVo::error(ErrorCode::OUT_LIMIT_NOT['code'], ErrorCode::OUT_LIMIT_NOT['message']);
       }
       $sc_data = [
@@ -147,7 +148,7 @@ class SourceController extends Base
       $numberii = $source['order_key_number'];
       $numberi = $source['source_number'];
       $order_number = $source['order_number'];
-      $id = $source['id'];
+      $id = $source['id']; 
 
       if ($numberii == null) {
         $numberii = 1;
@@ -290,6 +291,7 @@ class SourceController extends Base
       $source['pull_phone']= $pull_user['phone'];
     }
     $user = $this->WeDb->find('user',"id = {$userid}");
+    // business_key 判断此溯源码是否是此商家的
     if($user['business_notice'] == $source['business_id']){
       $source['business_key'] = true;
     }else{
@@ -304,16 +306,16 @@ class SourceController extends Base
     $user = $this->WeDb->find('user', "id = {$userid}");
     $business_id = $user['business_notice'];
     if($user['role_id'] == 3){
-      $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}",'*','create_time asc');
-      $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}",'*','create_time asc');
+      $select = $this->WeDb->selectView($this->table, "enter_user_id = {$userid} and business_id = {$business_id}",'*','storage_time desc');
+      $select2 = $this->WeDb->selectView($this->table, "out_user_id = {$userid} and business_id = {$business_id}",'*','deliver_time desc');
       $data = [
         'message' => "请求成功",
         'enter' => $select,
         'out' => $select2,
       ];
     }else if($user['role_id'] == 2){
-      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null",'*','create_time asc');
-      $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null",'*','create_time asc');
+      $select = $this->WeDb->selectView($this->table,"business_id = {$business_id} and enter_user_id is not null",'*','','','storage_time desc');
+      $select2 = $this->WeDb->selectView($this->table,"business_id = {$business_id} and out_user_id is not null",'*','','','deliver_time desc');
       $data = [
         'message' => "请求成功",
         'enter' => $select,

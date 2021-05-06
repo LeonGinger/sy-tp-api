@@ -37,12 +37,12 @@ class UserController extends BaseCheckUser
         }else{
             $business = $this->WeDb->find('business',"id = {$data['business_notice']}");
         }
-        $data['role_id'] = 3;
+        // $data['role_id'] = 3;
         if($this->adminInfo['role_id']!='1' && empty($data['business_notice'])){return ResultVo::error(ErrorCode::USER_NOT_LIMIT);}
         $where = '';
 
         $search[0] = !empty($data['business_notice'])?'business_notice = '.$data['business_notice']:'';
-        $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
+        // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
         $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
         
