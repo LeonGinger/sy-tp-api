@@ -65,6 +65,22 @@ class SourceController extends Base
       ];
       $return = $this->Wechat_tool->sendMessage($data);
       // * //
+      // 推送给负责人↓
+      $da_content = [
+        'first' => ['value' => '您公司的批次'.$source['source_code'].'已入库成功', 'color' => "#000000"],
+        'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+        'keyword2' => ['value' => $source['source_code_number'], 'color' => "#000000"],
+        'keyword3' => ['value' => $time, 'color' => "#000000"],
+        'remark' => ['value' => '有新的批次入库啦！', 'color' => "#000000"],
+      ];
+      $data = [
+        'Template_id' => '7HKGROEJxTpvX5Wc4ya-dDC5Kfpp8dI7mdmUpMmkHUY',
+        'openid' => $user['open_id'],
+        'url' => Config::get('domain_h5').'#/pages/operation/operation-list',
+        'content' => $da_content,
+      ];
+      $return = $this->Wechat_tool->sendMessage($data);
+      // * //
     } else if ($key == 2) { // 出库操作
       $order  = $this->request->param('order');
       $username = $this->request->param('username');
@@ -405,24 +421,24 @@ class SourceController extends Base
       'goto_mobile'=>$goto_mobile,
     ];
     // 推送给用户↓
-    $da_content = [
-      'first' => ['value' => '您的快递信息被修改了', 'color' => "#000000"],
-      'keyword1' => ['value' => $goto_order, 'color' => "#000000"],
-      'keyword2' => ['value' => $time, 'color' => "#000000"],
-      'remark' => ['value' => '点击查看', 'color' => "#000000"], 
-    ];
-    $url_data = [
-      'order'=>$goto_order,
-      'username'=>$goto_user,
-      'mobile'=>$goto_mobile
-    ];
-    $data = [
-      'Template_id' => 'LbP3wXj0FEZd30BGZqLZZNn0yrPI5APIjQGM9tk_KaI',
-      'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
-      'url' => Config::get('domain_h5').'#/pages/express/express?source_code='.$code,
-      'content' => $da_content,
-    ];
-    $return = $this->Wechat_tool->sendMessage($data);
+    // $da_content = [
+    //   'first' => ['value' => '您的快递信息被修改了', 'color' => "#000000"],
+    //   'keyword1' => ['value' => $goto_order, 'color' => "#000000"],
+    //   'keyword2' => ['value' => $time, 'color' => "#000000"],
+    //   'remark' => ['value' => '点击查看', 'color' => "#000000"], 
+    // ];
+    // $url_data = [
+    //   'order'=>$goto_order,
+    //   'username'=>$goto_user,
+    //   'mobile'=>$goto_mobile
+    // ];
+    // $data = [
+    //   'Template_id' => 'LbP3wXj0FEZd30BGZqLZZNn0yrPI5APIjQGM9tk_KaI',
+    //   'openid' => !empty($goto_user['open_id'])?$goto_user['open_id']:'',
+    //   'url' => Config::get('domain_h5').'#/pages/express/express?source_code='.$source_code,
+    //   'content' => $da_content,
+    // ];
+    // $return = $this->Wechat_tool->sendMessage($data);
     // * //
     $update = $this->WeDb->update('source','source_code = "'.$source_code.'"',$data);
     return ResultVo::success($update);

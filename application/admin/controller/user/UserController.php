@@ -27,7 +27,6 @@ class UserController extends BaseCheckUser
      * @return       [type]                        [description]
      */
     public function index(){
-
         $data = $this->request->param('');
         $user = User::where("id = {$this->adminInfo['id']}")->find();
         
