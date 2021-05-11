@@ -58,7 +58,7 @@ class businessAll
             'first' => ['value' => '本日溯源统计', 'color' => "#000000"],
             'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
             'keyword2' => ['value' => date('Y-m-d H:i:s'), 'color' => "#000000"],
-            'keyword3' => ['value' => "今日 您的出库数量为：{$enter_number},您的入库数量为：{$out_number}", 'color' => "#000000"],
+            'keyword3' => ['value' => "今日 您的出库数量为：{$enter_number}您的入库数量为：{$out_number}", 'color' => "#000000"],
             'remark' => ['value' => "溯源系统", 'color' => "#000000"],
         ];
         $data = [

@@ -213,23 +213,26 @@ class SourceController extends Base
         ];
         $return = $this->Wechat_tool->sendMessage($go_data);
         // * //
-        // 推送给负责人↓↓↓!
-        $da_content = [
-          'first' => ['value' => '用户查阅了一条新的溯源信息', 'color' => "#000000"],
-          'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
-          'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
-          'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
-          'keyword4' => ['value' => 1, 'color' => "#000000"],
-          'remark' => ['value' => '感谢您的使用', 'color' => "#000000"],
-        ];
-        $go_data = [
-          'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
-          'openid' => $user['open_id'],
-          'url' => Config::get('domain_h5').'#/pages/traceability/traceability?source_code='.$source['source_code'],
-          'content' => $da_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($go_data);
-        // * //
+        $bs_user = $this->WeDb->find('user','business_notice='.$source['business_id'].' and role_id = 2');
+        if($bs_user){
+          // 推送给负责人↓↓↓!
+          $da_content = [
+            'first' => ['value' => '用户查阅了一条新的溯源信息', 'color' => "#000000"],
+            'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
+            'keyword2' => ['value' => $source['source_code'], 'color' => "#000000"],
+            'keyword3' => ['value' => $source['deliver_time'], 'color' => "#000000"],
+            'keyword4' => ['value' => 1, 'color' => "#000000"],
+            'remark' => ['value' => '感谢您的使用', 'color' => "#000000"],
+          ];
+          $go_data = [
+            'Template_id' => 'KJdDHONKC12OItqLA9FzMduTJiT8njE7tYxBOK7Etx8',
+            'openid' => $bs_user['open_id'],
+            'url' => Config::get('domain_h5').'#/pages/traceability/traceability?source_code='.$source['source_code'],
+            'content' => $da_content,
+          ];
+          $return = $this->Wechat_tool->sendMessage($go_data);
+          // * //
+        }
         $sc_data = [
           'scan_time' => $time,
         ];

@@ -247,7 +247,17 @@ class BusinessController extends BaseCheckUser
 		$log_appraisal = $this->WeDb->find('business_appraisal',"id = {$business['business_appraisal_id']}");
 		if($business['business_name'] != $log_business['business_name'] || $business['responsible_name'] != $log_business['responsible_name'] || 
 		   $business['responsible_phone'] != $log_business['responsible_phone'] || $business['business_address'] != $log_business['business_address'] ||
-		   $business['business_appraisal']['appraisal_image'] != $log_appraisal['appraisal_image']){
+		   json_encode($business['business_appraisal']['appraisal_image']) != $log_appraisal['appraisal_image']){
+			//    var_dump($business['business_name']);
+			//    var_dump($log_business['business_name']);
+			//    var_dump($business['responsible_name']);
+			//    var_dump($log_business['responsible_name']);
+			//    var_dump($business['responsible_phone']);
+			//    var_dump($log_business['responsible_phone']);
+			//    var_dump($business['business_address']);
+			//    var_dump($log_business['business_address']);
+			//    var_dump($business['business_appraisal']['appraisal_image']);
+			//    var_dump($log_appraisal['appraisal_image']);
 				// 更改未核审状态并存历史记录
 				$state = $this->WeDb->update('business',"id = {$business['id']}",['verify_if'=>3]);
 				$log_data = [

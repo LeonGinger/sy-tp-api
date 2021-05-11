@@ -364,4 +364,74 @@ class SourcecodeController extends BaseCheckUser
         $source = db::name('source')->where('order_number = "'.$order_number.'"')->delete();
         return ResultVo::success(['order' => $order , 'source' => $source]);
     }
+    // 发货统计详情
+    public function source_list_where(){
+        $data = $this->request->param('');
+        // var_dump($data);
+        // exit;
+        $userid = $this->adminInfo['id'];
+        $user = $this->WeDb->find('user', "id = {$userid}");
+        $field = "*";
+        // var_dump($order);
+        // exit;
+        $where = '';
+        if(isset($data['value'])){
+            if($data['value']==1){
+                $search[3] = 'enter_user_id is null and out_user_id is null';
+            }else if($data['value']==2){
+                $search[3] = 'enter_user_id is not null and out_user_id is null';
+            }else if($data['value']==3){
+                $search[3] = 'enter_user_id is not null and out_user_id is not null';
+            }
+        }
+        $search[0] = !empty($userid) ? 'business_id = ' . $user['business_notice'] : '';
+        $search[1] = !empty($data['source_number'])?'source_code like "%'.trim($data['source_number']).'%"':'1=1';
+        $search[2] = !empty($data['menu_id'])?'menu_id = '.$data['menu_id']:'';
+        $search[3] = 'goto_user is not null';
+        if($user['role_id'] == 1){
+            $search[0] = '';
+        }
+        foreach ($search as $key => $value) {
+            # code...
+            if ($value) {
+                $where = $where . $value . ' and ';
+            }
+        }
+        $where = substr($where, 0, strlen($where) - 5);
+        $source = $this->WeDb->selectView('source', $where, $field, $data['page'], $data['limit'], 'id desc');
+        $total = $this->WeDb->totalView('source', $where, 'id');
+        for ($i = 0; $i < count($source); $i++) {
+            if ($source[$i]['enter_user_id'] == null) {
+                $source[$i]['state'] = '未入库';
+            } else if ($source[$i]['out_user_id'] == null) {
+                $source[$i]['state'] = '已入库';
+            } else if ($source[$i]['out_user_id'] != null) {
+                $source[$i]['state'] = '已出库';
+            }
+            if ($source[$i]['source_number'] == null) {
+                $source[$i]['source_number'] = 0;
+            }
+            if($source[$i]['enter_user_id'] != null){
+                $user = $this->WeDb->find('user', "id = {$source[$i]['enter_user_id']}");
+                $source[$i]['enter_user'] = $user['username'];
+            }
+            if($source[$i]['out_user_id'] != null){
+                $user = $this->WeDb->find('user', "id = {$source[$i]['out_user_id']}");
+                if($user){
+                    $source[$i]['out_user'] = $user['username'];
+                }else{
+                    $source[$i]['out_user'] = $source[$i]['operator_name'];
+                }
+            }
+            $business = $this->WeDb->find('business',"id = {$source[$i]['business_id']}");
+            $source[$i]['business']=$business;
+        }
+        return ResultVo::success(['list' => $source, 'total' => $total]);
+    }
+    public function order_update(){
+        $data = $this->request->param('');
+        // var_dump($data);
+        $update = $this->WeDb->update('source','id = '.$data['id'],['goto_user'=>$data['goto_user'],'goto_order'=>$data['goto_order'],'goto_mobile'=>$data['goto_mobile']]);
+        return ResultVo::success($update);
+    }
 }
