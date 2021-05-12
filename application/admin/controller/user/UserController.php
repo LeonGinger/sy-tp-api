@@ -203,38 +203,38 @@ class UserController extends BaseCheckUser
         ];
         $update = $this->WeDb->update('user', "id = {$out_id}", $out_data);
         $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$out_id}", ['role_id'=>4]);
-        // 推送模板消息
-        // 推送给操作员↓
-        $da_content = [
-            'first' => ['value' => '商户 '.$business['business_name'].' 已将您移出操作员', 'color' => "#000000"],
-            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
-            'keyword3' => ['value' => $time, 'color' => "#000000"],
-            'remark' => ['value' => '你的账号已更改为普通用户，感谢您对本商户的贡献', 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
-            'openid' => $out_user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/my/my',
-            'content' => $da_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        // 推送给商家↓
-        $bs_content = [
-            'first' => ['value' => '您已将 '.$out_user['user_name'].' 移出操作员', 'color' => "#000000"],
-            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
-            'keyword3' => ['value' => $time, 'color' => "#000000"],
-            'remark' => ['value' => '移出成功', 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
-            'openid' => $user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
-            'content' => $bs_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        //*//
+        // // 推送模板消息
+        // // 推送给操作员↓
+        // $da_content = [
+        //     'first' => ['value' => '商户 '.$business['business_name'].' 已将您移出操作员', 'color' => "#000000"],
+        //     'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+        //     'keyword2' => ['value' => $out_user['username'], 'color' => "#000000"],
+        //     'keyword3' => ['value' => $time, 'color' => "#000000"],
+        //     'remark' => ['value' => '你的账号已更改为普通用户，感谢您对本商户的贡献', 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
+        //     'openid' => $out_user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/my/my',
+        //     'content' => $da_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // // 推送给商家↓
+        // $bs_content = [
+        //     'first' => ['value' => '您已将 '.$out_user['user_name'].' 移出操作员', 'color' => "#000000"],
+        //     'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+        //     'keyword2' => ['value' => $out_user['out_user'], 'color' => "#000000"],
+        //     'keyword3' => ['value' => $time, 'color' => "#000000"],
+        //     'remark' => ['value' => '移出成功', 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => 'gxu6GxRIvgXsKX9PQTv66Rfk_3pJP2gbRURcOCmSvX4',
+        //     'openid' => $user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
+        //     'content' => $bs_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // //*//
         return ResultVo::success($update);
     }
     /**

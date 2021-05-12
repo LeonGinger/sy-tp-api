@@ -184,21 +184,21 @@ class BusinessController extends Base
             return ResultVo::error(ErrorCode::IS_NOT_BUSINESS['code'], ErrorCode::IS_NOT_BUSINESS['message']);
         }
         $delete = $this->WeDb->update($this->table, "id={$businessid}", ['delete_time' => date('Y-m-d H:i:s')]);
-        // 推送给商家的所有人员↓
-        $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
-        for($i=0;$i<count($foruser);$i++){
-            $da_content = [
-                'business'=>['value' => $business['business_name'], 'color' => "#ff0000"],
-            ];
-            $data = [
-                'Template_id'=>'kpULPN1XJZBpdCY1GBt3LQwsbRzLEwZUp9b0AHjBLj4',
-                'openid'=>$foruser[$i]['open_id'],
-                'url'=>Config::get('domain_h5').'/#/my/my',
-                'content'=>$da_content,
-            ];
-            $return = $this->Wechat_tool->sendMessage($data);
-        }
-        // * //
+        // // 推送给商家的所有人员↓
+        // $foruser = $this->WeDb->selectView('user',"business_notice = {$businessid}");
+        // for($i=0;$i<count($foruser);$i++){
+        //     $da_content = [
+        //         'business'=>['value' => $business['business_name'], 'color' => "#ff0000"],
+        //     ];
+        //     $data = [
+        //         'Template_id'=>'kpULPN1XJZBpdCY1GBt3LQwsbRzLEwZUp9b0AHjBLj4',
+        //         'openid'=>$foruser[$i]['open_id'],
+        //         'url'=>Config::get('domain_h5').'/#/my/my',
+        //         'content'=>$da_content,
+        //     ];
+        //     $return = $this->Wechat_tool->sendMessage($data);
+        // }
+        // // * //
         $roleupdate = $this->WeDb->update('user',"business_notice={$businessid}", ['role_id' => 4, 'business_notice' => '']);
         $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>4]);
         return ResultVo::success($roleupdate);
@@ -447,37 +447,37 @@ class BusinessController extends Base
         }
         $userupdate = $this->WeDb->update('user', "id={$userid}", $us_data);
         $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$this->uid}", ['role_id'=>$us_data['role_id']]);
-        // 推送模板消息
-        // 推送给操作员↓
-        $da_content = [
-            'business_name' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'business_user' => ['value' => $business['responsible_name'], 'color' => "#000000"],
-            'business_phone' => ['value' => $business['responsible_phone'], 'color' => "#000000"],
-            'business_address' => ['value' => $business['business_address'], 'color' => "#000000"],
-            'remark' => ['value' => '恭喜您加入到本公司', 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => '-hpsvO5xcmL1l2Af_6_VFOLO65vRMRPggsOKnpejQo30',
-            'openid' => $user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/my/my',
-            'content' => $da_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        // 推送给商家↓
-        $bs_content = [
-            'username' => ['value' => $user['username'], 'color' => "#000000"],
-            'phone' => ['value' => $user['phone'], 'color' => "#000000"],
-            'time' => ['value' => $time, 'color' => "#000000"],
-            'number' => ['value' => $business_number, 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => '-Ga5jQnQmi12lHPsSxfZk1S_PgMiu93xzmDZa9589WY',
-            'openid' => $business_user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
-            'content' => $bs_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        //*//
+        // // 推送模板消息
+        // // 推送给操作员↓
+        // $da_content = [
+        //     'business_name' => ['value' => $business['business_name'], 'color' => "#000000"],
+        //     'business_user' => ['value' => $business['responsible_name'], 'color' => "#000000"],
+        //     'business_phone' => ['value' => $business['responsible_phone'], 'color' => "#000000"],
+        //     'business_address' => ['value' => $business['business_address'], 'color' => "#000000"],
+        //     'remark' => ['value' => '恭喜您加入到本公司', 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => '-hpsvO5xcmL1l2Af_6_VFOLO65vRMRPggsOKnpejQo30',
+        //     'openid' => $user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/my/my',
+        //     'content' => $da_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // // 推送给商家↓
+        // $bs_content = [
+        //     'username' => ['value' => $user['username'], 'color' => "#000000"],
+        //     'phone' => ['value' => $user['phone'], 'color' => "#000000"],
+        //     'time' => ['value' => $time, 'color' => "#000000"],
+        //     'number' => ['value' => $business_number, 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => '-Ga5jQnQmi12lHPsSxfZk1S_PgMiu93xzmDZa9589WY',
+        //     'openid' => $business_user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
+        //     'content' => $bs_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // //*//
         return ResultVo::success($userupdate);
     }
     // 我的员工列表接口
@@ -535,36 +535,36 @@ class BusinessController extends Base
         ];
         $update = $this->WeDb->update('user', "id ={$userid}", $qt_data);
         $authroleadmin = $this->WeDb->update('auth_role_admin', "admin_id={$userid}", ['role_id'=>$qt_data['role_id']]);
-        // 推送模板消息
-        // 推送给操作员↓
-        $da_content = [
-            'first' => ['value' => '您的账户已从'.$business['business_name'].'商户中注销', 'color' => "#000000"],
-            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
-            'remark' => ['value' => '您的账户已更改为普通用户，感谢您对本系统的大力支持', 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
-            'openid' => $user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/my/my',
-            'content' => $da_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        // 推送给商家↓
-        $bs_content = [
-            'first' => ['value' => '您的操作员'.$user['username'].'已退出本商户', 'color' => "#000000"],
-            'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
-            'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
-            'remark' => ['value' => '您的操作员已离开本商户，更改为普通用户', 'color' => "#000000"],
-        ];
-        $data = [
-            'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
-            'openid' => $business_user['open_id'],
-            'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
-            'content' => $bs_content,
-        ];
-        $return = $this->Wechat_tool->sendMessage($data);
-        //*//
+        // // 推送模板消息
+        // // 推送给操作员↓
+        // $da_content = [
+        //     'first' => ['value' => '您的账户已从'.$business['business_name'].'商户中注销', 'color' => "#000000"],
+        //     'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+        //     'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+        //     'remark' => ['value' => '您的账户已更改为普通用户，感谢您对本系统的大力支持', 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
+        //     'openid' => $user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/my/my',
+        //     'content' => $da_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // // 推送给商家↓
+        // $bs_content = [
+        //     'first' => ['value' => '您的操作员'.$user['username'].'已退出本商户', 'color' => "#000000"],
+        //     'keyword1' => ['value' => $business['business_name'], 'color' => "#000000"],
+        //     'keyword2' => ['value' => date('Y-m-d'), 'color' => "#000000"],
+        //     'remark' => ['value' => '您的操作员已离开本商户，更改为普通用户', 'color' => "#000000"],
+        // ];
+        // $data = [
+        //     'Template_id' => 'y4J2v_FOTVA_arqQGUZzQVPM1xhr3Sqm-mFEQ_YAdME',
+        //     'openid' => $business_user['open_id'],
+        //     'url' => Config::get('domain_h5').'#/pages/employee/employee-list',
+        //     'content' => $bs_content,
+        // ];
+        // $return = $this->Wechat_tool->sendMessage($data);
+        // //*//
         return ResultVo::success($update);
     }
     public function businessfind(){

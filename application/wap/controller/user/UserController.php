@@ -256,22 +256,22 @@ class UserController extends Base
     $select = db::table('business_notice')->where('id = 1')->select();
     return ResultVo::success($select);
   }
-  public function subscribeMassage(){
-    // 推送给商家的所有人员↓
-      $da_content = [
-        'character_string1'=>['value' => '11', 'color' => "#000000"],
-        'shing3'=>['value' => '11', 'color' => "#000000"],
-        'time2'=>['value' => '11', 'color' => "#000000"],
-        'thing5'=>['value' => '11', 'color' => "#000000"],
-      ];
-      $data = [
-        'Template_id'=>'JV0X9Q-mZCaGzks5RK8bDrzkZjWKYS1nKVkN44JPE4U',
-        'openid'=>'ozY535toP9r_khydwW5SBiV0g-CM',
-        'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
-        'title'=>'123456',
-        'content'=>$da_content,
-      ];
-      $return = $this->Wechat_tool->subscribeMassage($data);
-    // * //
-  }
+  // public function subscribeMassage(){
+  //   // 推送给商家的所有人员↓
+  //     $da_content = [
+  //       'character_string1'=>['value' => '11', 'color' => "#000000"],
+  //       'shing3'=>['value' => '11', 'color' => "#000000"],
+  //       'time2'=>['value' => '11', 'color' => "#000000"],
+  //       'thing5'=>['value' => '11', 'color' => "#000000"],
+  //     ];
+  //     $data = [
+  //       'Template_id'=>'JV0X9Q-mZCaGzks5RK8bDrzkZjWKYS1nKVkN44JPE4U',
+  //       'openid'=>'ozY535toP9r_khydwW5SBiV0g-CM',
+  //       'url'=>Config::get('domain_h5').'#/pages/Product/Product-list',
+  //       'title'=>'123456',
+  //       'content'=>$da_content,
+  //     ];
+  //     $return = $this->Wechat_tool->subscribeMassage($data);
+  //   // * //
+  // }
 }

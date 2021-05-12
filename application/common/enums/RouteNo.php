@@ -48,6 +48,7 @@ class RouteNo
         // 'web/sys/dataindex'=>'/sys/SettingController/index_base',
         // 'web/sys/dataindex'=>'/sys/SettingController/index_base',
         'web/setting_indexno'=>'/sys/SettingController/sys_getno',
+        'web/urlGo'=>'/source/sourcecodeController/urlGo',
         
     ];
     // 管理员相关

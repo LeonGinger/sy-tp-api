@@ -67,7 +67,7 @@ class SourceController extends Base
       // * //
       // 推送给负责人↓
       $da_content = [
-        'first' => ['value' => '您公司的批次'.$source['source_code'].'已入库成功', 'color' => "#000000"],
+        'first' => ['value' => '您的批次'.$source['source_code'].'已入库成功', 'color' => "#000000"],
         'keyword1' => ['value' => $source['menu_name'], 'color' => "#000000"],
         'keyword2' => ['value' => $source['source_code_number'], 'color' => "#000000"],
         'keyword3' => ['value' => $time, 'color' => "#000000"],
@@ -144,7 +144,7 @@ class SourceController extends Base
       // 推送给负责人↓↓↓!
       $bs_user = $this->WeDb->find('user','business_notice='.$source['business_id'].' and role_id = 2'); 
       $da_content = [
-        'first' => ['value' => '您公司的批次 '.$source['source_code'].'已离开仓库', 'color' => "#000000"],
+        'first' => ['value' => '您的批次 '.$source['source_code'].'已离开仓库', 'color' => "#000000"],
         'keyword1' => ['value' => '本批次已进行出库', 'color' => "#000000"],
         'keyword2' => ['value' => $time, 'color' => "#000000"],
         'remark' => ['value' => '出库成功', 'color' => "#000000"],

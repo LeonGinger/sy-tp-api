@@ -259,7 +259,7 @@ class SourcecodeController extends BaseCheckUser
             $menu_monitor = $this->WeDb->find('menu_monitor', "menu_id={$menu_id}");
             $sourceinsert = array();
             for ($o = 0; $o < $number; $o++) {  //第二维多少箱
-                $source_code = round_code(14);
+                $source_code = "SUE-".self::code_round($o+1);
                 $total += 1;
                 $in_data = [
                     'order_id' => $orderid,
@@ -301,6 +301,24 @@ class SourcecodeController extends BaseCheckUser
             'total'=>$total,
         ];
         return ResultVo::success($data);
+    }
+    public function code_round($index,$length = 6){
+        $codelist = Db::name('source')->order('id desc')->select();
+        if($codelist){
+            $maxcode = $codelist[0]['source_code'];
+            $expload = explode("-",$maxcode);
+            $number = hexdec($expload[1]);
+            $tsnumber = $number+$index;
+            $tsnumber = sprintf('%06X',$tsnumber);
+            return $tsnumber;
+        }else{
+            $expload = 000000;
+            $number = hexdec($expload);
+            $tsnumber = $number+$index;
+            $tsnumber = sprintf('%06X',$tsnumber);
+            return $tsnumber;
+        }
+        
     }
     // 溯源二维码生成/批次
     public function scode_list(){
@@ -433,5 +451,11 @@ class SourcecodeController extends BaseCheckUser
         // var_dump($data);
         $update = $this->WeDb->update('source','id = '.$data['id'],['goto_user'=>$data['goto_user'],'goto_order'=>$data['goto_order'],'goto_mobile'=>$data['goto_mobile']]);
         return ResultVo::success($update);
+    }
+    public function urlGo(){
+        $data = $this->request->param('');
+        // var_dump($data);
+        $code = $data['code'];
+        header('Location:'.'http://sy.zsicp.com/h5/#/pages/traceability/traceability?source_code='.$code);
     }
 }

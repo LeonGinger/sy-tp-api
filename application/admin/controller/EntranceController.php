@@ -117,6 +117,8 @@ class EntranceController
         'order_delete'=>'/source/SourcecodeController/orderdelete',
         'source_list_where'=>'/source/SourcecodeController/source_list_where',
         'orderupdate'=>'/source/SourcecodeController/order_update',
+        'coderound'=>'/source/SourcecodeController/code_round',
+        'urlGo'=>'/source/SourcecodeController/urlGo',
 
         //查询管理
         'sourcelog_index' => '/source/CertifyesultController/index',
