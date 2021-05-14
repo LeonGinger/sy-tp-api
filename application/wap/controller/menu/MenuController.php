@@ -25,6 +25,28 @@ class MenuController extends Base
       if( $business['state'] != 1){
           return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
       }
+      // 检测信息
+      $monitor_image = $this->request->param('monitor_image');
+      $sample_name = $this->request->param('sample_name');
+      $monitoring_time = $this->request->param('monitoring_time');
+      $test_location = $this->request->param('test_location');
+      $inkey = false;
+      if(($monitor_image == '' || $monitor_image == null)&&
+        ($sample_name == '' || $sample_name == null)&&
+        ($monitoring_time == '' || $monitoring_time == null)&&
+        ($test_location == '' || $test_location == null)){
+          $inkey = true;
+        }else if(($monitor_image != '' && $monitor_image != null)&&
+          ($sample_name != '' && $sample_name != null)&&
+          ($monitoring_time != '' && $monitoring_time != null)&&
+          ($test_location != '' && $test_location != null)){
+            $inkey = true;
+          }else{
+            $inkey = false;
+          }
+      if($inkey = false){
+        return ResultVo::error(301,"您的检测信息不完整，请重新填写");
+      }
       $businessid = $user['business_notice'];
       $menu_name = $this->request->param('menu_name');
       $menu_address = $this->request->param('menu_address');
@@ -55,10 +77,7 @@ class MenuController extends Base
         'update_user_id'=>$userid,
       ];
       $menuid = $this->WeDb->insertGetId($this->table,$insert);
-      $monitor_image = $this->request->param('monitor_image');
-      $sample_name = $this->request->param('sample_name');
-      $monitoring_time = $this->request->param('monitoring_time');
-      $test_location = $this->request->param('test_location');
+      
       $insert2 = [
         'menu_id'=>$menuid,
         'monitor_image'=>json_encode($monitor_image),
@@ -150,6 +169,27 @@ class MenuController extends Base
       if( $business['state'] != 1){
           return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
       }
+      $monitor_image = $this->request->param('monitor_image');
+      $sample_name = $this->request->param('sample_name');
+      $monitoring_time = $this->request->param('monitoring_time');
+      $test_location = $this->request->param('test_location');
+      $inkey = false;
+      if(($monitor_image == '' || $monitor_image == null)&&
+        ($sample_name == '' || $sample_name == null)&&
+        ($monitoring_time == '' || $monitoring_time == null)&&
+        ($test_location == '' || $test_location == null)){
+          $inkey = true;
+        }else if(($monitor_image != '' && $monitor_image != null)&&
+          ($sample_name != '' && $sample_name != null)&&
+          ($monitoring_time != '' && $monitoring_time != null)&&
+          ($test_location != '' && $test_location != null)){
+            $inkey = true;
+          }else{
+            $inkey = false;
+          }
+      if($inkey = false){
+        return ResultVo::error(301,"您的检测信息不完整，请重新填写");
+      }
       $businessid = $user['business_notice'];
       $menu_id = $this->request->param('menu_id');
       $Y_menu = $this->WeDb->find('menu',"id = {$menu_id}");
@@ -174,10 +214,7 @@ class MenuController extends Base
         'update_user_id'=>$userid,
       ];
       $menuid = $this->WeDb->update($this->table,"id = {$menu_id}",$update);
-      $monitor_image = $this->request->param('monitor_image');
-      $sample_name = $this->request->param('sample_name');
-      $monitoring_time = $this->request->param('monitoring_time');
-      $test_location = $this->request->param('test_location');
+      
       $update2 = [
         'monitor_image'=>json_encode($monitor_image),
         'sample_name'=>$sample_name,

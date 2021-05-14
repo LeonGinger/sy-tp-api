@@ -41,7 +41,7 @@ class UserController extends BaseCheckUser
         $where = '';
 
         $search[0] = !empty($data['business_notice'])?'business_notice = '.$data['business_notice']:'';
-        // $search[1] = !empty($data['role_id'])?'role_id in ('.$data['role_id'].')':'';
+        $search[1] = 'role_id != 4';
         $search[2] = !empty($data['phone'])?'phone = '.trim($data['phone']):'';
         $search[3] = !empty($data['username'])?'username like "%'.trim($data['username']).'%"':'';
         

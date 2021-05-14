@@ -493,7 +493,7 @@ class BusinessController extends Base
         if($role != 1 && $role != 2 && $role != 3){
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
-        $select = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']} and role_id != 2", '*');
+        $select = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']}", '*');
         return ResultVo::success($select);
     }
     // 查询当前商家的商品

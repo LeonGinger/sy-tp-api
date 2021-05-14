@@ -160,6 +160,14 @@ class MenuController extends BaseCheckUser
      */
     public function edit(){
         $data = $this->request->param('');
+        
+        // return ResultVo::success($data);
+        // $a = $this->WeDb->find('menu_monitor','menu_id ='.$data['id']);
+        // $b = $this->WeDb->update('menu_monitor','menu_id = '.$data['id'],['monitor_image'=>json_encode($data['monitor_image'])]);
+        // var_dump($a['monitor_image']);
+        // var_dump(json_encode($data['monitor_image']));
+        // var_dump($b);
+        // exit;
         // if(!isset($data['id'])){return ResultVo::error();} 
         $id = $data['id'];
         $up_data = array(
@@ -181,7 +189,7 @@ class MenuController extends BaseCheckUser
         // var_dump($data['monitor_menu']['monitor_image']);
         // exit;
         $res_monitor = $this->WeDb->update('menu_monitor','menu_id = '.$id,[
-            'monitor_image' => empty($data['monitor_image'])?$data['monitor_image']:[],
+            'monitor_image' => json_encode($data['monitor_image']),
             'sample_name' =>  $data['monitor_menu']['sample_name'],
             'test_location' => $data['monitor_menu']['test_location'],
             'monitoring_time' => $data['monitor_menu']['monitoring_time'],
@@ -190,7 +198,7 @@ class MenuController extends BaseCheckUser
         // if(isset($data['certificate_image'])){
             $res_certificate = $this->WeDb->update('menu_certificate','menu_id = '.$id,['certificate_image'=>$data['certificate_image']]);
         // }
-        return ResultVo::success($data['id']);
+        return ResultVo::success($res_monitor);
     }
     /**
      * [state 修改商品状态]

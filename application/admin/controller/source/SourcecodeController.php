@@ -259,7 +259,7 @@ class SourcecodeController extends BaseCheckUser
             $menu_monitor = $this->WeDb->find('menu_monitor', "menu_id={$menu_id}");
             $sourceinsert = array();
             for ($o = 0; $o < $number; $o++) {  //第二维多少箱
-                $source_code = "SUE-".self::code_round($o+1);
+                $source_code = "SY-".self::code_round($o+1);
                 $total += 1;
                 $in_data = [
                     'order_id' => $orderid,
