@@ -24,14 +24,39 @@ class Base extends Controller
 
     public function __construct()
     {              
-      
+        
         $this->request =  Request::instance();
         $this->Wechat_tool = WechatUtils::getInstance();
         $this->jwtAuthApi = JwtAuthWap::getInstance();
         $this->WeDb = WeDbUtils::getInstance();
         $this->uid = $this->jwtAuthApi->getuid();
+        $this->check_subscribe();
+        
     }
+    public function check_subscribe(){
 
+        if($this->request->header('token')){
+            if($this->uid){
+                $is_user = $this->WeDb->find('user','id = '.$this->uid);
+                    if($is_user){
+
+                        $new_uinfo = $this->Wechat_tool->userinfo_openid($is_user['open_id']);
+                        if($new_uinfo['subscribe']==0){
+                        // $return_error = ResultVo::error(400, "您未关注公众号，请重试");
+                            echo json_encode(['çode'=>400, 'message'=>"您未关注公众号，请重试"],JSON_UNESCAPED_UNICODE);
+                            die();
+                            exit();
+
+                        }
+
+                    }
+
+       // var_dump($new_uinfo);
+       }
+
+        }
+        
+    }
 
         /** http get 请求*/
     public  function Gemini_GetReq($url, $param = array()) {
