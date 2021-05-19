@@ -162,7 +162,10 @@ class UserController extends Base
     $result = $this->WeDb->update('user', "id = {$userid}", $set_data);
     return  ResultVo::success($result);
   }
-  /*用户上传图片 */
+  /**
+   * 上传头像图片
+   * @remark:前端公用的上传图片接口已在file控制内,本接口遗留了几处地方公共了该接口上传,请转向新的公用图片接口
+  */
   public function upload_headimg()
   {
     $file = request()->file('imgurl');  

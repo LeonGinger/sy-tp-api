@@ -316,8 +316,57 @@ class SourceController extends Base
     }else{
       $source['business_key'] = false;
     }
+    $menu_info = $this->WeDb->find('menu','id = '.$source['menu_id']);
+    $source['menu_info'] = $menu_info;
+    // var_dump($menu_info);
     return ResultVo::success($source);
   }
+  //修改溯源信息,
+  public function SelectAllUp(){
+    $request_data = $this->request->param('');
+    $code = $this->request->param('source_code');
+    $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
+    if($source == null){
+      return ResultVo::error('963','您的溯源码错误，请重试');
+    }
+    //
+    $updata_source = array(
+
+      // monitoring_content
+      // order_id
+      // business_id
+      // menu_id
+      // source_number
+      // order_number
+      'menu_name' => $request_data['menu_name'],
+      'menu_address' => $request_data['menu_address'],
+      'menu_weight' => $request_data['menu_weight'],
+      'production_time' => $request_data['production_time'],
+      'quality_time' => $request_data['quality_time'],
+      'menu_images_json' => $request_data['menu_images_json'],
+      'monitor_image' => $request_data['monitor_image'],
+      'test_location' => $request_data['test_location'],
+      'sample_name' => $request_data['sample_name'],
+      'monitoring_time' => $request_data['monitoring_time'],
+      // source_code
+      // source_code_number
+      // order_key_number
+      // certificate_image
+      // storage_time
+      // enter_user_id
+      // deliver_time
+      // out_user_id
+      // scan_time
+      // operator_name
+      // goto_order
+      // goto_user
+      // goto_mobile
+    );
+    $this->WeDb->update('source','order_number = "'.$source['order_number'].'"',$updata_source);
+    $source = $this->WeDb->find('source', 'source_code = "' . $code . '" ');
+    return ResultVo::success($source);
+  }
+
   // 出入库记录
   public function opend_list()
   {

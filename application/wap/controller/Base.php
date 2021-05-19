@@ -41,6 +41,7 @@ class Base extends Controller
                     if($is_user){
 
                         $new_uinfo = $this->Wechat_tool->userinfo_openid($is_user['open_id']);
+                        if(@$new_uinfo['errcode']){return;}
                         if($new_uinfo['subscribe']==0){
                         // $return_error = ResultVo::error(400, "您未关注公众号，请重试");
                             echo json_encode(['çode'=>400, 'message'=>"您未关注公众号，请重试"],JSON_UNESCAPED_UNICODE);

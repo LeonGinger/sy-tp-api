@@ -75,6 +75,7 @@ class EntranceController
     private $namespacePrefix='wap';
     
     private $methodApi_POST = [
+        'h5uploadimg'=>'/file/UploadController/Img_Allupload',
         'test'=>'/file/UploadController/qiuNiuUpToken',
         'update_token'=>'/user/UserController/update_token',
         // 'test'=>'/auth/LoginController/index',
@@ -115,6 +116,7 @@ class EntranceController
         'open_source'=>'/source/SourceController/open_source', //出入库
         'opend_list'=>'/source/SourceController/opend_list', //出入库记录
         'SelectAll'=>'/source/SourceController/SelectAll',
+        'SelectAllUp'=>'/source/SourceController/SelectAllUp',
         'goto_update'=>'/source/SourceController/goto_update',
         // 每日统计
         'business_push'=>'/business/BusinessController/business_push',

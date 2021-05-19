@@ -87,7 +87,12 @@ class BusinessController extends BaseCheckUser
 				return ResultVo::error(12138,"此商家已被用户解除绑定，系统将自动删除");
 			}
     	}
-		return ResultVo::success($result_verif);
+    	try{
+    		return ResultVo::success($result_verif);
+    	} catch (\Throwable $th) {
+    		return ResultVo::success();
+    	}
+		
     }
 
     /*审核*/

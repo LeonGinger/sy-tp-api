@@ -8,6 +8,8 @@ use app\common\utils\PublicFileUtils;
 use app\common\vo\ResultVo;
 use think\facade\Env;
 use think\File;
+use think\facade\Config;
+use think\facade\Validate;
 
 /**
  * 上传文件（管理文件的）
@@ -74,6 +76,37 @@ class UploadController extends Base
         $res = [];
         $res["key"] = $path;
         return ResultVo::success($res);
+    }
+
+    /**
+     * 前端通用的上传图片接口
+     */
+    public function Img_Allupload(){
+
+        $file = request()->file('imgurl');  
+
+        if($file == null){
+          return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'], ErrorCode::UPLOAD_IS_NULL['message']);
+        } 
+        $info = $file->validate(['ext' => 'jpg,jpeg,png'])
+          ->move(Config::get('upload_resources'));
+          // var_dump($file);
+          // exit;
+        $source = Config::get('upload_resources').$info->getSaveName();
+        // $url = Config::get('domain_http').''.$info->getSaveName();
+        $url  = str_replace(Config::get('upload_resources'), Config::get('domain_http') . 'uploads/resources/', $source);
+        /**
+         * 大小压缩
+         * code....  
+         **/
+        /*返回头像地址 */
+        $re_data = array(
+          'link' => $url,
+          'dir' => $source,
+        );
+        return ResultVo::success($re_data);
+    
+    
     }
 
 }

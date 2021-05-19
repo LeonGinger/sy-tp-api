@@ -235,7 +235,8 @@ class SourcecodeController extends BaseCheckUser
         }
         
         // $sourceANDnumber = $this->request->param("sourceANDnumber");
-        $order_number = round_Code();
+        // $order_number = round_Code();
+        $order_number = $this->random_batch();
         // var_dump(json_encode($sourceANDnumbe));
         // exit;
         $data = [
