@@ -45,7 +45,7 @@ class Base extends Controller
      * 批次 日期  序号  商家ID
      * P 20210519 0001  B1
      * @remark:目前规则P日期序号没有商家id
-     * 目前问题最大批次 9999 且整个平台的
+     * 目前问题最大批次 9999 且整个平台的,后期不够用需要完善该随机方法
      */
     public function random_batch(){
         $redis = new Redis;

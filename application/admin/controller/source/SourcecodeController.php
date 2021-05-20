@@ -364,6 +364,9 @@ class SourcecodeController extends BaseCheckUser
             $menu = $this->WeDb->find('menu',"id = {$menu_id}");
             $json[$i]['menu_id'] = $menu['menu_name'];
             $json[$i]['menu_weight'] = $menu['menu_weight'];
+            //溯源信息-source
+            $sourceInfo = $this->WeDb->find('source','order_number = "'.$order_number.'" and menu_id = '.$menu_id);
+            $json[$i]['source'] = $sourceInfo;
         }
         return ResultVo::success($json);
     }

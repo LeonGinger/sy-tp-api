@@ -12,4 +12,5 @@
 return [
 
     'app\command\Business',//每日统计发送模板消息
+    'app\command\Admin',//后台管理系统相关定时任务
 ];
