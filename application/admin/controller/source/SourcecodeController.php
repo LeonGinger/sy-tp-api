@@ -462,4 +462,11 @@ class SourcecodeController extends BaseCheckUser
         $code = $data['code'];
         header('Location:'.'http://sy.zsicp.com/h5/#/pages/traceability/traceability?source_code='.$code);
     }
+    /**
+     * 修改批次内溯源信息
+     * @LatTime:2021年5月24日13:45:02 
+     */
+    public function orderInfo_update(){
+        //修改后台批次内的商品的溯源信息
+    }
 }
