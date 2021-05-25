@@ -468,5 +468,10 @@ class SourcecodeController extends BaseCheckUser
      */
     public function orderInfo_update(){
         //修改后台批次内的商品的溯源信息
+        $request_data = $this->request->param('');
+                
+        $result = $this->WeDb->update();
+        
+        return ResultVo::success($result);
     }
 }
