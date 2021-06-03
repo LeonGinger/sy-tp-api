@@ -1,0 +1,232 @@
+
+########溯源系统TP5.1----------后端项目结构图
+##LastTime:2021年6月3日16:49:48
+@Author:<a>https://gitee.com/LeonJay</a>
+@Author:<a>https://gitee.com/wukgd</a>
+|   .env
+|   .gitignore
+|   .htaccess
+|   .travis.yml
+|   404.html
+|   build.php
+|   composer.json
+|   composer.lock
+|   index.html
+|   LICENSE.txt
+|   README
+|   README.md
+|   think
+|   tree.md
+|   vue-admin.sql
+|   
++---application
+|   |   .htaccess
+|   |   command.php
+|   |   common.php
+|   |   tags.php
+|   |   
+|   +---admin                                                           //后台管理系统模块
+|   |   |   common.php                                          
+|   |   |   tags.php    
+|   |   |   
+|   |   +---behavior                                                    //登录验证
+|   |   |       CheckAuth.php
+|   |   |       
+|   |   +---controller                                                  
+|   |   |   |   Base.php                                                //基类
+|   |   |   |   BaseCheckUser.php                                       //钩子
+|   |   |   |   EntranceController.php                                  //封装的DIY路由,入口分发
+|   |   |   |   
+|   |   |   +---ad                                                      //广告
+|   |   |   |       AdController.php
+|   |   |   |       SiteController.php
+|   |   |   |       
+|   |   |   +---auth                                                    //权限\用户相关
+|   |   |   |       AdminController.php
+|   |   |   |       LoginController.php
+|   |   |   |       PermissionRuleController.php
+|   |   |   |       RoleController.php
+|   |   |   |       
+|   |   |   +---business                                                //商家相关
+|   |   |   |       BusinessController.php
+|   |   |   |       MenuController.php
+|   |   |   |       
+|   |   |   +---file                                                    //文件上传相关
+|   |   |   |       ResourceController.php
+|   |   |   |       ResourceTagController.php
+|   |   |   |       UploadController.php
+|   |   |   |       
+|   |   |   +---job                                                     //后台队列任务
+|   |   |   |       businessAll.php
+|   |   |   |       Demo.php
+|   |   |   |       System.php
+|   |   |   |       Wechat.php
+|   |   |   |       
+|   |   |   +---region                                                  //溯源码数据统计
+|   |   |   |       RegionController.php
+|   |   |   |       
+|   |   |   +---source                                                 //溯源码相关
+|   |   |   |       CertifyesultController.php
+|   |   |   |       SourcecodeController.php
+|   |   |   |           
+|   |   |   +---sys                                                    //系统设置
+|   |   |   |       AdminController.php
+|   |   |   |       SettingController.php
+|   |   |   |       
+|   |   |   +---user                                                   //员工管理(用户角色不在该控制器下,仅员工)
+|   |   |   |       UserController.php
+|   |   |   |       
+|   |   |   \---wechat                                                 //微信管理(后台管理)
+|   |   |           FansController.php
+|   |   |           
+|   |   +---model                                                      //后台的model层(此处可用common/model或者app/model)
+|   |   |       FileResource.php
+|   |   |       FileResourceTag.php
+|   |   |       
+|   |   \---view                                                      //视图层(可无视)
+|   |           .gitignore
+|   |           
+|   +---command                                                      //定时任务
+|   |       Admin.php
+|   |       Business.php
+|   |       
+|   +---common                                                      //公共方法(存放所有工具)
+|   |   +---auth                                                    //JWT
+|   |   |       JwtAuthWap.php
+|   |   |       
+|   |   +---constant                                                //
+|   |   |       CacheKeyConstant.php
+|   |   |       
+|   |   +---enums                                                   //异常状态和code工具
+|   |   |       ErrorCode.php
+|   |   |       RouteNo.php
+|   |   |       
+|   |   +---exception                                              //异常报错类
+|   |   |       exception.html
+|   |   |       GlobalHandle.php
+|   |   |       JsonException.php
+|   |   |       l404.html
+|   |   |       
+|   |   +---model                                                  //公共model
+|   |   |           
+|   |   +---utils                                                  //各种可用工具
+|   |   |       Compress.php
+|   |   |       PassWordUtils.php
+|   |   |       PublicFileUtils.php
+|   |   |       RedisUtils.php
+|   |   |       TokenUtils.php
+|   |   |       TreeUtils.php
+|   |   |       UrlUtils.php
+|   |   |       WechatUtils.php                                   //微信操作工具
+|   |   |       WeDbUtils.php                                    //Db简易操作工具
+|   |   |       
+|   |   \---vo
+|   |           ResultVo.php                                    //JSON返回工具
+|   |           
+|   +---http                                                    //中间件
+|   |   \---middleware
+|   |           JwtApi.php
+|   |           
+|   +---index                                                  //默认TP入口模块
+|   |   \---controller
+|   |           IndexController.php
+|   |           
+|   +---model                                                 //所有model
+|   |       
+|   \---wap                                                   //前端H5模块
+|       |   common.php
+|       |   tags.php
+|       |   
+|       +---controller
+|       |   |   Base.php                                      //基类
+|       |   |   BaseCheckUser.php                             //钩子(废弃的钩子,仅用来继承)
+|       |   |   EntranceController.php                        //封装DIY路由,入口分发
+|       |   |   
+|       |   +---auth                                          //该模块复制于admin
+|       |   |       AdminController.php
+|       |   |       LoginController.php
+|       |   |       PermissionRuleController.php
+|       |   |       RoleController.php
+|       |   |       
+|       |   +---business                                      //商家相关
+|       |   |       BusinessController.php
+|       |   |       
+|       |   +---file                                         //文件上传相关
+|       |   |       ResourceController.php
+|       |   |       ResourceTagController.php
+|       |   |       UploadController.php
+|       |   |       
+|       |   +---job                                          //前端队列任务
+|       |   |       order.php
+|       |   |       
+|       |   +---menu                                        //商品相关
+|       |   |       MenuController.php
+|       |   |       
+|       |   +---source                                      //溯源相关
+|       |   |       SourceController.php
+|       |   |       
+|       |   +---user                                        //用户员工相关
+|       |   |       UserController.php
+|       |   |       
+|       |   \---wechat                                      //微信操作相关
+|       |           WechatController.php
+|       |           
+|       +---model                                           //前端H5的model
+|       |       FileResource.php
+|       |       FileResourceTag.php
+|       |       
+|       \---view                                            //视图层(无用)
+|               .gitignore
+|               
++---config                                                    //配置文件
+|       app.php                     
+|       cache.php
+|       cookie.php
+|       database.php
+|       gateway_worker.php
+|       log.php
+|       public_file.php                                       // 存放目录
+|       queue.php
+|       session.php
+|       template.php
+|       trace.php
+|       webside.php                                         // 后台管理系统配置文件
+|       wechat.php                                          // 微信(公众号\小程序\企业号)配置
+|       wechattpl.php                                       // 微信公众号模板消息配置
+|       worker.php
+|       worker_server.php
+|       
++---extend
+|   |   .gitignore
+|   |   Sms_YunPian.php                                       // 云片封装工具
+|   |   
+|   +---databackup                                            // 数据库备份操作工具(第三方的谨慎使用)
+|   |       Backup.php
+|   |       composer.json
+|   |       README.md
+|   |       
+|   \---redis                                                 // redis封装工具
+|           composer.json
+|           README.md
+|           Redis.php
+|           
++---public                                                   // 运行目录
+|   |   .htaccess
+|   |   china.json
+|   |   chinaeasy.json
+|   |   favicon.ico
+|   |   index.php
+|   |   nginx.htaccess
+|   |   robots.txt
+|   |   router.php
+|   |   wechat_ticket.txt
+|   |   wechat_token.txt
+|   |   
+|   +---Data                                    
+|   +---static                                              // 静态文件
+|   |           
++---route                                                   //路由
+|       route.php
+|       
++---thinkphp
+
