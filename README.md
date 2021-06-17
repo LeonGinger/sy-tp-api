@@ -1,5 +1,22 @@
 # 前言
+本项目仅用于学术研究,请勿用于商业用途否则后果自负.
  
+## 说明
+商品信息溯源系统，后端采用<a href="https://github.com/lmxdawn">lmxdawn作者</a>的vue+TP进行二次封装,
+本项目二次封装项目说明<a href="./README">README</a>
+
+项目含有三端(后端接口,后台管理系统,前端UNIAPP-H5)
+后端:<a href="https://github.com/LeonGinger/sy-tp-api">https://github.com/LeonGinger/sy-tp-api</a>
+后台:<a href="https://github.com/LeonGinger/sy-tp-html">https://github.com/LeonGinger/sy-tp-html</a>
+前端H5:<a href="https://github.com/LeonGinger/sy-h5-html">https://github.com/LeonGinger/sy-h5-html</a>
+
+本项目开发作者:
+@Author:<a href="https://gitee.com/LeonJay">LeonJay</a>
+@Author:<a href="https://gitee.com/just-be">just-be</a>
+
+
+# 以下是原作者lmxdawn项目说明
+
 **项目前端地址：** <a href="https://github.com/lmxdawn/vue-admin-html" target="_blank">https://github.com/lmxdawn/vue-admin-html</a>
 
 **项目后端地址：** <a href="https://github.com/lmxdawn/vue-admin-php" target="_blank">https://github.com/lmxdawn/vue-admin-php</a>
@@ -43,4 +60,3 @@
 ## 一些注意点 ##
 1. 用的是 tp5.1 版本，具体文档 <a href="https://www.kancloud.cn/manual/thinkphp5_1/353946">点击查看</a>
 2. 安装好后请把 composer.json 里面的 "topthink/framework": "5.1.*"  * 号 改成具体的某个版本
-123123
