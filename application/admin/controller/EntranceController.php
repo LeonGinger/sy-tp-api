@@ -119,6 +119,7 @@ class EntranceController
         'orderupdate'=>'/source/SourcecodeController/order_update',
         'coderound'=>'/source/SourcecodeController/code_round',
         'urlGo'=>'/source/SourcecodeController/urlGo',
+        'sourceinfoupdate'=>'/source/SourcecodeController/sourceInfo_update',
 
         //查询管理
         'sourcelog_index' => '/source/CertifyesultController/index',

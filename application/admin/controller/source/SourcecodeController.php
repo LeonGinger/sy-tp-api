@@ -450,10 +450,15 @@ class SourcecodeController extends BaseCheckUser
         }
         return ResultVo::success(['list' => $source, 'total' => $total]);
     }
+    /*修改快递信息 */
     public function order_update(){
         $data = $this->request->param('');
         // var_dump($data);
-        $update = $this->WeDb->update('source','id = '.$data['id'],['goto_user'=>$data['goto_user'],'goto_order'=>$data['goto_order'],'goto_mobile'=>$data['goto_mobile']]);
+        $update = $this->WeDb->update('source','id = '.$data['id'],[
+            'goto_user'=>$data['goto_user'],
+            'goto_order'=>$data['goto_order'],
+            'goto_mobile'=>$data['goto_mobile']
+        ]);
         return ResultVo::success($update);
     }
     public function urlGo(){
@@ -466,11 +471,17 @@ class SourcecodeController extends BaseCheckUser
      * 修改批次内溯源信息
      * @LatTime:2021年5月24日13:45:02 
      */
-    public function orderInfo_update(){
+    public function sourceInfo_update(){
         //修改后台批次内的商品的溯源信息
         $request_data = $this->request->param('');
-                
-        $result = $this->WeDb->update();
+        
+        $where = 'order_number = "'.$request_data['order_number'].'" and menu_id = '.$request_data['menu_id'];
+        $result = $this->WeDb->update('source',$where,[
+            'menu_name'=>$request_data['menu_name'],
+            'menu_address'=>$request_data['menu_address'],
+            'production_time'=>$request_data['production_time'],
+            'quality_time'=>$request_data['quality_time'],
+        ]);
         
         return ResultVo::success($result);
     }
