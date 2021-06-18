@@ -216,22 +216,29 @@ class UserController extends Base
     return ResultVo::success($log);
   }
   // 短信验证码
-  function iphone_code()
+  // H5-公共短信发送方法—
+  public function iphone_code()
   {
     $redis = new Redis();
     $mobile = $this->request->param('mobile');
     $type  = $this->request->param('type');
-    if (empty($mobile)) {
-      return ResultVo::error(ErrorCode::PHONE_IS_NULL['code'], ErrorCode::PHONE_IS_NULL['message']);
-    }
-    $check_repeat = $this->WeDb->find('user', 'phone = "' . $mobile . '"');
-    if ($check_repeat) {
-      return ResultVo::error(ErrorCode::PHONE_IS_TWO['code'], ErrorCode::PHONE_IS_TWO['message']);
-    }
+    $no_checkrepeat = ['example'];
+
+    // if (empty($mobile)) {
+    //   return ResultVo::error(ErrorCode::PHONE_IS_NULL['code'], ErrorCode::PHONE_IS_NULL['message']);
+    // }
+
+    // $check_repeat = $this->WeDb->find('user', 'phone = "' . $mobile . '"');
+    // if ($check_repeat) {
+    //   return ResultVo::error(ErrorCode::PHONE_IS_TWO['code'], ErrorCode::PHONE_IS_TWO['message']);
+    // }
+
     // Loader::import('Sms_YunPian', EXTEND_PATH);
     // var_dump($check_repeat);
     // exit;
     $sms = new \Sms_YunPian();
+    var_dump($sms);
+    exit();
     $code = mt_rand(100000, 999999);
     // 测试
     // $code = '123456';
@@ -249,6 +256,42 @@ class UserController extends Base
       return ResultVo::error(400,'发送短信验证失败');
     }
   }
+  //商家入驻发送验证码
+  public function business_sendcode(){
+    $redis = new Redis();
+    $mobile = $this->request->param('mobile');
+    $type  = $this->request->param('type');
+    $no_checkrepeat = ['example'];
+
+    if (empty($mobile)) {
+      return ResultVo::error(ErrorCode::PHONE_IS_NULL['code'], ErrorCode::PHONE_IS_NULL['message']);
+    }
+
+    $check_repeat = $this->WeDb->find('user', 'phone = "' . $mobile . '" and id !='.$this->uid);
+    if ($check_repeat) {
+      return ResultVo::error(ErrorCode::PHONE_IS_TWO['code'], ErrorCode::PHONE_IS_TWO['message']);
+    }
+
+    $sms = new \Sms_YunPian();
+    $code = mt_rand(100000, 999999);
+    // 测试
+    // $code = '123456';
+    // $redis::set('phonecode_'.$this->uid,$code,180);
+    // $redis::set('phonecode_'.$this->uid.'_mobile',$mobile,180);
+    // return ResultVo::success(['message'=>'发送短信验证成功','code'=>200]);
+    if ($sms->send($mobile, $code)) {
+
+      $redis::set('phonecode_' . $this->uid, $code, 300);
+      $redis::set('phonecode_' . $this->uid . '_mobile', $mobile, 300);
+      //返回结果        
+      return ResultVo::error(200,'发送短信验证成功');
+    } else { 
+      return ResultVo::error(400,'发送短信验证失败');
+    }
+  }
+
+
+
   // 常见问题查询接口
   public function common_problem(){
     $select = db::table('common_problem')->select();
