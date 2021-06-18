@@ -86,13 +86,15 @@ class BusinessController extends BaseCheckUser
 			if($result_verif == 12138){
 				return ResultVo::error(12138,"此商家已被用户解除绑定，系统将自动删除");
 			}
+			if($result_verif == 12137){
+				return ResultVo::error(12137,"此商家已被禁用,无需审核");
+			}
     	}
-    	try{
+	    	try{
     		return ResultVo::success($result_verif);
     	} catch (\Throwable $th) {
     		return ResultVo::success();
     	}
-		
     }
 
     /*审核*/
@@ -107,7 +109,6 @@ class BusinessController extends BaseCheckUser
 			$delete = $this->WeDb->update('business',"id = {$business_info['id']}",['delete_time'=>date('Y-m-d H:i:s')]);
 			return 12138;
 		}
-		
 		// var_dump($business_user);
 		// exit;
     	switch ($data['verify_if']) {
@@ -166,6 +167,7 @@ class BusinessController extends BaseCheckUser
 				if($business_user['role_id']==2){//判别是否是修改，角色为2是修改，角色为4是加入
 					// 恢复历史信息
 					$log_business = $this->WeDb->selectView('business_update_log',"business_id = {$business_user['business_notice']}",'*','update_time asc');
+					// if(!$log_business){return 12137;}
 					$log_business = $log_business[0];
 					$lg_data1=[
 						'business_name'=>$log_business['business_name'],

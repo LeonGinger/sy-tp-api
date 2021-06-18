@@ -50,14 +50,18 @@ class ResultVo
      * @param null $message
      * @return \think\response\Json
      */
-    public static function error($code, $message = null)
+    public static function error($code, $message = null,$data =[])
     {
    
         if (is_array($code)) {
             $message = isset($code['message']) && $message == null ? $code['message'] : $message;
             $code = isset($code['code']) ? $code['code'] : null;
         }
-        $instance = new self($code, $message, new \stdClass());
+        if (empty($data)) {
+            $data = new \stdClass();
+        }
+
+        $instance = new self($code, $message,$data);
 
         return json($instance);
     }

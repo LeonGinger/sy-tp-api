@@ -172,7 +172,7 @@ class UserController extends Base
     // var_dump($file);
     // exit;
     if($file == null){
-      return ResultVo::error(ErrorCode::UPLOAD_IS_NULL['code'], ErrorCode::UPLOAD_IS_NULL['message']);
+      return ResultVo::error(ErrorCode::UPLOAD_IS_NULL);
     } 
     $info = $file->validate(['ext' => 'jpg,jpeg,png'])
       ->move(Config::get('upload_headimg_path'));

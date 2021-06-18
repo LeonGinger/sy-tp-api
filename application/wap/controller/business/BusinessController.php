@@ -209,18 +209,21 @@ class BusinessController extends Base
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $business = $this->WeDb->find('business',"id = {$user['business_notice']}");
-        if( $business['state'] != 1){
-            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message']);
-        }
-        if ($user['role_id'] != 1 && $user['role_id'] != 2) {
-            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
-        }
+
         $businessid = $user['business_notice'];
         $select = business::with(['BusinessAppraisal','BusinessImg'])
             // ->with('BusinessImg')
             // ->join('business_img', 'business_img.business_id = business.id')
             ->where("id={$businessid}")
             ->select();
+
+        if( $business['state'] != 1){
+            return ResultVo::error(ErrorCode::STATE_NOT['code'], ErrorCode::STATE_NOT['message'],$select);
+        }
+        if ($user['role_id'] != 1 && $user['role_id'] != 2) {
+            return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message'],$select);
+        }
+
         return ResultVo::success($select);
     }
     // 修改所有信息接口(会修改状态为未审核)

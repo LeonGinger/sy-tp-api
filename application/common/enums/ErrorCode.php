@@ -53,7 +53,7 @@ class ErrorCode
     const NOT_PHONE_CODE = [ 'code' => 33, 'message' => '验证码错误'];
     const DATA_NOT_CONTRNT = ['code'=>44, 'message' =>'数据不完整，请重试' ];
     const USER_NOT_BUSINESS = ['code'=>55,'message' =>'您不是操作员，无需注销'];
-    const STATE_NOT = ['code'=>81,'message'=>'您的企业核审还未通过，请耐心等待'];
+    const STATE_NOT = ['code'=>81,'message'=>'您的企业已被禁用，请联系管理员'];
     // 管理员相关
 
 }
