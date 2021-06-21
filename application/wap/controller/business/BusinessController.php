@@ -49,6 +49,9 @@ class BusinessController extends Base
         if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
         //销毁验证码
         $redis::del('phonecode_applybusiness_' . $this->uid);
+        if(!$user['phone']){
+            $this->WeDb->update('user','id = '.$this->uid,['phone'=>$responsible_phone]);
+        }
         // var_dump($appraisal_img);
         // exit;
         // 四个重要信息不能为空
@@ -141,7 +144,9 @@ class BusinessController extends Base
         if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
         //销毁验证码
         $redis::del('phonecode_applybusiness_' . $this->uid);
-
+        if(!$user['phone']){
+            $this->WeDb->update('user','id = '.$this->uid,['phone'=>$responsible_phone]);
+        }
         // var_dump($appraisal_img);
         // exit;
         if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){

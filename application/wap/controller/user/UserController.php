@@ -197,8 +197,7 @@ class UserController extends Base
   {
     $userid = $this->uid;
     $user = $this->WeDb->selectlink($this->table, 'role', "{$this->table}.role_id = role.id ", '' . $this->table . '.id = "' . $userid . '"');
-    // var_dump($user);
-    // exit;
+
     if(!$user){return ResultVo::error(406,"查询不到此用户，请退出重试");}
     if($user[0]['business_notice'] != '' && $user[0]['business_notice']!= null){
       $business = $this->WeDb->find('business',"id={$user[0]['business_notice']}");
