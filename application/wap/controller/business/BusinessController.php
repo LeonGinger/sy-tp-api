@@ -28,6 +28,7 @@ class BusinessController extends Base
     // 加入商家
     public function Apply_add()
     {
+        $redis = new Redis();
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $time = date('Y-m-d H:i:s');
@@ -40,6 +41,14 @@ class BusinessController extends Base
         $responsible_name = $this->request->param('responsible_name');
         $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
+        $reg_code = $this->request->param('responsible_phonecode');
+        //
+        //
+        $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
+        if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+        if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+        //销毁验证码
+        $redis::del('phonecode_applybusiness_' . $this->uid);
         // var_dump($appraisal_img);
         // exit;
         // 四个重要信息不能为空
@@ -102,6 +111,7 @@ class BusinessController extends Base
     }
     // 核审不通过重新申请
     public function Apply_open(){
+        $redis = new Redis();
         $userid = $this->uid;
         $user = $this->WeDb->find('user', "id={$userid}");
         $this_business = $this->WeDb->find('business',"id = {$user['business_notice']}");
@@ -123,6 +133,15 @@ class BusinessController extends Base
         $responsible_name = $this->request->param('responsible_name');
         $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
+        $reg_code = $this->request->param('responsible_phonecode');
+        //
+        //
+        $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
+        if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+        if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+        //销毁验证码
+        $redis::del('phonecode_applybusiness_' . $this->uid);
+
         // var_dump($appraisal_img);
         // exit;
         if($business_name == '' || $business_address == '' || $responsible_name == '' || $responsible_phone == ''){
@@ -496,7 +515,9 @@ class BusinessController extends Base
         if($role != 1 && $role != 2 && $role != 3){
             return ResultVo::error(ErrorCode::USER_NOT_LIMIT['code'], ErrorCode::USER_NOT_LIMIT['message']);
         }
-        $select = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']}", '*');
+        $select_staff = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']} and role_id !=2 ", '*');
+        $select_boss = $this->WeDb->selectSQL('user', "where business_notice = {$user['business_notice']} and role_id =2 ", '*');
+        $select = array_merge($select_boss,$select_staff);
         return ResultVo::success($select);
     }
     // 查询当前商家的商品

@@ -90,6 +90,7 @@ class EntranceController
         'userindex'=>'/user/UserController/index',
         'this_source_log'=>'/user/UserController/this_source_log',
         'iphone_code'=>'/user/UserController/iphone_code',
+        'iphonebs_code'=>'/user/UserController/business_sendcode',
         'common_problem'=>'/user/UserController/common_problem',
         'business_notice'=>'/user/UserController/business_notice',
         'subscribeMassage'=>'/user/UserController/subscribeMassage', //订阅消息推送
