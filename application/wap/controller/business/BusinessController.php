@@ -42,13 +42,17 @@ class BusinessController extends Base
         $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
         $reg_code = $this->request->param('responsible_phonecode');
+        $regphonechanger = $this->request->param('regphonechanger');
         //
         //
-        $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
-        if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
-        if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
-        //销毁验证码
-        $redis::del('phonecode_applybusiness_' . $this->uid);
+        if($regphonechanger){
+            $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
+            if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+            if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+            //销毁验证码
+            $redis::del('phonecode_applybusiness_' . $this->uid);
+
+        }
         if(!$user['phone']){
             $this->WeDb->update('user','id = '.$this->uid,['phone'=>$responsible_phone]);
         }
@@ -137,13 +141,16 @@ class BusinessController extends Base
         $responsible_phone = $this->request->param('responsible_phone');
         $appraisal_img = $this->request->param('appraisal_img');
         $reg_code = $this->request->param('responsible_phonecode');
+        $regphonechanger = $this->request->param('regphonechanger');
         //
         //
-        $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
-        if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
-        if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
-        //销毁验证码
-        $redis::del('phonecode_applybusiness_' . $this->uid);
+        if($regphonechanger){
+            $redis_code = $redis::get('phonecode_applybusiness_' . $this->uid);
+            if(!$redis_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+            if($redis_code != $reg_code){return ResultVo::error(ErrorCode::NOT_PHONE_CODE);}
+            //销毁验证码
+            $redis::del('phonecode_applybusiness_' . $this->uid);
+        }
         if(!$user['phone']){
             $this->WeDb->update('user','id = '.$this->uid,['phone'=>$responsible_phone]);
         }

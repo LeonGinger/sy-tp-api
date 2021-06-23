@@ -260,7 +260,7 @@ class LoginController extends Base
             $check_repeat = User::where('phone = "'.$tel.'" and delete_time is null and id != '.$login_info['id'])->find();
             if($check_repeat){return ResultVo::error(ErrorCode::DATA_NOT['code'],'该手机号已被使用');}
 
-            // $code = '123456';
+            $code = '123456';
 
             $this->redis::set('admin_phonecode_mobile_'.$tel."_adminId_".$login_info['id'],$code,180);
             return ResultVo::success();
@@ -271,7 +271,7 @@ class LoginController extends Base
             $check_repeat = User::where('phone = "'.$tel.'" and delete_time is null and id != '.$login_info['id'])->find();
             if($check_repeat){return ResultVo::error(ErrorCode::DATA_NOT['code'],'该手机号已被使用');}
 
-            // $code = '123456';
+            $code = '123456';
 
             $this->redis::set('admin_phonecode_mobile_'.$tel."_adminId_".$login_info['id'],$code,180);
             return ResultVo::success();
@@ -283,9 +283,9 @@ class LoginController extends Base
         
 
         /* 测试 */
-        // $code = '123456';
-        // $this->redis::set('admin_phonecode_mobile_'.$tel,$code,180);
-        // return ResultVo::success();
+        $code = '123456';
+        $this->redis::set('admin_phonecode_mobile_'.$tel,$code,180);
+        return ResultVo::success();
         /*end*/
 
         if($sms->send($tel,$code)){
