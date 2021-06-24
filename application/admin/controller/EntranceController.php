@@ -148,6 +148,11 @@ class EntranceController
         'database_del'=>'/sys/SettingController/del_base',
         // 每日统计
         'business_push'=>'/business/BusinessController/business_push',
+        //单位设置
+        'unitlist'=>'/sys/SettingController/unit_list',
+        'unitadd'=>'/sys/SettingController/unit_save',
+        'unitedit'=>'/sys/SettingController/unit_update',
+        'unitdel'=>'/sys/SettingController/unit_remove',
     ];
 
 }

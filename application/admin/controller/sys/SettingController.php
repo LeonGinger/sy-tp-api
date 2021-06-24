@@ -9,6 +9,7 @@ use think\db;
 use think\facade\Config;
 use databackup\Backup;
 use think\Queue;
+use app\model\Unit;
 /**
  * 后台设置相关
  */
@@ -310,4 +311,101 @@ class SettingController extends BaseCheckUser
 		return ResultVo::success();
 
 	}
+
+
+	/****************************************设置单位相关接口 开始*******************************************/
+	/**
+	 * 单位列表
+	 * @HtttpRequest                               get|
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-06-24T09:44:45+0800
+	 * @LastTime     2021-06-24T09:44:45+0800
+	 * @return       [type]                        [description]
+	 */
+	public function unit_list(){
+		$data = $this->request->param('');
+		$where = '';
+		$search[0] = !empty($data['unit_class'])?'unit_class = '.$data['unit_class']:'';
+		$search[1] = !empty($data['business_id'])?"business_id = {$data['business_id']}":'';
+		$order = 'id desc';
+
+        foreach ($search as $key => $value) {
+            # code...
+            if($value){
+                $where=$where.$value.' and ';
+            }
+        }
+        $where=substr($where,0,strlen($where)-5);
+
+        $list = Unit::with(['hasBusiness'])
+        			->where($where)
+            		->page($data['page'],$data['size'])
+            		->order($order)
+            		->select()
+            		->toarray();
+        $total =  $this->WeDb->totalView("unit",$where);
+ 		return ResultVo::success(['list'=>$list,'total'=>$total]);
+	}
+	/**
+	 * 添加单位
+	 * @HtttpRequest                               |post
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-06-24T09:44:54+0800
+	 * @LastTime     2021-06-24T09:44:54+0800
+	 * @return       [type]                        [description]
+	 */
+	public function unit_save(){
+		$data = $this->request->param('');
+
+		if($this->adminInfo['role_id']!='1' && empty($data['business_id'])){
+			return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);
+		}
+		$indata = array(
+			'unit_name' => $data['unit_name'],
+			'unit_class' => $data['unit_class'],
+			'business_id' => $data['business_id'],
+		);
+		$result = $this->WeDb->insertGetId('unit',$indata);
+		return ResultVo::success();
+	}
+	/**
+	 * 修改单位
+	 * @HtttpRequest                               |post
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-06-24T09:45:07+0800
+	 * @LastTime     2021-06-24T09:45:07+0800
+	 * @return       [type]                        [description]
+	 */
+	public function unit_update(){
+		$data = $this->request->param('');
+
+		if(empty($data['id'])){return ResultVo::error(ErrorCode::DATA_VALIDATE_FAIL);}
+
+		$updata = array(
+			'unit_name' => $data['unit_name'],
+			'unit_class' => $data['unit_class'],
+		);
+		$result = $this->WeDb->update('unit','id = '.$data['id'],$updata);
+		return ResultVo::success();
+	}
+	/**
+	 * 删除单位(可多选)
+	 * @HtttpRequest                               |post
+	 * @Author       GNLEON
+	 * @Param
+	 * @DateTime     2021-06-24T09:45:17+0800
+	 * @LastTime     2021-06-24T09:45:17+0800
+	 * @return       [type]                        [description]
+	 */
+	public function unit_remove(){
+		$data = $this->request->param('');
+		$result = Unit::where('id in ('.$data['id'].')')->delete();
+		return ResultVo::success($result); 
+		
+	}
+	/****************************************设置单位相关接口 结束*******************************************/
+
 }
